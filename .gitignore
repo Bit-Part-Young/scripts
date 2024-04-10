@@ -1,3 +1,11 @@
 test*
 *.db
 !test.db
+
+POSCAR
+*.vasp
+CONTCAR
+OUTCAR
+*.lmp
+*.xyz
+dpmd_raw/
