@@ -13,7 +13,7 @@ all:
 
 libparser.a: $(CPPOBJ_PARS) $(COBJ_PARS) locproj.tab.h
 	rm -f libparser.a
-	ar vq libparser.a $(CPPOBJ_PARS) $(COBJ_PARS) locproj.tab.h
+	ar vq libparser.a $(CPPOBJ_PARS) $(COBJ_PARS)
 
 #locproj.tab.c locproj.tab.h: locproj.y
 #	bison $(DEBUG) -d locproj.y

@@ -8,7 +8,8 @@ CPP_OPTIONS = -DHOST=\"LinuxGNU\" \
               -Duse_bse_te \
               -Dtbdyn \
               -Dfock_dblbuf \
-              -D_OPENMP
+              -D_OPENMP \
+              -Dqd_emulate
 
 CPP         = gcc -E -C -w $*$(FUFFIX) >$*$(SUFFIX) $(CPP_OPTIONS)
 
@@ -35,11 +36,16 @@ CFLAGS_LIB  = -O
 FFLAGS_LIB  = -O1
 FREE_LIB    = $(FREE)
 
-OBJECTS_LIB = linpack_double.o
+OBJECTS_LIB = linpack_double.o getshmem.o
 
 # For the parser library
 CXX_PARS    = g++
-LLIBS       = -lstdc++
+# LLIBS       = -lstdc++
+LIBS += parser
+LLIBS = -Lparser -lparser -lstdc++
+QD ?= /opt/homebrew
+LLIBS += -L$(QD)/lib -lqdmod -lqd
+INCS += -I$(QD)/include/qd
 
 ##
 ## Customize as of this point! Of course you may change the preceding
@@ -55,25 +61,25 @@ FFLAGS     += -march=native
 FFLAGS     += -fallow-argument-mismatch
 
 # BLAS and LAPACK (mandatory)
-OPENBLAS_ROOT ?= /path/to/your/openblas/installation
+OPENBLAS_ROOT ?= /opt/homebrew/Cellar/openblas/0.3.27
 BLASPACK    = -L$(OPENBLAS_ROOT)/lib -lopenblas
 
 # scaLAPACK (mandatory)
-SCALAPACK_ROOT ?= /path/to/your/scalapack/installation
+SCALAPACK_ROOT ?= /opt/homebrew
 SCALAPACK   = -L$(SCALAPACK_ROOT)/lib -lscalapack
 
 LLIBS      += $(SCALAPACK) $(BLASPACK)
 
 # FFTW (mandatory)
-FFTW_ROOT  ?= /path/to/your/fftw/installation
+FFTW_ROOT  ?= /opt/homebrew
 LLIBS      += -L$(FFTW_ROOT)/lib -lfftw3 -lfftw3_omp
 INCS       += -I$(FFTW_ROOT)/include
 
 # HDF5-support (optional but strongly recommended)
-#CPP_OPTIONS+= -DVASP_HDF5
-#HDF5_ROOT  ?= /path/to/your/hdf5/installation
-#LLIBS      += -L$(HDF5_ROOT)/lib -lhdf5_fortran
-#INCS       += -I$(HDF5_ROOT)/include
+CPP_OPTIONS+= -DVASP_HDF5
+HDF5_ROOT  ?= /opt/homebrew
+LLIBS      += -L$(HDF5_ROOT)/lib -lhdf5_fortran
+INCS       += -I$(HDF5_ROOT)/include
 
 # For the VASP-2-Wannier90 interface (optional)
 #CPP_OPTIONS    += -DVASP2WANNIER90

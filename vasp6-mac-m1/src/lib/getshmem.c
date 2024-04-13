@@ -14,6 +14,8 @@
  * input: size (fortran integer*8)
  * output: shmem id
  */
+#define SHM_NORESERVE 0 // this line was added
+
 void getshmem_C(size_t *size, int*id)
 {
   key_t key;
