@@ -8,4 +8,5 @@ CONTCAR
 OUTCAR
 *.lmp
 *.xyz
+*.dump
 dpmd_raw/
