@@ -117,7 +117,7 @@ def main():
 
     natoms, ediffg, _, force_array = grab_info(outcar_filepath=outcar_filepath)
 
-    print(f"OUTCAR info: {natoms} atoms, {force_array.shape[0]} ion steps.")
+    print(f"OUTCAR info: {natoms} atoms, {force_array.shape[0]} ion steps.\n")
 
     boolen_array = calcuate_force(
         force_array=force_array,
