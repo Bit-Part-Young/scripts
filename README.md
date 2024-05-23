@@ -49,6 +49,11 @@
 
 ---
 
+- `shell-scripts/`: shell 脚本
+  - `shell_set.ipynb`: shell set 命令测试
+
+---
+
 - `image-process/`: 图片处理
   - `pdf2img.py`: pdf 转 png 格式图片
 
@@ -60,7 +65,12 @@
   - `clease.ipynb`: clease 程序使用
   - `dpdata.ipynb`: dpdata 程序使用
   - `pyxtal.ipynb`: pyxtal 程序使用
+
+- `misc/`: 其他脚本
+  - `at2wt.py`: 将 Ti-22Al-23Nb-1Mo-1Zr 格式化学式原子百分比转化成质量百分比
+  - `coord_transform.ipynb`: 分数坐标与直角坐标互相转换
   - `index_transform.ipynb`: 三、四指数坐标转换
+  - `interatomic_potential_schematic.ipynb`: 势函数示意图绘制
 
 ---
 
