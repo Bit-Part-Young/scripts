@@ -1,6 +1,7 @@
 """将 Ti-22Al-23Nb-1Mo-1Zr 格式化学式原子百分比转化成质量百分比"""
 
 import re
+from typing import Dict
 
 # atomic mass data: got from pymatgen
 atomic_mass_dict = {
@@ -125,7 +126,7 @@ atomic_mass_dict = {
 }
 
 
-def calculate_weight(chem: str) -> dict(str, float):
+def calculate_weight(chem: str) -> Dict[str, float]:
     # 匹配 Ti-22Al-23Nb-1Mo-1Zr 格式化学元素符号和相应的原子数
     ele_number_list = re.findall("([0-9]*)([A-Z][a-z]?)", chem)
     ele_number_list.reverse()
