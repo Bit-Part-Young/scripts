@@ -43,6 +43,7 @@
   - `check_force.py`: 检查 OUTCAR 文件中的原子受力收敛性
   - `check_force_ase.py`: 检查 OUTCAR 文件中的原子受力收敛性；基于 ASE
   - `uniform_direct_coords.py`: 将 VASP POSCAR 中原子坐标分数范围限制在 0-1 之间
+  - `read_force_pymatgen.ipynb`: 使用 pymatgen 读取 OUTCAR 文件中的原子位置与受力
 
 ---
 
