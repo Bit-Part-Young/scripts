@@ -35,7 +35,7 @@
 ---
 
 - `atomate-usage/`: atomate 程序使用
-  - `atomate_db.ipynb`: 获取使用 atomate 计算并并存储到数据库（Mongodb）中的数据
+  - `atomate_db.ipynb`: 获取使用 atomate 计算并存储到数据库（Mongodb）中的数据
 
 ---
 
@@ -44,6 +44,8 @@
   - `check_force_ase.py`: 检查 OUTCAR 文件中的原子受力收敛性；基于 ASE
   - `uniform_direct_coords.py`: 将 VASP POSCAR 中原子坐标分数范围限制在 0-1 之间
   - `read_force_pymatgen.ipynb`: 使用 pymatgen 读取 OUTCAR 文件中的原子位置与受力
+  - `extract_force.sh`: 提取原子位置及受力，可指定原子、离子步步数
+  - `read_force.py`: 解析每个目录下的 vasprun.xml 文件，提取受力并统计最大受力
 
 ---
 
@@ -76,5 +78,5 @@ git diff cb92b24 cec4770
 
 ---
 
-- `depredated/`: 弃用脚本
+- `deprecated/`: 弃用脚本
   - `xsd2vasp.py`: xsd POSCAR 构型文件格式互相转换
