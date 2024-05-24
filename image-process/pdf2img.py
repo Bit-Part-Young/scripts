@@ -17,7 +17,7 @@ from pdf2image.exceptions import (
 def pdf2img(
     pdf_file: str,
     output_file: str,
-    dpi_num: int = 300,
+    dpi: int = 300,
     single_file: bool = False,
     output_folder: str = "./fig-pdf",
 ):
@@ -26,9 +26,9 @@ def pdf2img(
     os.makedirs(output_folder, exist_ok=True)
 
     images = convert_from_path(
-        pdf_file,
-        fmt="png",
-        dpi=dpi_num,
+        pdf_path=pdf_file,
+        dpi=dpi,
+        fmt="jpg",  # jpg 大小比 png 小
         single_file=single_file,
         output_folder=output_folder,
         output_file=output_file,
@@ -47,4 +47,4 @@ if __name__ == "__main__":
         output_folder=output_folder,
     )
 
-    print("\npdf to img convertion is done.")
+    print("\npdf to image convertion is done.")
