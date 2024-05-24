@@ -31,6 +31,7 @@
   - `pymatgen_vasp_help.ipynb`: `pymatgen.io.vasp.help` 模块使用
   - `pymatgen_vasp_outcar.ipynb`: `pymatgen.io.vasp.outputs` 模块中的 `Outcar` 类使用
   - `pymatgen_vasp_oszicar.ipynb`: `pymatgen.io.vasp.outputs` 模块中的 `Oszicar` 类使用
+  - `pymatgen_elastic_properties.ipynb`: 使用 pymatgen ElasticTensor 类计算弹性性质
 
 ---
 
