@@ -17,6 +17,7 @@
   - `ase_eos.ipynb`: 拟合 eos 方程并绘制曲线
   - `ase_rdf.ipynb`: 计算并绘制 rdf
   - `ase_outcar.ipynb`: 获取 OUTCAR 文件中数据（离子步构型、能量及受力）
+  - `ase_phase_diagram.ipynb`: 使用 ase phasediagram 模块绘制相图
 
 ---
 
