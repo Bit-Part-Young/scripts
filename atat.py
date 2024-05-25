@@ -66,8 +66,8 @@ def read_atat_enum_out(
         text = fs.read()
 
     # 匹配每个 end 前的内容，忽略空白行
-    pattern = r"(?:(?!\n\n).)*?\nend"
-    matches = re.findall(pattern, text, re.DOTALL)
+    pattern_atoms = r"(?:(?!\n\n).)*?\nend"
+    matches = re.findall(pattern_atoms, text, re.DOTALL)
 
     if isinstance(index, str):
         try:
@@ -75,7 +75,7 @@ def read_atat_enum_out(
         except ValueError:
             pass
 
-    def pattern2atoms(match: str) -> Atoms:
+    def match2atoms(match: str) -> Atoms:
         match = re.sub(r"\nend", "", match).strip()
 
         # 将匹配的内容写入临时文件，最后删除
@@ -92,13 +92,13 @@ def read_atat_enum_out(
     if isinstance(index, (slice, str)):
         atoms_list = []
         for match in matches[index]:
-            atoms = pattern2atoms(match)
+            atoms = match2atoms(match)
             atoms_list.append(atoms)
 
         return atoms_list
     else:
         match = matches[index]
-        atoms = pattern2atoms(match)
+        atoms = match2atoms(match)
 
         return atoms
 
