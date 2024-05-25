@@ -26,7 +26,8 @@
   - `pymatgen_periodic_table.ipynb`: periodic_table 模块使用；元素周期表 tui 版本绘制
   - `pymatgen_symmetry.ipynb`: symmetry 模块使用；对称性分析
   - `pymatgen_phase_diagram.ipynb`: phase diagram 模块使用；三元相图 convex hull 绘制
-  - `pymatgen_api.ipynb`: 新旧 api 模块使用
+  - `pymatgen_new_api.ipynb`: 新 api 模块使用（三元、四元相图 convex hull 绘制）
+  - `pymatgen_old_api.ipynb`: 旧 api 模块使用
   - `pymatgen_neighbor.ipynb`: 查看晶体结构中的原子近邻情况
   - `pymatgen_slab.ipynb`: surface 模块使用；构建表面 slab 模型
   - `pymatgen_vasp_help.ipynb`: `pymatgen.io.vasp.help` 模块使用
