@@ -1,15 +1,22 @@
-"""实现 ATAT str.out 文件读取"""
+"""ATAT str.out 文件的构型读取并转换为 ase Atoms 对象"""
 
-import io
+import os
+import re
+from typing import List, Union
 
 import numpy as np
 from ase import Atoms
-from ase.io.vasp import read_vasp, write_vasp
+from ase.io import string2index
 from ase.utils import reader
 
 
 @reader
-def read_atat_out(file: str, tot_natoms_threshold: int = 1000):
+def read_atat_out(
+    file: str,
+    tot_natoms_threshold: int = 1000,
+) -> Atoms:
+    """读取 str.out 文件中的构型并转换为 ase Atoms 对象"""
+
     fd = file
 
     coordinate_vectors = []
@@ -49,14 +56,55 @@ def read_atat_out(file: str, tot_natoms_threshold: int = 1000):
     return atoms
 
 
-# TODO 实现枚举的 str.out 文件批量读取
-@reader
-def read_atat_enum_out(file: str, index=-1):
-    fd = file
+def read_atat_enum_out(
+    file: str,
+    index: Union[int, slice, str] = -1,
+) -> Union[Atoms, List[Atoms]]:
+    """读取枚举的 str.out 文件构型，并实现 `ase.io.read()` 的构型索引功能"""
 
-    images = fd.read().split("end\n").remove("\n")
+    with open(file, "r") as fs:
+        text = fs.read()
 
-    if isinstance(index, int):
-        atoms = read_atat_out(io.StringIO(images[index]))
+    # 匹配每个 end 前的内容，忽略空白行
+    pattern = r"(?:(?!\n\n).)*?\nend"
+    matches = re.findall(pattern, text, re.DOTALL)
 
-    return atoms
+    if isinstance(index, str):
+        try:
+            index = string2index(index)
+        except ValueError:
+            pass
+
+    def pattern2atoms(match: str) -> Atoms:
+        match = re.sub(r"\nend", "", match).strip()
+
+        # 将匹配的内容写入临时文件，最后删除
+        tmp_fn = "tmp.out"
+        with open(tmp_fn, "w") as f:
+            f.write(match)
+
+        atoms = read_atat_out(tmp_fn)
+
+        os.remove(tmp_fn)
+
+        return atoms
+
+    if isinstance(index, (slice, str)):
+        atoms_list = []
+        for match in matches[index]:
+            atoms = pattern2atoms(match)
+            atoms_list.append(atoms)
+
+        return atoms_list
+    else:
+        match = matches[index]
+        atoms = pattern2atoms(match)
+
+        return atoms
+
+
+if __name__ == "__main__":
+    fn = "str_enum.out"
+
+    atoms_list = read_atat_enum_out(fn, index="4:6")
+    print(atoms_list)

@@ -63,7 +63,7 @@
 
 - 其他
   - `posconv.py`: 构型文件格式互相转换；基于 ASE
-  - `atat.py`: 解析 ATAT 中的 str.out 格式构型文件；基于 ASE
+  - `atat.py`: 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
   - `clease.ipynb`: clease 程序使用
   - `dpdata.ipynb`: dpdata 程序使用
   - `pyxtal.ipynb`: pyxtal 程序使用
