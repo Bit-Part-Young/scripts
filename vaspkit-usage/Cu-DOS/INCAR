@@ -1,0 +1,11 @@
+ISTART = 0
+ICHARG = 11
+ISPIN  = 1
+PREC   = Accurate
+EDIFF  = 1E-6
+ALGO   = Fast
+ENCUT  = 250
+ISMEAR = -5
+LWAVE  = .FALSE.
+LCHARG = .FALSE.
+LORBIT = 11
