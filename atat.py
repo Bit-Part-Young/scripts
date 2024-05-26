@@ -100,8 +100,16 @@ def read_atat_enum_out(
 
 
 if __name__ == "__main__":
-    fn = "str_enum.out"
 
+    # str_enum.out Ti-Al-Nb-Mo-Zr N=2 structure enumeration
+    print("read_atat_enum_out() test:")
+    fn = "str_enum.out"
     atoms_list = read_atat_enum_out(fn, index="-5:")
     for atoms in atoms_list:
         print(atoms)
+
+    # bestsqs.out reference: https://albertlinda.com/sqs_to_poscar.html
+    print("\nread_atat_out() test:")
+    fn = "bestsqs.out"
+    atoms = read_atat_out(fn)
+    print(atoms)
