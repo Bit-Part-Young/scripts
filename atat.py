@@ -1,23 +1,24 @@
 """ATAT str.out 文件的构型读取并转换为 ase Atoms 对象"""
 
-import os
+import io
 import re
 from typing import List, Union
 
 import numpy as np
 from ase import Atoms
 from ase.io import string2index
-from ase.utils import reader
 
 
-@reader
-def read_atat_out(
-    file: str,
-    tot_natoms_threshold: int = 1000,
-) -> Atoms:
+def read_atat_out(file: str) -> Atoms:
     """读取 str.out 文件中的构型并转换为 ase Atoms 对象"""
 
-    fd = file
+    if "\n" not in file:
+        fd = open(file, "r")
+    else:
+        fd = io.StringIO(file)
+
+    num_lines = len(fd.readlines())
+    fd.seek(0)
 
     coordinate_vectors = []
     for _ in range(3):
@@ -35,13 +36,15 @@ def read_atat_out(
 
     atoms_pos = []
     atom_symbols = []
-    for _ in range(tot_natoms_threshold):
+    for _ in range(num_lines - 6):
         ac = fd.readline().split()
         if not ac:
             break
         atoms_pos.append([float(ac[0]), float(ac[1]), float(ac[2])])
         atom_symbols.append(ac[3])
     atoms_pos = np.array(atoms_pos)
+
+    fd.close()
 
     cartesian = False
     if np.max(np.abs(atoms_pos)) > 1.0:
@@ -65,7 +68,7 @@ def read_atat_enum_out(
     with open(file, "r") as fs:
         text = fs.read()
 
-    # 匹配每个 end 前的内容，忽略空白行
+    # 匹配每个 end 及前面的内容
     pattern_atoms = r"(?:(?!\n\n).)*?\nend"
     matches = re.findall(pattern_atoms, text, re.DOTALL)
 
@@ -78,14 +81,7 @@ def read_atat_enum_out(
     def match2atoms(match: str) -> Atoms:
         match = re.sub(r"\nend", "", match).strip()
 
-        # 将匹配的内容写入临时文件，最后删除
-        tmp_fn = "tmp.out"
-        with open(tmp_fn, "w") as f:
-            f.write(match)
-
-        atoms = read_atat_out(tmp_fn)
-
-        os.remove(tmp_fn)
+        atoms = read_atat_out(match)
 
         return atoms
 
@@ -106,5 +102,6 @@ def read_atat_enum_out(
 if __name__ == "__main__":
     fn = "str_enum.out"
 
-    atoms_list = read_atat_enum_out(fn, index="4:6")
-    print(atoms_list)
+    atoms_list = read_atat_enum_out(fn, index="-5:")
+    for atoms in atoms_list:
+        print(atoms)
