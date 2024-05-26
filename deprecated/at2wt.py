@@ -122,7 +122,7 @@ atomic_mass_dict = {
     "Mc": 290.0,
     "Lv": 293.0,
     "Ts": 294.0,
-    "Og": 2949.0,  # wrong?
+    "Og": 294.0,
 }
 
 
@@ -146,7 +146,8 @@ def calculate_weight(chem: str) -> Dict[str, float]:
         weight_total += element_weight
 
     ele_weight_dict = {
-        element: round(percent / weight_total, 4) for element, percent in weight_list
+        element: round(percent / weight_total, 4)
+        for element, percent in weight_list
     }
     print(ele_weight_dict)
 

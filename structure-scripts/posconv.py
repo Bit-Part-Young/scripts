@@ -13,7 +13,7 @@ def ConfigurationConvert(
 
     atoms = read(input_file)
 
-    if output_file == "POSCAR" or output_file.endswith(("vasp", "poscar")):
+    if (output_file == "POSCAR") or output_file.endswith(("vasp", "poscar")):
 
         write(
             output_file,
@@ -37,7 +37,7 @@ def ConfigurationConvert(
             format="xyz",
         )
 
-    elif output_file.endswith("extxyz"):
+    elif (input_file == "OUTCAR") & output_file.endswith("xyz"):
         write(
             output_file,
             images=atoms,
@@ -49,7 +49,9 @@ def ConfigurationConvert(
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="Configuration file format convert.")
+    parser = argparse.ArgumentParser(
+        description="Structure file format convert. Support most ase recognized formats."
+    )
     parser.add_argument("input_file", help="Input file.")
     parser.add_argument("output_file", help="Output file.")
     args = parser.parse_args()
