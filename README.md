@@ -50,6 +50,12 @@
   - `extract_force.sh`: 提取原子位置及受力，可指定原子、离子步步数
   - `read_force.py`: 解析每个目录下的 vasprun.xml 文件，提取受力并统计最大受力
 
+- `structure-scripts/`: 结构相关脚本
+  - `posconv.py`: 构型文件格式互相转换（基于ASE，支持 ASE 大部分可识别的格式）
+  - `atat.py`: 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
+  - `crysinfo.py`: 获取晶体结构对称性信息
+  - `get_interface.py`: 生成界面结构
+
 ---
 
 - `shell-scripts/`: shell 脚本
@@ -59,21 +65,20 @@
 
 - `image-process/`: 图片处理
   - `pdf2img.py`: pdf 转 png 格式图片
+  - `image_crop.py`: 裁切图片多余空白
 
 ---
 
 - 其他
-  - `posconv.py`: 构型文件格式互相转换；基于 ASE
-  - `atat.py`: 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
   - `clease.ipynb`: clease 程序使用
   - `dpdata.ipynb`: dpdata 程序使用
   - `pyxtal.ipynb`: pyxtal 程序使用
 
 - `misc/`: 其他脚本
-  - `at2wt.py`: 将 Ti-22Al-23Nb-1Mo-1Zr 格式化学式原子百分比转化成质量百分比
   - `coord_transform.ipynb`: 分数坐标与直角坐标互相转换
   - `index_transform.ipynb`: 三、四指数坐标转换
   - `interatomic_potential_schematic.ipynb`: 势函数示意图绘制
+  - `at2wt.ipynb`: 将 Ti-22Al-23Nb-1Mo-1Zr 格式化学式原子百分比转化成质量百分比
 
 ---
 
@@ -93,3 +98,4 @@ git diff cb92b24 cec4770
 
 - `deprecated/`: 弃用脚本
   - `xsd2vasp.py`: xsd POSCAR 构型文件格式互相转换
+  - `at2wt.py`: 将 Ti-22Al-23Nb-1Mo-1Zr 格式化学式原子百分比转化成质量百分比
