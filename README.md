@@ -68,6 +68,17 @@
 
 ---
 
+- `vaspkit-usage/`: vaspkit 程序使用
+  - `Cu-bandstructure/`: Cu 能带结构分析与绘制
+  - `Cu-DOS/`: Cu DOS 分析与绘制
+  - `ELASTIC/`: 从 弹性张量文件中计算弹性性质（3D 和 2D）
+
+---
+
+- `atomkit-usage/`: atomkit 程序使用
+
+---
+
 - `image-process/`: 图片处理
   - `pdf2img.py`: pdf 转 png 格式图片
   - `image_crop.py`: 裁切图片多余空白
