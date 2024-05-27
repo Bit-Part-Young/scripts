@@ -1,19 +1,20 @@
-#/bin/bash
+#!/bin/bash
 
-# author: nxu
-# version:1.0
 # To determinr whether entropy T*S is less than 1 mev
-# To use it : bash sigma.sh
-# tamas@zju.edu.cn
-# url: https://github.com/tamaswells/VASP_script/blob/master/sigma.sh
+# reference: https://github.com/tamaswells/VASP_script/blob/master/sigma.sh
 
+entropy_ts=$(grep 'entropy T\*S' OUTCAR | tail -n 1 | awk '{print $5}')
+natoms=$(sed -n 7p POSCAR | tr -d '\r' | awk '{for(i=1; i<=NF; i++) sum+=$i; print sum}')
 
-aveenergy=$(echo "scale=5;$(grep "entropy T\*S" OUTCAR | tail -n 1 |  awk '{print $5}')/$(sed -n 7p POSCAR | tr -d "\r"  |  awk '{ for(i=1;i<=NF;i++) sum+=$i; print sum}')" | bc)
-sigma=`grep "SIGMA" INCAR | awk '{split($0,a,"=" ); print a[2]}'`
-absaveenergy=${aveenergy#-}
-if [ `echo "$absaveenergy < 0.001" | bc` -eq 1 ] ; then
-	echo "Your sigma $sigma is okay; for average T*S $absaveenergy is < 0.001 eV "
+energy_ts_average=$(echo "scale=5; ${entropy_ts}/${natoms}" | bc)
+value_abs=${energy_ts_average#-}
+
+sigma=$(echo "SIGMA = 0.1 (for metal: 0.2)" | grep -Eo '([0-9.]+)' | head -1)
+
+flag=$(echo "$value_abs < 0.001" | bc)
+
+if [ "${flag}" -eq 1 ]; then
+	echo "Your SIGMA $sigma is okay; for average T*S $value_abs is < 0.001 eV/atom."
 else
-	echo "Your sigma $sigma is BAD; for average T*S $absaveenergy  is > 0.001 eV,try to decrease sigma!"
+	echo "Your SIGMA $sigma is BAD; for average T*S $value_abs is > 0.001 eV/atom. Try to decrease SIGMA!"
 fi
-
