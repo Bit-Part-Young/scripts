@@ -37,11 +37,6 @@
 
 ---
 
-- `atomate-usage/`: atomate 程序使用
-  - `atomate_db.ipynb`: 获取使用 atomate 计算并存储到数据库（Mongodb）中的数据
-
----
-
 - `VASP-scripts`: VASP 相关脚本
   - `check_force.py`: 检查 OUTCAR 文件中的原子受力收敛性
   - `check_force_ase.py`: 检查 OUTCAR 文件中的原子受力收敛性；基于 ASE
@@ -49,17 +44,24 @@
   - `read_force_pymatgen.ipynb`: 使用 pymatgen 读取 OUTCAR 文件中的原子位置与受力
   - `extract_force.sh`: 提取原子位置及受力，可指定原子、离子步步数
   - `read_force.py`: 解析每个目录下的 vasprun.xml 文件，提取受力并统计最大受力
-  - `sigma_check.sh`: 确定 "entropy T*S" 是否小于 1 meV
+  - `sigma_check.sh`: 确定 `entropy T*S` 是否小于 1 meV
+  - `VASP-Official-Tutorials-2017.pdf`: VASP 官方教程 2017 版；来自 https://github.com/tamaswells/VASP_script
+  - `extract_outcar.ipynb`: 使用正则表达式提取 OUTCAR 文件中的数据（练习用）
+
+---
+
+- `atomate-usage/`: atomate 程序使用
+  - `atomate_db.ipynb`: 获取使用 atomate 计算并存储到数据库（Mongodb）中的数据
 
 ---
 
 - `structure-scripts/`: 结构相关脚本
   - `posconv.py`: 构型文件格式互相转换（基于ASE，支持 ASE 大部分可识别的格式）
   - `atat.py`: 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
-  - `crysinfo.py`: 获取晶体结构对称性信息
-  - `get_interface.py`: 生成界面结构
-  - `read_poscar.py`: 读取 POSCAR 文件
-  - `build_structure.ipynb`: 构建晶体结构
+  - `crysinfo.py`: 获取晶体结构对称性信息（WIP）
+  - `get_interface.py`: 生成界面结构（待优化）
+  - `read_poscar.py`: 读取 POSCAR 文件（练习用）
+  - `build_structure.ipynb`: 构建晶体结构（练习用）
 
 ---
 
