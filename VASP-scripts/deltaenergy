@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# 查看 RMM 优化是否超过 40 步，如果超过，很可能 SCF 没有收敛。同时返回第一步和最后一步离子步的能量差值
+# reference: https://github.com/tamaswells/VASP_script/blob/master/deltaer
+
+if [ "$(grep 'RMM:  39' OSZICAR)" ]; then
+	echo BAD
+	exit
+else 
+    echo fine
+fi
+
+energy_final=$(grep '  without entropy' OUTCAR | tail -n 1 | awk '{print $7}')
+energy_initial=$(grep '  without entropy' OUTCAR | head -n 1 | awk '{print $7}')
+
+echo "First ion step energy: ${energy_initial}; last: ${energy_final}"
+echo -n "delta E: "
+echo "scale=5; ${energy_final} - ${energy_initial}" | bc
