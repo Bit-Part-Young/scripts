@@ -18,7 +18,7 @@ fi
 flag=$(echo "$value_abs < 0.001" | bc)
 
 if [ "${flag}" -eq 1 ]; then
-	echo "Your SIGMA $sigma is okay; for average T*S $value_abs is < 0.001 eV/atom."
+	echo "Your SIGMA $sigma is okay; for average entropy T*S $value_abs is < 0.001 eV/atom."
 else
-	echo "Your SIGMA $sigma is BAD; for average T*S $value_abs is > 0.001 eV/atom. Try to decrease SIGMA!"
+	echo "Your SIGMA $sigma is BAD; for average entropy T*S $value_abs is > 0.001 eV/atom. Try to decrease SIGMA!"
 fi
