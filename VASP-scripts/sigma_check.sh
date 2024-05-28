@@ -9,7 +9,11 @@ natoms=$(sed -n 7p POSCAR | tr -d '\r' | awk '{for(i=1; i<=NF; i++) sum+=$i; pri
 energy_ts_average=$(echo "scale=5; ${entropy_ts}/${natoms}" | bc)
 value_abs=${energy_ts_average#-}
 
-sigma=$(echo "SIGMA = 0.1 (for metal: 0.2)" | grep -Eo '([0-9.]+)' | head -1)
+if grep -q 'SIGMA' INCAR; then
+    sigma=$(grep SIGMA INCAR | grep -Eo '([0-9.]+)' | head -1)
+else
+    sigma=0.2
+fi
 
 flag=$(echo "$value_abs < 0.001" | bc)
 
