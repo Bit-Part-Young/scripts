@@ -1,16 +1,19 @@
 """ase VASP Caculator 计算示例"""
 
-from ase.build import molecule
+from ase.build import molecule, bulk
 from ase.calculators.vasp import Vasp
 
-atoms = molecule("N2", pbc=True)
-atoms.center(vacuum=5)
+# N2 示例在 master 上运行会报错
+# atoms = molecule("N2", pbc=True)
+# atoms.center(vacuum=5)
+atoms = bulk("Nb", a=3.2)
 
 
 calc = Vasp(
     xc="pbe",  # 选择泛涵
     encut=400,  # 截断能
-    kpts=(1, 1, 1),  # k 点
+    # kpts=(1, 1, 1),  # k 点
+    kpts=(5, 5, 5),  # k 点
 )
 
 # 执行计算
