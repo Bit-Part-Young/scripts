@@ -51,6 +51,8 @@
 ---
 
 - `atomate-usage/`: atomate 程序使用
+  - `static.py`: 静态计算 workflow
+  - `opt.py`: 弛豫计算 workflow
   - `atomate_db.ipynb`: 获取使用 atomate 计算并存储到数据库（Mongodb）中的数据
 
 ---
