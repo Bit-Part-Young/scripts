@@ -12,3 +12,5 @@ OUTCAR
 *.xyz
 *.dump
 dpmd_raw/
+
+fake-vasp/
