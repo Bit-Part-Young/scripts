@@ -10,10 +10,11 @@
 
 - `ase-usage/`: ASE 程序使用
   - `ase_atoms.ipynb`: atoms 模块使用
+  - `ase_crystal.ipynb`: 构建晶体
   - `ase_db.ipynb`: db 模块使用
+  - `ase_data.ipynb`: data 模块使用
   - `ase_io.ipynb`: io 模块使用
   - `ase_visualize.ipynb`: visualize 模块使用
-  - `ase_crystal.ipynb`: 构建晶体
   - `ase_eos.ipynb`: 拟合 eos 方程并绘制曲线
   - `ase_rdf.ipynb`: 计算并绘制 rdf
   - `ase_outcar.ipynb`: 获取 OUTCAR 文件中数据（离子步构型、能量及受力）
@@ -24,6 +25,8 @@
 - `pymatgen-usage/`: pymatgen 程序使用
   - `pymatgen_eos.ipynb`: 拟合 eos 方程并绘制曲线
   - `pymatgen_periodic_table.ipynb`: periodic_table 模块使用；元素周期表 tui 版本绘制
+  - `pymatgen_unit.ipynb`: unit 模块使用
+  - `pymatgen_periodic_table.ipynb`: periodic_table 模块使用；元素周期表 tui 版本绘制
   - `pymatgen_symmetry.ipynb`: symmetry 模块使用；对称性分析
   - `pymatgen_phase_diagram.ipynb`: phase diagram 模块使用；三元相图 convex hull 绘制
   - `pymatgen_new_api.ipynb`: 新 api 模块使用（三元、四元相图 convex hull 绘制）
@@ -31,9 +34,13 @@
   - `pymatgen_neighbor.ipynb`: 查看晶体结构中的原子近邻情况
   - `pymatgen_slab.ipynb`: surface 模块使用；构建表面 slab 模型
   - `pymatgen_vasp_help.ipynb`: `pymatgen.io.vasp.help` 模块使用
+  - `pymatgen_vasp_vasprun.ipynb`: `pymatgen.io.vasp.outputs` 模块中的 `Vasprun` 类使用
   - `pymatgen_vasp_outcar.ipynb`: `pymatgen.io.vasp.outputs` 模块中的 `Outcar` 类使用
   - `pymatgen_vasp_oszicar.ipynb`: `pymatgen.io.vasp.outputs` 模块中的 `Oszicar` 类使用
   - `pymatgen_elastic_properties.ipynb`: 使用 pymatgen ElasticTensor 类计算弹性性质
+  - `pymatgen_kpoints.ipynb`: `pyamtgen.io.vasp.inputs` 模块中的 Kpoints 类使用
+  - `pymatgen_vaspsets.ipynb`: `pymatgen.io.vasp.sets` 模块使用
+  - `pymatgen_visualize_structure.ipynb`: 可视化晶体结构
 
 ---
 
@@ -53,6 +60,7 @@
 - `atomate-usage/`: atomate 程序使用
   - `static.py`: 静态计算 workflow
   - `opt.py`: 弛豫计算 workflow
+  - `atomate_basic.ipynb`: atomate 基础使用
   - `atomate_db.ipynb`: 获取使用 atomate 计算并存储到数据库（Mongodb）中的数据
 
 ---
@@ -75,11 +83,12 @@
 - `vaspkit-usage/`: vaspkit 程序使用
   - `Cu-bandstructure/`: Cu 能带结构分析与绘制
   - `Cu-DOS/`: Cu DOS 分析与绘制
-  - `ELASTIC/`: 从 弹性张量文件中计算弹性性质（3D 和 2D）
+  - `ELASTIC/`: 从弹性张量文件中计算弹性性质（3D 和 2D）
 
 ---
 
 - `atomkit-usage/`: atomkit 程序使用
+  - `Wyckoff.in`: 查看对称性（Wyckoff）位置信息
 
 ---
 
@@ -93,6 +102,7 @@
   - `clease.ipynb`: clease 程序使用
   - `dpdata.ipynb`: dpdata 程序使用
   - `pyxtal.ipynb`: pyxtal 程序使用
+  - `pandas.ipynb`: pandas 程序使用
   - `elastic_stability.py`: Born 弹性稳定性判据
 
 ---
@@ -114,8 +124,11 @@ git diff cb92b24 cec4770
 ---
 
 - `plots/`: 绘图示例
-  - `corr_heatmap.ipynb`: 相关性热图绘制
   - `matplotlib_basic.ipynb`: 各种绘图示例
+  - `colors.ipynb`: 绘图配色
+  - `corr_heatmap.ipynb`: 相关性热图绘制
+  - `eriodic_table_plot.ipynb`: 元素周期表绘制
+  - `misc_plot.ipynb`: 其他绘图示例
 
 ---
 
