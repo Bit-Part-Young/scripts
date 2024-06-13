@@ -65,6 +65,12 @@
 
 ---
 
+- `elastic/`: 弹性相关脚本
+  - `elastic_stability.py`: Born 力学稳定性判据
+  - `elastic_property.ipynb`: 弹性性质计算
+
+---
+
 - `structure-scripts/`: 结构相关脚本
   - `posconv.py`: 构型文件格式互相转换（基于ASE，支持 ASE 大部分可识别的格式）
   - `atat.py`: 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
@@ -103,7 +109,6 @@
   - `dpdata.ipynb`: dpdata 程序使用
   - `pyxtal.ipynb`: pyxtal 程序使用
   - `pandas.ipynb`: pandas 程序使用
-  - `elastic_stability.py`: Born 弹性稳定性判据
 
 ---
 
