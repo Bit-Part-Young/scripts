@@ -44,7 +44,7 @@
 
 ---
 
-- `VASP-scripts`: VASP 相关脚本
+- `VASP-scripts/`: VASP 相关脚本
   - `check_force.py`: 检查 OUTCAR 文件中的原子受力收敛性
   - `check_force_ase.py`: 检查 OUTCAR 文件中的原子受力收敛性；基于 ASE
   - `uniform_direct_coords.py`: 将 VASP POSCAR 中原子坐标分数范围限制在 0-1 之间
@@ -80,10 +80,13 @@
   - `read_poscar.py`: 读取 POSCAR 文件（练习用）
   - `build_structure.ipynb`: 构建晶体结构（练习用）
 
+- `sqsgen-usage/`: sqsgen 程序使用
+
 ---
 
 - `shell-scripts/`: shell 脚本
   - `shell_set.ipynb`: shell set 命令测试
+  - `awk.ipynb`: awk 命令使用
 
 ---
 
@@ -141,3 +144,4 @@ git diff cb92b24 cec4770
 - `deprecated/`: 弃用脚本
   - `xsd2vasp.py`: xsd POSCAR 构型文件格式互相转换
   - `at2wt.py`: 将 Ti-22Al-23Nb-1Mo-1Zr 格式化学式原子百分比转化成质量百分比
+  - ...
