@@ -11,6 +11,7 @@ OUTCAR
 *.lmp
 *.xyz
 *.dump
+*.cif
 dpmd_raw/
 
 fake-vasp/
