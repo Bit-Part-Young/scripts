@@ -1,0 +1,13 @@
+# Ti2AlNb B2 element Mo substitite Al
+structure:
+  file: Ti2AlNb_B2.vasp
+  supercell: [2, 2, 2]
+iterations: 1e6
+shell_weights:
+  1: 1.0
+  2: 1.0
+which: Al
+composition:
+  Mo: 0
+  Al: 32
+

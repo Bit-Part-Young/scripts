@@ -1,0 +1,16 @@
+# Multiple independent sublattices - from TiN to (Ti0.25Al0.25)(B0.25N0.25)
+structure:
+  supercell: [2, 2, 2]
+  file: ti-n.cif
+iterations: 5e5
+shell_weights:
+  2: 1.0
+composition:
+  B:
+    N: 16
+  N:
+    N: 16
+  Ti:
+    Ti: 16
+  Al:
+    Ti: 16

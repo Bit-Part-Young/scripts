@@ -1,0 +1,13 @@
+structure:
+  file: b2.vasp
+  supercell: [5, 5, 5]
+iterations: 1e7
+shell_weights:
+  1: 1.0
+  2: 1.0
+which: Al
+composition:
+  Ti: 7
+  Al: 55
+  Nb: 63
+
