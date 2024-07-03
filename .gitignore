@@ -5,12 +5,13 @@ test*
 !test.db
 
 POSCAR
-*.vasp
 CONTCAR
 OUTCAR
+*.vasp
 *.lmp
 *.xyz
 *.dump
+*.lammpstrj
 *.cif
 dpmd_raw/
 
