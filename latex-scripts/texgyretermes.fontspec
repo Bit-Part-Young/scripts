@@ -1,0 +1,8 @@
+\defaultfontfeatures[TeX Gyre Termes]
+{
+  Extension      = .otf ,
+  UprightFont    = texgyretermes-regular,
+  BoldFont       = texgyretermes-bold,
+  ItalicFont     = texgyretermes-italic,
+  BoldItalicFont = texgyretermes-bolditalic,
+}

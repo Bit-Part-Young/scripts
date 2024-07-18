@@ -1,0 +1,39 @@
+\ProvidesFile{tutgtermes.fd}[2019/01/17 v0.0 OpenType font definitions for TeX Gyre Termes]
+\DeclareFontFamily{TU}{tgtermes}{}
+\DeclareFontShape{TU}{tgtermes}{m}{n}{%
+  <->\UnicodeFontFile{texgyretermes-regular}{\UnicodeFontTeXLigatures}
+}{}
+\DeclareFontShape{TU}{tgtermes}{m}{it}{%
+  <->\UnicodeFontFile{texgyretermes-italic}{\UnicodeFontTeXLigatures}
+}{}
+\DeclareFontShape{TU}{tgtermes}{m}{sc}{%
+  <->\UnicodeFontFile{texgyretermes-regular}{\UnicodeFontTeXLigatures +smcp}
+}{}
+\DeclareFontShape{TU}{tgtermes}{m}{scit}{%
+  <->\UnicodeFontFile{texgyretermes-italic}{\UnicodeFontTeXLigatures +smcp}
+}{}
+\DeclareFontShape{TU}{tgtermes}{b}{n}{
+  <->\UnicodeFontFile{texgyretermes-bold}{\UnicodeFontTeXLigatures}
+}{}
+\DeclareFontShape{TU}{tgtermes}{b}{it}{%
+  <->\UnicodeFontFile{texgyretermes-bolditalic}{\UnicodeFontTeXLigatures}
+}{}
+\DeclareFontShape{TU}{tgtermes}{b}{sc}{
+  <->\UnicodeFontFile{texgyretermes-bold}{\UnicodeFontTeXLigatures +smcp}
+}{}
+\DeclareFontShape{TU}{tgtermes}{b}{scit}{%
+  <->\UnicodeFontFile{texgyretermes-bolditalic}{\UnicodeFontTeXLigatures +smcp}
+}{}
+\DeclareFontShape{TU}{tgtermes}{bx}{n}{%
+  <->ssub * tgtermes/b/n
+}{}
+\DeclareFontShape{TU}{tgtermes}{bx}{it}{%
+  <->ssub * tgtermes/b/it
+}{}
+\DeclareFontShape{TU}{tgtermes}{bx}{sc}{%
+  <->ssub * tgtermes/b/sc
+}{}
+\DeclareFontShape{TU}{tgtermes}{bx}{scit}{%
+  <->ssub * tgtermes/b/scit
+}{}
+\endinput
