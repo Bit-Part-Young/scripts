@@ -108,11 +108,12 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 
 ---
 
-- `shell-scripts/`: Shell 脚本
+- `HPC/`: 超算用脚本
 
 ```bash
-shell_set.ipynb                      # Shell set 命令测试
-awk.ipynb                            # awk 命令使用
+sruns                                # 根据超算类型申请计算节点
+checkjob                             # 检查在队列中的 job 任务信息
+print_help.sh                        # 定义 print_help 函数，供其他 Shell 脚本调用
 ```
 
 ---
@@ -151,6 +152,15 @@ clease.ipynb                         # clease 程序使用
 dpdata.ipynb                         # dpdata 程序使用
 pyxtal.ipynb                         # pyxtal 程序使用
 pandas.ipynb                         # pandas 程序使用
+```
+
+---
+
+- `shell-scripts/`: Shell 脚本
+
+```bash
+shell_set.ipynb                      # Shell set 命令测试
+awk.ipynb                            # awk 命令使用
 ```
 
 ---

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# 检查在队列中的 job 任务信息
+
+# 加载 print_help 函数
+source ./print_help.sh
+
+# 检查 echo 是否有 -e 选项
+if test "$(echo -e)" = "-e"; then ECHO=echo; else ECHO="echo -e"; fi
+
+#---------------------------------- 函数 ----------------------------------------
+cha='WorkDir|JobState|JobId|JobName|NumNodes|NumCPUs|StdErr|StdOut|Command|RunTime|BatchHost|Partition'
+
+job_check() {
+  scontrol show job $1 | grep -E "$cha"
+}
+
+job_check_all() {
+  job_array=($(squeue | awk 'NR>1 {print $1}'))
+  for job_id in ${job_array[*]}; do
+    # scontrol show job ${job_id} | grep -E "$cha"
+    job_check "${job_id}"
+    echo "======================================"
+  done
+}
+#-------------------------------------------------------------------------------
+
+#------------------------------ 定义 help 函数 -----------------------------------
+declare -A argv_dict=(
+  ["all"]="show all jobs information"
+  ["JobId"]="show specific JobId information"
+)
+description="show queue jobs information"
+#-------------------------------------------------------------------------------
+
+#--------------------------- Main program --------------------------------------
+if [[ $1 = "-h" || $1 = "--help" || $# -lt 1 ]]; then
+  print_help
+elif [[ $1 = "all" || $# -eq 1 ]]; then
+  job_check_all
+elif [[ $1 =~ "^[0-9]+$" || $# -eq 1 ]]; then
+  job_check "$1"
+else
+  $ECHO "Invalid argument: $1. Use '-h/--help' for help.\n"
+  print_help
+fi
