@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# 检查 VASP 弛豫计算目录是否达到收敛精度
+
+script_name=$(basename "$0")
+show_help() {
+  echo "Check VASP structure optimization calculation folder is converged or not."
+  echo -e "\nUsage: ${script_name} [FOLDERS...]"
+  echo -e "\nOptions:"
+  echo "    -h, --help    Show this help message and exit."
+  echo "    FOLDERS       VASP calculation folders."
+}
+
+if [ $# -eq 0 ]; then
+  show_help
+  exit 1
+fi
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  show_help
+  exit 0
+fi
+
+for dir in "$@"; do
+  outcar_file="$dir/OUTCAR"
+
+  if [ ! -f "$outcar_file" ]; then
+    echo "Directory $dir OUTCAR doesn't exsists!"
+  else
+    if grep -q "reached required accuracy" "$outcar_file"; then
+      echo "Folder $dir VASP Structure Optimization Calulation is converged!"
+    else
+      echo "Folder $dir VASP Structure Optimization Calulation isn't converged."
+    fi
+  fi
+done
