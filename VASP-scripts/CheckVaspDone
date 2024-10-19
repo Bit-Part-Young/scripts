@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# 检查 VASP 计算目录是否完成计算
+
+script_name=$(basename "$0")
+show_help() {
+  echo "Check VASP calculation folder is completed or not."
+  echo -e "\nUsage: ${script_name} [FOLDERS...]"
+  echo -e "\nOptions:"
+  echo "    -h, --help    Show this help message and exit."
+  echo "    FOLDERS       VASP calculation folders."
+}
+
+if [ $# -eq 0 ]; then
+  show_help
+  exit 1
+fi
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  show_help
+  exit 0
+fi
+
+for dir in "$@"; do
+  outcar_file="$dir/OUTCAR"
+
+  if [ ! -f "$outcar_file" ]; then
+    echo "Directory $dir OUTCAR doesn't exsists!"
+  else
+    if grep -q "Total CPU time used" "$outcar_file"; then
+      echo "Folder $dir VASP Calulation is completed!"
+    else
+      echo "Folder $dir VASP Calulation isn't completed."
+    fi
+  fi
+done
