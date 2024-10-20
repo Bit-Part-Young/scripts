@@ -22,7 +22,9 @@ def check_outcar(outcar_filepath: Path):
 
     if not outcar_filepath.is_file():
         dashline = "-" * 79
-        warning_str = "OUTCAR file does NOT exist! Please check your directory."
+        warning_str = (
+            "OUTCAR file does NOT exist! Please check your directory."
+        )
         warning_info = "\n".join((dashline, warning_str, dashline))
 
         raise SystemExit(warning_info)
@@ -40,7 +42,7 @@ def grab_info(outcar_filepath: Path) -> Tuple[int, np.ndarray, np.ndarray]:
         The array of the atom force in all ion steps with unit of eV/Angst
     """
 
-    atoms_list = read("OUTCAR_test", index=":")
+    atoms_list = read(outcar_filepath, index=":")
     natoms = len(atoms_list[0])
 
     position_array = np.array([atoms.get_positions() for atoms in atoms_list])
@@ -119,8 +121,9 @@ def main():
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
         print(
-            f"Step {step}: total {len(atom_index)} atoms force did NOT converge, index: {atom_index}."
+            f"Step {step}: Total {len(atom_index)} atoms force did NOT converge, Index:"
         )
+        print(atom_index)
 
 
 if __name__ == "__main__":

@@ -11,7 +11,7 @@ Usage() {
     printf "    -out    : Sets the output file.\n"
     printf "    -h      : Print this message. \n"
     printf "    -infos  : Prints infos\n\n"
-    printf "Example:\n    VaspForces.sh -atom=4 -iter=all -outcar=OUTCAR\n"
+    printf "Example:\n    Extract_force.sh -atom=4 -iter=all -outcar=OUTCAR\n"
     printf "\nAuthor: Hilal Balout\n"
     printf "E-mail: hilal_balout@hotmail.com\n"
 }
