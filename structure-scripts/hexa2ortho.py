@@ -1,13 +1,15 @@
-"""六方转正交"""
+"""六方胞转正交胞"""
 
 from ase.build.supercells import make_supercell
 from ase.io import read, write
 
 # 六方转正交，reference: https://mp.weixin.qq.com/s/H66KxwJCLvr-hR-sosPB_w
-# TODO: 该转变矩阵只适合夹角为 60 度的情况？
+
+# TODO: 如何将转换后的 正交胞 lattice vector 转换成只有 xx yy zz 分量的格式
 
 
 def hexa2ortho(input_fn: str, output_fn: str):
+    """六方胞转正交胞"""
 
     T = [
         [1, 1, 0],
@@ -33,7 +35,10 @@ def hexa2ortho(input_fn: str, output_fn: str):
 
 
 if __name__ == "__main__":
-    input_fn = "Zr_hexagonal.vasp"
-    output_fn = "test.vasp"
+    input_fn = "hexagonal.vasp"
+    output_fn = "orthogonal.vasp"
 
-    hexa2ortho(input_fn, output_fn)
+    hexa2ortho(
+        input_fn=input_fn,
+        output_fn=output_fn,
+    )
