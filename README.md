@@ -60,8 +60,11 @@ check_force_ase.py                   # 检查 OUTCAR 文件中的原子受力收
 read_force_pymatgen.ipynb            # 使用 pymatgen 读取 OUTCAR 文件中的原子位置与受力
 extract_force.sh                     # 提取原子位置及受力，可指定原子、离子步步数
 read_force.py                        # 解析每个目录下的 vasprun.xml 文件，提取受力并统计最大受力
-sigma_check.sh                       # 确定 entropy T*S 是否小于 1 meV
 extract_outcar.ipynb                 # 使用正则表达式提取 OUTCAR 文件中的数据（练习用）
+
+CheckVaspDone                        # 检查 VASP 计算是否完成
+CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（力 + 能量）
+sigma_check.sh                       # 确定 entropy T*S 是否小于 1 meV
 
 wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
 
@@ -96,8 +99,9 @@ elastic_matrix.ipynb                 # 根据独立弹性常数和晶系生成�
 - `structure-scripts/`: 结构相关脚本
 
 ```bash
-posconv.py                           # 构型文件格式互相转换（基于ASE，支持 ASE 大部分可识别的格式）
+posconv.py                           # 构型文件格式互相转换（基于 ASE，支持 ASE 大部分可识别的格式）
 atat.py                              # 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
+hexa2ortho.py                        # 将六方胞转换为正交胞
 crysinfo.py                          # 获取晶体结构对称性信息（WIP）
 get_interface.py                     # 生成界面结构（待优化）
 read_poscar.py                       # 读取 POSCAR 文件（练习用）
