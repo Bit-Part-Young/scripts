@@ -1,59 +1,61 @@
 #!/bin/bash
 
+# TODO: 提取力数据失败，待检查
 # reference: https://github.com/K4ys4r/VASP_Scripts/tree/master/Extract_Forces
 
 Usage() {
-    printf "\nExtract forces and atoms positions from VASP OUTCAR File.\n\n"
-    printf "Usage:\n"
-    printf "    -outcar : Sets the outcar file name.\n"
-    printf "    -atom   : Sets the Atom number default value : all atoms.\n"
-    printf "    -iter   : Sets the Iterations number default value : all iterations.\n"
-    printf "    -out    : Sets the output file.\n"
-    printf "    -h      : Print this message. \n"
-    printf "    -infos  : Prints infos\n\n"
-    printf "Example:\n    Extract_force.sh -atom=4 -iter=all -outcar=OUTCAR\n"
-    printf "\nAuthor: Hilal Balout\n"
-    printf "E-mail: hilal_balout@hotmail.com\n"
+  printf "\nExtract forces and atoms positions from VASP OUTCAR File.\n\n"
+  printf "Usage:\n"
+  printf "    -outcar : Sets the outcar file name.\n"
+  printf "    -atom   : Sets the Atom number default value : all atoms.\n"
+  printf "    -iter   : Sets the Iterations number default value : all iterations.\n"
+  printf "    -out    : Sets the output file.\n"
+  printf "    -h      : Print this message. \n"
+  printf "    -infos  : Prints infos\n\n"
+  printf "Example:\n    Extract_force.sh -atom=4 -iter=all -outcar=OUTCAR\n"
+  printf "\nAuthor: Hilal Balout\n"
+  printf "E-mail: hilal_balout@hotmail.com\n"
 }
+
 for i in "$@"; do
-    case $i in
-    -atom=*)
-        Atom="${i#*=}"
-        shift
-        ;;
-    -iter=*)
-        Iter="${i#*=}"
-        shift
-        ;;
-    -outcar=*)
-        Inp="${i#*=}"
-        shift
-        ;;
-    -out=*)
-        Out="${i#*=}"
-        shift
-        ;;
-    -h)
-        Usage
-        exit 0
-        ;;
-    esac
+  case $i in
+  -atom=*)
+    Atom="${i#*=}"
+    shift
+    ;;
+  -iter=*)
+    Iter="${i#*=}"
+    shift
+    ;;
+  -outcar=*)
+    Inp="${i#*=}"
+    shift
+    ;;
+  -out=*)
+    Out="${i#*=}"
+    shift
+    ;;
+  -h)
+    Usage
+    exit 0
+    ;;
+  esac
 done
 
 if [[ -z "${Atom}" ]]; then
-    Atom=all
+  Atom=all
 fi
 
 if [[ -z "${Iter}" ]]; then
-	Iter=all
+  Iter=all
 fi
 
 if [[ -z "${Inp}" ]] || [[ ! -f "${Inp}" ]]; then
-	printf "\n\t!!!..Error in OUTCAR File Name!\n\n"
-	Usage
-	exit 0
+  printf "\n\t!!!..Error in OUTCAR File Name!\n\n"
+  Usage
+  exit 0
 else
-	N_ions=$(grep NIONS ${Inp} | awk '{printf"%d",$NF}')
+  N_ions=$(grep NIONS ${Inp} | awk '{printf"%d",$NF}')
 fi
 
 awk '/TOTAL-FORCE \(eV\/Angst\)/{
