@@ -67,6 +67,7 @@ CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（�
 sigma_check.sh                       # 确定 entropy T*S 是否小于 1 meV
 
 get_potcar_pymatgen.py               # 获取 pymatgen 推荐的赝势文件
+get_vasp_data.py                     # 获取 VASP 计算目录的数据
 
 wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
 pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
