@@ -66,7 +66,10 @@ CheckVaspDone                        # 检查 VASP 计算是否完成
 CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（力 + 能量）
 sigma_check.sh                       # 确定 entropy T*S 是否小于 1 meV
 
+get_potcar_pymatgen.py               # 获取 pymatgen 推荐的赝势文件
+
 wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
+pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
 
 # BandStructure-DOS/ 目录
 plot_bs_pymatgen.py                  # 使用 pymatgen 模块绘制能带结构

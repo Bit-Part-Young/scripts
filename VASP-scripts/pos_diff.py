@@ -8,6 +8,8 @@ import numpy as np
 from ase.atoms import Atoms
 from ase.io import read
 
+# TODO: 添加只查看原子坐标变化，不考虑计算胞晶格常数变化的功能
+
 
 def pos_diff(
     atoms1: Atoms,
