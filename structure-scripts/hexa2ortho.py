@@ -17,6 +17,13 @@ def hexa2ortho(input_fn: str, output_fn: str):
         [0, 0, 1],
     ]
 
+    # 或
+    # T = [
+    #     [1, 2, 0],
+    #     [0, 1, 0],
+    #     [0, 0, 1],
+    # ]
+
     atoms_hexagonal = read(input_fn)
 
     atoms_orghogonal = make_supercell(
