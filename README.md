@@ -66,11 +66,9 @@ CheckVaspDone                        # 检查 VASP 计算是否完成
 CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（力 + 能量）
 sigma_check.sh                       # 确定 entropy T*S 是否小于 1 meV
 
+potcar_pbe_compare.py                # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4)
 get_potcar_pymatgen.py               # 获取 pymatgen 推荐的赝势文件
 get_vasp_data.py                     # 获取 VASP 计算目录的数据
-
-wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
-pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
 
 # BandStructure-DOS/ 目录
 plot_bs_pymatgen.py                  # 使用 pymatgen 模块绘制能带结构
@@ -103,6 +101,8 @@ elastic_matrix.ipynb                 # 根据独立弹性常数和晶系生成�
 - `structure-scripts/`: 结构相关脚本
 
 ```bash
+wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
+pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
 posconv.py                           # 构型文件格式互相转换（基于 ASE，支持 ASE 大部分可识别的格式）
 atat.py                              # 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
 hexa2ortho.py                        # 将六方胞转换为正交胞
