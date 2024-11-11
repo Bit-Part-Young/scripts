@@ -3,6 +3,7 @@
 __pycache__/
 
 test*
+tmp*
 *.db
 !test.db
 
