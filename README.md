@@ -37,15 +37,18 @@ pymatgen_new_api.ipynb               # 新 api 模块使用（三元、四元相
 pymatgen_old_api.ipynb               # 旧 api 模块使用
 pymatgen_neighbor.ipynb              # 查看晶体结构中的原子近邻情况
 pymatgen_slab.ipynb                  # surface 模块使用；构建表面 slab 模型
-pymatgen_vasp_help.ipynb             # pymatgen.io.vasp.help 模块使用
-pymatgen_vasp_vasprun.ipynb          # pymatgen.io.vasp.outputs 模块中的 Vasprun 类使用
-pymatgen_vasp_outcar.ipynb           # pymatgen.io.vasp.outputs 模块中的 Outcar 类使用
-pymatgen_vasp_oszicar.ipynb          # pymatgen.io.vasp.outputs 模块中的 Oszicar 类使用
-pymatgen_elastic_properties.ipynb    # 使用 pymatgen ElasticTensor 类计算弹性性质
-pymatgen_kpoints.ipynb               # pyamtgen.io.vasp.inputs 模块中的 Kpoints 类使用
-pymatgen_vaspsets.ipynb              # pymatgen.io.vasp.sets 模块使用
-pymatgen_visualize_structure.ipynb   # 可视化晶体结构
 
+pymatgen_vasp_help.ipynb             # pymatgen.io.vasp.help 模块使用
+pymatgen_kpoints.ipynb               # pyamtgen.io.vasp.inputs 模块中的 Kpoints 类使用
+pymatgen_vasprun.ipynb               # pymatgen.io.vasp.outputs 模块中的 Vasprun 类使用
+pymatgen_outcar.ipynb                # pymatgen.io.vasp.outputs 模块中的 Outcar 类使用
+pymatgen_oszicar.ipynb               # pymatgen.io.vasp.outputs 模块中的 Oszicar 类使用
+pymatgen_vaspsets.ipynb              # pymatgen.io.vasp.sets 模块使用
+pymatgen_dos.ipynb                   # pymatgen DOS 绘制
+pymatgen_dos2.ipynb                   # pymatgen DOS 数据获取
+
+pymatgen_elastic_properties.ipynb    # 使用 pymatgen ElasticTensor 类计算弹性性质
+pymatgen_visualize_structure.ipynb   # 可视化晶体结构
 ```
 
 ---
