@@ -48,7 +48,6 @@ pymatgen_vaspsets.ipynb              # pymatgen.io.vasp.sets 模块使用
 
 pymatgen_dos.ipynb                   # pymatgen DOS 绘制
 pymatgen_dos2.ipynb                  # pymatgen DOS 数据获取
-dos_bs_inputs.py                     # 生成 DOS 和 BandStructure 计算的输入文件
 
 pymatgen_elastic_properties.ipynb    # 使用 pymatgen ElasticTensor 类计算弹性性质
 
@@ -81,8 +80,13 @@ get_potcar_pymatgen.py               # 获取 pymatgen 推荐的赝势文件
 get_vasp_data.py                     # 获取 VASP 计算目录的数据
 
 # BandStructure-DOS/ 目录
+dos_bs_inputs.py                     # 生成 DOS 和 BandStructure 计算的输入文件
 plot_bs_pymatgen.py                  # 使用 pymatgen 模块绘制能带结构
 plot_bs_vaspkit.py                   # 使用 vaspkit 工具获取能带数据，绘制能带结构
+get_dos_spd.py                       # 获取体系分态密度数据
+plot_dos_spd.py                      # 使用 pymatgen 模块绘制体系分态密度
+plot_dos_spd.py                      # 绘制体系分态密度（不使用 pymatgen 模块）
+plot_dos_element_spd.py              # 使用 pymatgen 模块绘制元素分态密度
 ```
 
 ---
