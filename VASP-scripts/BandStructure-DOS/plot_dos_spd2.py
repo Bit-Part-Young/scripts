@@ -45,15 +45,19 @@ def plot_dos_spd(
     )
 
     ax.yaxis.set_minor_locator(MultipleLocator(5))
+    ax.xaxis.set_minor_locator(MultipleLocator(1))
 
     ax.set(
-        xlim=(-10, 2.5),
+        xlim=(-11, 5.0),
         ylim=(0, 35),
         xlabel="Energy (eV)",
         ylabel="DOS",
     )
 
-    ax.legend(handlelength=1.0)
+    ax.legend(
+        loc="upper left",
+        handlelength=1.0,
+    )
 
     fig.savefig(figname)
 
