@@ -1,15 +1,18 @@
 """体系分态密度绘制（不用 pymatgen 模块）"""
 
+from typing import Optional
+
 import matplotlib.pyplot as plt
 import pandas as pd
+from matplotlib.ticker import MultipleLocator
 from scipy.ndimage import gaussian_filter1d
 from spt.plot_params import set_roman_plot_params
 
 
 def plot_dos_spd(
-    filter: bool,
-    sigma: float,
     figname: str,
+    filter: bool = False,
+    sigma: Optional[float] = None,
 ):
 
     csv_fname = "dos_spd.csv"
@@ -40,6 +43,8 @@ def plot_dos_spd(
         color="black",
         linestyle="--",
     )
+
+    ax.yaxis.set_minor_locator(MultipleLocator(5))
 
     ax.set(
         xlim=(-10, 2.5),

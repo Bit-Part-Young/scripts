@@ -35,7 +35,8 @@ energy_dos_dict = {
 
 
 df = pd.DataFrame(energy_dos_dict)
-print(df)
+# print(df)
+print(f'Max density: {df["energy"].max()}')
 
 csv_fname = "dos_spd.csv"
 df.to_csv(csv_fname, index=False)
