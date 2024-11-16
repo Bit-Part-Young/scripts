@@ -36,7 +36,9 @@ energy_dos_dict = {
 
 df = pd.DataFrame(energy_dos_dict)
 # print(df)
-print(f'Max density: {df["energy"].max()}')
+df_interval = df[(df["energy"] >= -5) & (df["energy"] <= 5)]
+print(f"energy range: {df['energy'].min()} ~ {df['energy'].max()}")
+print(f'Max density in energy range -5.0 ~ 5.0: {df_interval["Total"].max()}')
 
 csv_fname = "dos_spd.csv"
 df.to_csv(csv_fname, index=False)
