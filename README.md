@@ -115,6 +115,7 @@ elastic_matrix.ipynb                 # 根据独立弹性常数和晶系生成�
 - `structure-scripts/`: 结构相关脚本
 
 ```bash
+layers_count.py                      # 统计原子层数
 wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
 pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
 posconv.py                           # 构型文件格式互相转换（基于 ASE，支持 ASE 大部分可识别的格式）
