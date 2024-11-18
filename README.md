@@ -115,6 +115,7 @@ elastic_matrix.ipynb                 # 根据独立弹性常数和晶系生成�
 - `structure-scripts/`: 结构相关脚本
 
 ```bash
+layers_distance_diff.py              # 统计原子层间距变化；仅限表面构型弛豫前后的原子层间距变化
 layers_count.py                      # 统计原子层数
 wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
 pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
