@@ -7,7 +7,7 @@ entropy=$(grep 'entropy T\*S' OUTCAR | tail -n 1 | awk '{print $5}')
 natoms=$(grep 'NIONS' OUTCAR | tail -1 | awk '{print $12}')
 
 entropy_average=$(echo "scale=5; ${entropy}/${natoms}" | bc)
-value_abs=${enrtopy_average#-}
+value_abs=${entropy_average#-}
 
 if grep -q 'SIGMA' INCAR; then
   sigma=$(grep SIGMA INCAR | grep -Eo '([0-9.]+)' | head -1)
