@@ -73,10 +73,10 @@ extract_outcar.ipynb                 # 使用正则表达式提取 OUTCAR 文件
 
 CheckVaspDone                        # 检查 VASP 计算是否完成
 CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（力 + 能量）
-sigma_check.sh                       # 确定 entropy T*S 是否小于 1 meV
+sigma.sh                             # 确定 entropy T*S 是否小于 1 meV/atom
 
-potcar_pbe_compare.py                # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4)
-get_potcar_pymatgen.py               # 获取 pymatgen 推荐的赝势文件
+potcar_pbe_compare.py                # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)
+get_potcar.py                        # 生成 VASP 和 pymatgen 推荐的赝势 POTCAR 文件
 get_vasp_data.py                     # 获取 VASP 计算目录的数据
 
 # BandStructure-DOS/ 目录
