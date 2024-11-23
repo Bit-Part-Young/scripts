@@ -1,6 +1,14 @@
-"""比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4)"""
+#!/usr/bin/env python3
 
+"""比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)"""
+
+import os
+import subprocess
 import sys
+
+import pandas as pd
+from monty.os.path import zpath
+from pymatgen.core import SETTINGS
 
 # Data source: https://github.com/materialsproject/pymatgen/blob/master/src/pymatgen/io/vasp/MPRelaxSet.yaml
 pymatgen_pbe_dict = {
@@ -73,11 +81,79 @@ vasp_pbe_dict = {
 }
 
 
-def potcar_pbe_compare(element: str):
-    """比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势(VASP5.4)"""
+def get_shell_outputs(command: str) -> str:
+    """获取 Shell 命令的输出"""
 
-    print(f"VASP recommended: {vasp_pbe_dict[element]}")
-    print(f"Pymatgen recommended: {pymatgen_pbe_dict[element]}")
+    result = subprocess.run(
+        command,
+        shell=True,
+        text=True,
+        capture_output=True,
+    )
+    return result.stdout
+
+
+def get_potcar_info(psp: str):
+    """获取 POTCAR 文件信息"""
+
+    PMG_VASP_PSP_DIR = SETTINGS.get("PMG_VASP_PSP_DIR")
+
+    functional_subdir = "POT_GGA_PAW_PBE"
+
+    paths_to_try: list[str] = [
+        os.path.join(PMG_VASP_PSP_DIR, functional_subdir, f"POTCAR.{psp}"),
+        os.path.join(PMG_VASP_PSP_DIR, functional_subdir, psp, "POTCAR"),
+    ]
+
+    for path in paths_to_try:
+        path = os.path.expanduser(path)
+        path = zpath(path)
+        if os.path.isfile(path):
+
+            command = f"head -n 1 {path}"
+            titel = get_shell_outputs(command).strip()
+
+            command = f"grep ENMAX {path} | awk '{{print $3}}'"
+            enmax = float(get_shell_outputs(command).strip()[:-1])
+
+            command = f"grep ZVAL {path} | awk '{{print $6}}'"
+            zval = int(float(get_shell_outputs(command).strip()))
+
+            command = f"grep VRHFIN {path} | awk '{{print $3}}'"
+            vrhfin = get_shell_outputs(command).strip()
+
+            psp_dict = {
+                "TITEL": titel,
+                "ENMAX": enmax,
+                "ZVAL": zval,
+                "VRHFIN": vrhfin,
+            }
+
+    return psp_dict
+
+
+def potcar_pbe_compare(element: str):
+    """比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势(VASP5.4.4)"""
+
+    psp_vasp = vasp_pbe_dict[element]
+    psp_pymatgen = pymatgen_pbe_dict[element]
+
+    psp_dict_vasp = get_potcar_info(psp=psp_vasp)
+    psp_dict_pymatgen = get_potcar_info(psp=psp_pymatgen)
+    if psp_vasp != psp_pymatgen:
+        print("VASP and pymatgen recommended is different.\n")
+        df = pd.DataFrame(
+            [psp_dict_vasp, psp_dict_pymatgen],
+            index=["VASP", "pymatgen"],
+        )
+    else:
+        print("VASP and pymatgen recommended is same.\n")
+        df = pd.DataFrame(
+            [psp_dict_vasp],
+            index=["VASP/pymatgen"],
+        )
+
+    print(df)
 
 
 if __name__ == "__main__":
