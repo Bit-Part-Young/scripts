@@ -1,4 +1,4 @@
-"""固定（特定）原子层 z 轴"""
+"""固定（特定）原子层 x/y/z 轴"""
 
 import numpy as np
 import pandas as pd
@@ -7,11 +7,14 @@ from pymatgen.core.structure import Structure
 
 def fix_layer(
     structure: Structure,
-    layer_number: int | list[int] | None = None,
+    layer_index: int | list[int] | None = None,
+    fixed_axis: int | list[int] | None = None,
     precision: float = 0.001,
     to_poscar: bool = False,
 ) -> Structure:
-    """固定（特定）原子层 z 轴"""
+    """
+    固定（特定）原子层 x/y/z 轴
+    """
 
     natoms = structure.num_sites
     positions = structure.cart_coords
@@ -23,38 +26,47 @@ def fix_layer(
     z_coords_rounded = precision * np.round(z_coords / precision)
 
     z_unique = np.unique(z_coords_rounded)
-    z_unique_sorted = np.sort(z_unique)
 
     print(f"Number of atom layer: {len(z_unique)}.\n")
 
     # 获取每个原子所在的原子层
-    layer_num_list = []
+    layer_index_list = []
     for z_coord in z_coords_rounded:
-        for i, z in enumerate(z_unique_sorted, start=1):
+        for i, z in enumerate(z_unique, start=1):
             if np.isclose(z, z_coord):
-                layer_num_list.append(i)
+                layer_index_list.append(i)
 
     data = {
         "x": positions[:, 0],
         "y": positions[:, 1],
         "z": positions[:, 2],
-        "layer_number": layer_num_list,
+        "layer_index": layer_index_list,
     }
     df = pd.DataFrame(data)
 
-    if layer_number is None:
-        fix_index = df.index
-        print("z axis of all layers are fixed.")
-    elif isinstance(layer_number, int):
-        fix_index = df[df["layer_number"] == layer_number].index
-        print(f"z axis of No. {fix_index} layer is fixed.")
-    elif isinstance(layer_number, list):
-        fix_index = df[df["layer_number"].isin(layer_number)].index
-        print(f"z axis of No. {fix_index} layers are fixed.")
+    if layer_index is None:
+        fixed_layer_index = df.index
+
+        print("All atoms are fixed.")
+    elif isinstance(layer_index, int):
+        fixed_layer_index = df[df["layer_index"] == layer_index].index
+
+        print(
+            f"No. {layer_index} layer, total {len(fixed_layer_index)} atoms are fixed."
+        )
+    elif isinstance(layer_index, list):
+        fixed_layer_index = df[df["layer_index"].isin(layer_index)].index
+
+        print(
+            f"No. {layer_index} layers, total {len(fixed_layer_index)} atoms are fixed."
+        )
 
     selective_dynamics = np.ones((natoms, 3))
-    # 固定选中原子层的 z 轴
-    selective_dynamics[fix_index, 2] = 0
+
+    if isinstance(fixed_axis, int):
+        selective_dynamics[fixed_layer_index, fixed_axis] = 0
+    elif isinstance(fixed_axis, list):
+        selective_dynamics[np.ix_(fixed_layer_index, fixed_axis)] = 0
 
     structure.add_site_property("selective_dynamics", selective_dynamics)
 
@@ -69,11 +81,18 @@ if __name__ == "__main__":
     # 示例
     structure_fn = "POSCAR_1"
     structure = Structure.from_file(structure_fn)
-    layer_number = 6
-    layer_number = [6, 7]
+
+    # 移除原子坐标轴原有的固定信息
+    structure.remove_site_property(property_name="selective_dynamics")
+
+    layer_index = 1
+    layer_index = [1, 2]
+    fixed_axis = 0
+    fixed_axis = [0, 1]
 
     fix_layer(
         structure=structure,
-        layer_number=layer_number,
+        layer_index=layer_index,
+        fixed_axis=fixed_axis,
         to_poscar=True,
     )
