@@ -98,18 +98,18 @@ def main():
     parser.add_argument(
         "-ediffg",
         type=float,
-        help="force convergence criteria",
+        help="force convergence criteria. Default: 0.01.",
         default=0.01,
     )
     parser.add_argument(
         "OUTCAR_PATH",
         type=Path,
-        help="OUTCAR file path",
+        help="OUTCAR file path. Default: .",
         default="OUTCAR",
     )
     args = parser.parse_args()
 
-    outcar_path = args.OUTCAR_FILE
+    outcar_path = args.OUTCAR_PATH
     ediffg = args.ediffg
 
     check_outcar(outcar_path)
