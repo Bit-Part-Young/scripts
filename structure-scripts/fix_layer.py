@@ -5,7 +5,7 @@ import pandas as pd
 from pymatgen.core.structure import Structure
 
 
-def fix_sf_layer(
+def fix_layer(
     structure: Structure,
     layer_number: int | list[int] | None = None,
     precision: float = 0.001,
@@ -66,12 +66,13 @@ def fix_sf_layer(
 
 if __name__ == "__main__":
 
+    # 示例
     structure_fn = "POSCAR_1"
     structure = Structure.from_file(structure_fn)
     layer_number = 6
     layer_number = [6, 7]
 
-    fix_sf_layer(
+    fix_layer(
         structure=structure,
         layer_number=layer_number,
         to_poscar=True,
