@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Check the force convergence in OUTCAR with ASE program.
 
@@ -9,6 +11,7 @@ Date: May 21, 2024
 """
 
 import argparse
+import os
 import re
 from pathlib import Path
 from typing import Tuple
@@ -17,10 +20,12 @@ import numpy as np
 from ase.io import read
 
 
-def check_outcar(outcar_filepath: Path):
+def check_outcar(outcar_path: Path):
     """Checks whether the OUTCAR file exists."""
 
-    if not outcar_filepath.is_file():
+    outcar = os.path.join(outcar_path, "OUTCAR")
+
+    if not outcar.is_file():
         dashline = "-" * 79
         warning_str = (
             "OUTCAR file does NOT exist! Please check your directory."
@@ -30,7 +35,7 @@ def check_outcar(outcar_filepath: Path):
         raise SystemExit(warning_info)
 
 
-def grab_info(outcar_filepath: Path) -> Tuple[int, np.ndarray, np.ndarray]:
+def grab_info(outcar_path: Path) -> Tuple[int, np.ndarray, np.ndarray]:
     """Grab the number of atoms, the force convergence criteria,
     position array and force array in all ion steps from the OUTCAR file.
 
@@ -42,7 +47,8 @@ def grab_info(outcar_filepath: Path) -> Tuple[int, np.ndarray, np.ndarray]:
         The array of the atom force in all ion steps with unit of eV/Angst
     """
 
-    atoms_list = read(outcar_filepath, index=":")
+    outcar = os.path.join(outcar_path, "OUTCAR")
+    atoms_list = read(outcar, index=":")
     natoms = len(atoms_list[0])
 
     position_array = np.array([atoms.get_positions() for atoms in atoms_list])
@@ -96,19 +102,19 @@ def main():
         default=0.01,
     )
     parser.add_argument(
-        "OUTCAR_FILE",
+        "OUTCAR_PATH",
         type=Path,
-        help="OUTCAR file",
+        help="OUTCAR file path",
         default="OUTCAR",
     )
     args = parser.parse_args()
 
-    outcar_filepath = args.OUTCAR_FILE
+    outcar_path = args.OUTCAR_FILE
     ediffg = args.ediffg
 
-    check_outcar(outcar_filepath)
+    check_outcar(outcar_path)
 
-    natoms, _, force_array = grab_info(outcar_filepath=outcar_filepath)
+    natoms, _, force_array = grab_info(outcar_path=outcar_path)
 
     print(f"OUTCAR info: {natoms} atoms, {force_array.shape[0]} ion steps.\n")
 
