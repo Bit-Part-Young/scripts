@@ -25,7 +25,7 @@ def check_outcar(outcar_path: Path):
 
     outcar = os.path.join(outcar_path, "OUTCAR")
 
-    if not outcar.is_file():
+    if not os.path.exists(outcar):
         dashline = "-" * 79
         warning_str = (
             "OUTCAR file does NOT exist! Please check your directory."
@@ -105,7 +105,7 @@ def main():
         "OUTCAR_PATH",
         type=Path,
         help="OUTCAR file path. Default: .",
-        default="OUTCAR",
+        default=".",
     )
     args = parser.parse_args()
 
