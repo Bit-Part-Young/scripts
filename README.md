@@ -131,8 +131,10 @@ print_help.sh                        # 定义 print_help 函数，供其他 Shel
 - `atomate-usage/`: atomate 程序使用
 
 ```bash
-static.py                            # 静态计算 workflow
-opt.py                               # 弛豫计算 workflow
+static.py                            # 静态计算 workflow（默认参数，Si）
+relax.py                             # 弛豫计算 workflow（默认参数，Si）
+static_metal.py                      # 静态计算 workflow（修改 INCAR、KPOINTS 参数，以适用于金属体系）
+relax_metal.py                       # 弛豫计算 workflow（修改 INCAR、KPOINTS 参数，以适用于金属体系）
 atomate_basic.ipynb                  # atomate 基础使用
 atomate_db.ipynb                     # 获取使用 atomate 计算并存储到数据库（Mongodb）中的数据
 ```

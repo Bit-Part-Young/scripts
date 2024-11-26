@@ -1,7 +1,7 @@
-"""采用 atomate 静态计算 workflow 默认参数"""
+"""采用 atomate 弛豫计算 workflow 默认参数"""
 
 from atomate.common.powerups import add_namefile, add_tags
-from atomate.vasp.workflows.presets.core import wf_static
+from atomate.vasp.workflows.presets.core import wf_structure_optimization
 from fireworks.core.launchpad import LaunchPad
 from pymatgen.core.structure import Structure
 
@@ -15,7 +15,7 @@ structure_primitive = structure_copy.get_primitive_structure()
 
 # structure_primitive = Structure.from_file("Si.vasp")
 
-wf = wf_static(structure_primitive)
+wf = wf_structure_optimization(structure_primitive)
 
 """
 # 解决 `cannot encode object: True, of type: <class 'numpy.bool'>` 报错
@@ -26,9 +26,9 @@ wf.metadata[key] = bool(wf.metadata[key])
 """
 
 wf = add_namefile(wf)
-wf = add_tags(wf, {"task_name": "default static workflow"})
+wf = add_tags(wf, {"task_name": "default relaxation workflow"})
 
 lpad = LaunchPad.auto_load()
 lpad.add_wf(wf)
 
-print("The default static workflow is added.")
+print("The default relaxation workflow is added.")
