@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 对个人常用的 Git 仓库进行 pull 操作
+# 对个人常用的 Git 仓库进行批量 pull 操作
 # 在不同电脑、服务器上使用该脚本时
 # 需自定义修改 pull_folders 和 pull_path
 
