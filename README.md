@@ -91,6 +91,43 @@ plot_dos_element_spd.py              # 使用 pymatgen 模块绘制元素分态�
 
 ---
 
+- `structure-scripts/`: 结构相关脚本
+
+```bash
+layers_count.py                      # 统计原子层数及每层原子数
+layers_distance_diff.py              # 统计原子层间距变化；仅限表面构型弛豫前后的原子层间距变化
+identify_layer.py                    # 识别每个原子所在的原子层
+fix_layer.py                         # 固定（特定）原子层 x/y/z 轴
+wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
+pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
+posconv.py                           # 构型文件格式互相转换（基于 ASE，支持 ASE 大部分可识别的格式）
+atat.py                              # 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
+hexa2ortho.py                        # 将六方胞转换为正交胞
+crysinfo.py                          # 获取晶体结构对称性信息（WIP）
+get_interface.py                     # 生成界面结构（待优化）
+read_poscar.py                       # 读取 POSCAR 文件（练习用）
+build_structure.ipynb                # 构建晶体结构（练习用）
+```
+
+---
+
+- `HPC/`: 超算用脚本
+
+```bash
+# 1-SiYuan、2-Pi 中的任务提交脚本
+# 超算编译好的 LAMMPS 中安装的 package 很少，不推荐使用
+vasp_local.slurm                     # 使用本地编译的 VASP
+vasp.slurm                           # module load 加载超算编译好的 VASP
+lammps_local.slurm                   # 使用本地编译的 LAMMPS
+job_universal.slurm                  # 通用任务（Python、Shell 等）提交脚本
+
+sruns                                # 根据超算类型申请计算节点
+checkjob                             # 检查在队列中的 job 任务信息
+print_help.sh                        # 定义 print_help 函数，供其他 Shell 脚本调用
+```
+
+---
+
 - `atomate-usage/`: atomate 程序使用
 
 ```bash
@@ -112,35 +149,7 @@ elastic_matrix.ipynb                 # 根据独立弹性常数和晶系生成�
 
 ---
 
-- `structure-scripts/`: 结构相关脚本
-
-```bash
-layers_count.py                      # 统计原子层数及每层原子数
-layers_distance_diff.py              # 统计原子层间距变化；仅限表面构型弛豫前后的原子层间距变化
-identify_layer.py                    # 识别每个原子所在的原子层
-fix_layer.py                         # 固定（特定）原子层 x/y/z 轴
-wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
-pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
-posconv.py                           # 构型文件格式互相转换（基于 ASE，支持 ASE 大部分可识别的格式）
-atat.py                              # 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
-hexa2ortho.py                        # 将六方胞转换为正交胞
-crysinfo.py                          # 获取晶体结构对称性信息（WIP）
-get_interface.py                     # 生成界面结构（待优化）
-read_poscar.py                       # 读取 POSCAR 文件（练习用）
-build_structure.ipynb                # 构建晶体结构（练习用）
-```
-
 - `sqsgen-usage/`: sqsgen 程序使用
-
----
-
-- `HPC/`: 超算用脚本
-
-```bash
-sruns                                # 根据超算类型申请计算节点
-checkjob                             # 检查在队列中的 job 任务信息
-print_help.sh                        # 定义 print_help 函数，供其他 Shell 脚本调用
-```
 
 ---
 
@@ -185,6 +194,7 @@ pandas.ipynb                         # pandas 程序使用
 - `shell-scripts/`: Shell 脚本
 
 ```bash
+pull.sh                              # 对个人常用的 Git 仓库进行批量 pull 操作
 shell_set.ipynb                      # Shell set 命令测试
 awk.ipynb                            # awk 命令使用
 ```
