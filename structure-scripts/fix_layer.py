@@ -85,9 +85,13 @@ if __name__ == "__main__":
     # 移除原子坐标轴原有的固定信息
     structure.remove_site_property(property_name="selective_dynamics")
 
+    # 固定单个原子层
     layer_index = 1
+    # 固定多个原子层
     layer_index = [1, 2]
+    # 固定 x 轴
     fixed_axis = 0
+    # 固定 x、y 轴
     fixed_axis = [0, 1]
 
     fix_layer(
