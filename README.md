@@ -103,6 +103,7 @@ pos_diff.py                          # 比较构型弛豫前后原子坐标的�
 posconv.py                           # 构型文件格式互相转换（基于 ASE，支持 ASE 大部分可识别的格式）
 atat.py                              # 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
 hexa2ortho.py                        # 将六方胞转换为正交胞
+build_structure_spacegroup.ipynb     # PyXtal、ASE、pymatgen 通过空间群构建复杂结构
 crysinfo.py                          # 获取晶体结构对称性信息（WIP）
 get_interface.py                     # 生成界面结构（待优化）
 read_poscar.py                       # 读取 POSCAR 文件（练习用）
