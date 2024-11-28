@@ -3,9 +3,10 @@
 from atomate.common.powerups import add_namefile, add_tags
 from atomate.vasp.powerups import add_modify_incar, add_modify_kpoints
 from atomate.vasp.workflows.presets.core import wf_structure_optimization
-from fireworks.core.launchpad import LaunchPad
 from pymatgen.core.structure import Structure
 from pymatgen.io.vasp.inputs import Kpoints
+
+from fireworks.core.launchpad import LaunchPad
 
 structure = Structure.from_prototype(
     prototype="bcc",
@@ -41,11 +42,12 @@ user_incar_settings = (
 
 user_kpoints_settings = Kpoints.gamma_automatic(kpts=(5, 5, 5))
 
-c = {"USER_INCAR_SETTINGS": user_incar_settings}
+# 该方式 修改 INCAR 参数会报错
+# c = {"USER_INCAR_SETTINGS": user_incar_settings}
 
 wf = wf_structure_optimization(
     structure_primitive,
-    c=c,
+    # c=c,
 )
 
 """
@@ -55,6 +57,14 @@ for key, val in wf.metadata.items():
 
 wf.metadata[key] = bool(wf.metadata[key])
 """
+
+wf = add_modify_incar(
+    wf,
+    modify_incar_params={
+        "incar_update": user_incar_settings,
+    },
+)
+
 
 wf = add_modify_kpoints(
     wf,
