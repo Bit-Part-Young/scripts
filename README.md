@@ -95,7 +95,7 @@ plot_dos_element_spd.py              # 使用 pymatgen 模块绘制元素分态�
 
 ```bash
 layers_count.py                      # 统计原子层数及每层原子数
-layers_distance_diff.py              # 统计原子层间距变化；仅限表面构型弛豫前后的原子层间距变化
+interlayer_separations.py            # 统计原子层间距变化（适用于表面/界面模型弛豫前后的原子层间距变化）
 identify_layer.py                    # 识别每个原子所在的原子层
 fix_layer.py                         # 固定（特定）原子层 x/y/z 轴
 wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
