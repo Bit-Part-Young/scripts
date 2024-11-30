@@ -2,11 +2,19 @@
 
 计算材料科学相关脚本。
 
+注意事项：
+
+- 本仓库代码主要依赖 ASE、pymatgen、atomate 等 Python 包
+
+- 使用脚本前，请先阅读源码及其中的注释！
+
+- 对于 ipynb 格式脚本文件，可使用 [nbviewer](https://nbviewer.org/) 在线查看
+
+- 部分代码可解析命令行参数
+
 ---
 
 ## 脚本内容
-
-注：对于 ipynb 格式文件，可使用 [nbviewer](https://nbviewer.org/) 在线查看。
 
 - `ase-usage/`: ASE 程序使用
 
