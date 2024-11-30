@@ -12,7 +12,8 @@
 
 ```bash
 ase_atoms.ipynb                      # atoms 模块使用
-ase_crystal.ipynb                    # 构建晶体
+ase_spacegroup.ipynb                 # spacegroup 模块使用
+ase_structure_generation.ipynb       # ase 构建晶体
 ase_db.ipynb                         # db 模块使用
 ase_data.ipynb                       # data 模块使用
 ase_io.ipynb                         # io 模块使用
