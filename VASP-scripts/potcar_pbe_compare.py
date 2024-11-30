@@ -2,16 +2,16 @@
 
 """比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)"""
 
+import argparse
 import os
 import subprocess
-import sys
 
 import pandas as pd
 from monty.os.path import zpath
 from pymatgen.core import SETTINGS
 
 # Data source: https://github.com/materialsproject/pymatgen/blob/master/src/pymatgen/io/vasp/MPRelaxSet.yaml
-pymatgen_pbe_dict = {
+pbe_dict_pymatgen = {
     "H": "H",
     "He": "He",
     "Li": "Li_sv",
@@ -46,7 +46,7 @@ pymatgen_pbe_dict = {
 }
 
 # Data source: https://www.vasp.at/wiki/index.php/Available_PAW_potentials
-vasp_pbe_dict = {
+pbe_dict_vasp = {
     "H": "H",
     "He": "He",
     "Li": "Li_sv",
@@ -135,8 +135,8 @@ def get_potcar_info(psp: str):
 def potcar_pbe_compare(element: str):
     """比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势(VASP5.4.4)"""
 
-    psp_vasp = vasp_pbe_dict[element]
-    psp_pymatgen = pymatgen_pbe_dict[element]
+    psp_vasp = pbe_dict_vasp[element]
+    psp_pymatgen = pbe_dict_pymatgen[element]
 
     psp_dict_vasp = get_potcar_info(psp=psp_vasp)
     psp_dict_pymatgen = get_potcar_info(psp=psp_pymatgen)
@@ -158,5 +158,17 @@ def potcar_pbe_compare(element: str):
 
 if __name__ == "__main__":
 
-    element = sys.argv[1]
+    parser = argparse.ArgumentParser(
+        description="Compare VASP and pymatgen recommended PBE pseudopotentials."
+    )
+
+    parser.add_argument(
+        "element",
+        help="Element symbol, eg. Ti.",
+    )
+
+    args = parser.parse_args()
+
+    element = args.element
+
     potcar_pbe_compare(element=element)

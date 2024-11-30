@@ -2,14 +2,13 @@
 
 """生成 VASP、pymatgen 推荐的赝势文件"""
 
+import argparse
 import os
-import sys
 
-from pymatgen.core.structure import Structure
-from pymatgen.io.vasp.inputs import Potcar
+from pymatgen.io.vasp.inputs import Poscar, Potcar
 
 # Data source: https://github.com/materialsproject/pymatgen/blob/master/src/pymatgen/io/vasp/MPRelaxSet.yaml
-pymatgen_pbe_dict = {
+pbe_dict_pymatgen = {
     "H": "H",
     "He": "He",
     "Li": "Li_sv",
@@ -44,7 +43,7 @@ pymatgen_pbe_dict = {
 }
 
 # Data source: https://www.vasp.at/wiki/index.php/Available_PAW_potentials
-vasp_pbe_dict = {
+pbe_dict_vasp = {
     "H": "H",
     "He": "He",
     "Li": "Li_sv",
@@ -79,31 +78,32 @@ vasp_pbe_dict = {
 }
 
 
-def get_potcar_pymatgen(
+def get_potcar(
     structure_fn: str = "POSCAR",
-    recommended: str = "vasp",
+    psp_recommended: str = "vasp",
 ):
     """生成 VASP、pymatgen 推荐的赝势文件"""
 
     if os.path.exists("POTCAR"):
         os.remove("POTCAR")
 
-    structure = Structure.from_file(structure_fn)
+    poscar = Poscar.from_file(structure_fn)
+    element_symbols = poscar.site_symbols
 
-    element_list = structure.composition.as_dict().keys()
-
-    if recommended == "vasp":
-        psp_list = [vasp_pbe_dict[element] for element in element_list]
+    if psp_recommended == "vasp":
+        psp_dict = pbe_dict_vasp
 
         print("\nPOTCAR recommended by VASP generated.")
-    elif recommended == "pymatgen":
-        psp_list = [pymatgen_pbe_dict[element] for element in element_list]
+    elif psp_recommended == "pymatgen":
+        psp_dict = pbe_dict_pymatgen
 
         print("\nPOTCAR recommended by pymatgen generated.")
 
+    psp_symbols = [psp_dict[element] for element in element_symbols]
+
     # 这里的 symbols 是元素赝势符号，而非元素符号
     potcar = Potcar(
-        symbols=psp_list,
+        symbols=psp_symbols,
         functional="PBE",
     )
     potcar.write_file("POTCAR")
@@ -111,10 +111,28 @@ def get_potcar_pymatgen(
 
 if __name__ == "__main__":
 
-    structure_fn = sys.argv[1] if len(sys.argv) > 1 else "POSCAR"
-    recommended = sys.argv[2] if len(sys.argv) > 2 else "vasp"
+    parser = argparse.ArgumentParser(
+        description="Generate VASP, pymatgen recommended POTCAR file."
+    )
 
-    get_potcar_pymatgen(
+    parser.add_argument(
+        "--pr",
+        help="Recommended pseudopotential source, eg. vasp, pymatgen.",
+        default="vasp",
+    )
+
+    parser.add_argument(
+        "--file",
+        help="Structure file, eg. POSCAR.",
+        default="POSCAR",
+    )
+
+    args = parser.parse_args()
+
+    structure_fn = args.file
+    psp_recommended = args.pr
+
+    get_potcar(
         structure_fn=structure_fn,
-        recommended=recommended,
+        psp_recommended=psp_recommended,
     )
