@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
 
-"""查看两个构型之间的变化/差异（主要为弛豫前后）"""
+"""
+查看两个构型之间的变化/差异（主要为弛豫前后）
+
+Usage:
+    pos_diff.py POSCAR1 POSCAR2      # 显示所有原子的坐标变化
+    pos_diff.py POSCAR1 POSCAR2 3    # 显示第 4 个原子的坐标变化
+    pos_diff.py POSCAR1 POSCAR2 3 4  # 显示第 4、5 个原子的坐标变化
+"""
 
 import sys
 
