@@ -1,33 +1,35 @@
 """
-Check the force convergence in OUTCAR.
+检查 OUTCAR 中的原子受力收敛情况
 
 reference: http://bbs.keinsci.com/thread-19985-1-1.html
-
-Author: YSL
-Version: v0.1
-Date: May 21, 2024
 """
 
 import argparse
 import re
 from pathlib import Path
-from typing import Tuple
 
 import numpy as np
 
 
-def check_outcar(outcar_filepath: Path):
+def check_outcar(outcar_path: Path):
     """Checks whether the OUTCAR file exists."""
 
-    if not outcar_filepath.is_file():
+    if not outcar_path.is_file():
         dashline = "-" * 79
-        warning_str = "OUTCAR file does NOT exist! Please check your directory."
+        warning_str = (
+            "OUTCAR file does NOT exist! Please check your directory."
+        )
         warning_info = "\n".join((dashline, warning_str, dashline))
 
         raise SystemExit(warning_info)
 
 
-def grab_info(outcar_filepath: Path) -> Tuple[int, float, np.ndarray, np.ndarray]:
+def grab_info(outcar_path: Path) -> tuple[
+    int,
+    float,
+    np.ndarray,
+    np.ndarray,
+]:
     """Grab the number of atoms, the force convergence criteria,
     position array and force array in all ion steps from the OUTCAR file.
 
@@ -46,7 +48,7 @@ def grab_info(outcar_filepath: Path) -> Tuple[int, float, np.ndarray, np.ndarray
     force_list = []
     line_list = []
 
-    with open(outcar_filepath, "r") as f:
+    with open(outcar_path, "r") as f:
         for index, line in enumerate(f):
             line_list.append(line.strip().split())
 
@@ -101,21 +103,22 @@ def main():
     """
 
     parser = argparse.ArgumentParser(
-        description="Check the force convergence in OUTCAR."
+        description="Check the force convergence in OUTCAR.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(
-        "OUTCAR_FILE",
+        "outcar_path",
         type=Path,
-        help="OUTCAR file",
+        help="OUTCAR path",
         default="OUTCAR",
     )
     args = parser.parse_args()
 
-    outcar_filepath = args.OUTCAR_FILE
+    outcar_path = args.outcar_path
 
-    check_outcar(outcar_filepath)
+    check_outcar(outcar_path)
 
-    natoms, ediffg, _, force_array = grab_info(outcar_filepath=outcar_filepath)
+    natoms, ediffg, _, force_array = grab_info(outcar_path=outcar_path)
 
     print(f"OUTCAR info: {natoms} atoms, {force_array.shape[0]} ion steps.\n")
 

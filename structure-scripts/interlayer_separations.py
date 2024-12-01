@@ -75,14 +75,24 @@ def interlayer_separations_cal(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Interlayer separations calculation(for Surface/Interface model after and before relaxation)."
+        description="Interlayer separations calculation (for Surface/Interface model after and before relaxation).",
+        epilog="Author: SLY.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument(
-        "structure1_fn", help="Structure file(after relaxation), eg. POSCAR1."
+        "structure1_fn",
+        nargs="?",
+        default="CONTCAR",
+        type=str,
+        help="Structure file (after relaxation), eg. CONTCAR.",
     )
     parser.add_argument(
-        "structure2_fn", help="Structure file(before relaxation), eg. POSCAR2."
+        "structure2_fn",
+        nargs="?",
+        default="POSCAR",
+        type=str,
+        help="Structure file (before relaxation), eg. POSCAR.",
     )
 
     args = parser.parse_args()

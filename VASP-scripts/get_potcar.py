@@ -112,25 +112,35 @@ def get_potcar(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Generate VASP, pymatgen recommended POTCAR file."
+        description="Generate VASP, pymatgen recommended POTCAR.",
+        epilog="Author: SLY.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        allow_abbrev=True,
     )
 
     parser.add_argument(
-        "--pr",
-        help="Recommended pseudopotential source, eg. vasp, pymatgen.",
+        "-pr",
+        "--psp_recommended",
+        nargs="?",
+        const="vasp",
         default="vasp",
+        type=str,
+        choices=["vasp", "pymatgen"],
+        help="Recommended pseudopotential source.",
     )
 
     parser.add_argument(
-        "--file",
-        help="Structure file, eg. POSCAR.",
+        "structure_file",
+        nargs="?",
         default="POSCAR",
+        type=str,
+        help="Structure file with POSCAR format.",
     )
 
     args = parser.parse_args()
 
-    structure_fn = args.file
-    psp_recommended = args.pr
+    structure_fn = args.structure_file
+    psp_recommended = args.psp_recommended
 
     get_potcar(
         structure_fn=structure_fn,

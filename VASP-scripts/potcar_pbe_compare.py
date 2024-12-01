@@ -93,7 +93,7 @@ def get_shell_outputs(command: str) -> str:
     return result.stdout
 
 
-def get_potcar_info(psp: str):
+def get_potcar_info(psp_symbol: str):
     """获取 POTCAR 文件信息"""
 
     PMG_VASP_PSP_DIR = SETTINGS.get("PMG_VASP_PSP_DIR")
@@ -101,8 +101,12 @@ def get_potcar_info(psp: str):
     functional_subdir = "POT_GGA_PAW_PBE"
 
     paths_to_try: list[str] = [
-        os.path.join(PMG_VASP_PSP_DIR, functional_subdir, f"POTCAR.{psp}"),
-        os.path.join(PMG_VASP_PSP_DIR, functional_subdir, psp, "POTCAR"),
+        os.path.join(
+            PMG_VASP_PSP_DIR, functional_subdir, f"POTCAR.{psp_symbol}"
+        ),
+        os.path.join(
+            PMG_VASP_PSP_DIR, functional_subdir, psp_symbol, "POTCAR"
+        ),
     ]
 
     for path in paths_to_try:
@@ -122,34 +126,34 @@ def get_potcar_info(psp: str):
             command = f"grep VRHFIN {path} | awk '{{print $3}}'"
             vrhfin = get_shell_outputs(command).strip()
 
-            psp_dict = {
+            psp_info_dict = {
                 "TITEL": titel,
                 "ENMAX": enmax,
                 "ZVAL": zval,
                 "VRHFIN": vrhfin,
             }
 
-    return psp_dict
+    return psp_info_dict
 
 
-def potcar_pbe_compare(element: str):
-    """比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势(VASP5.4.4)"""
+def potcar_pbe_compare(element_symbol: str):
+    """比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)"""
 
-    psp_vasp = pbe_dict_vasp[element]
-    psp_pymatgen = pbe_dict_pymatgen[element]
+    psp_vasp = pbe_dict_vasp[element_symbol]
+    psp_pymatgen = pbe_dict_pymatgen[element_symbol]
 
-    psp_dict_vasp = get_potcar_info(psp=psp_vasp)
-    psp_dict_pymatgen = get_potcar_info(psp=psp_pymatgen)
+    psp_info_dict_vasp = get_potcar_info(psp_symbol=psp_vasp)
+    psp_info_dict_pymatgen = get_potcar_info(psp_symbol=psp_pymatgen)
     if psp_vasp != psp_pymatgen:
         print("VASP and pymatgen recommended is different.\n")
         df = pd.DataFrame(
-            [psp_dict_vasp, psp_dict_pymatgen],
+            [psp_info_dict_vasp, psp_info_dict_pymatgen],
             index=["VASP", "pymatgen"],
         )
     else:
         print("VASP and pymatgen recommended is same.\n")
         df = pd.DataFrame(
-            [psp_dict_vasp],
+            [psp_info_dict_vasp],
             index=["VASP/pymatgen"],
         )
 
@@ -159,16 +163,17 @@ def potcar_pbe_compare(element: str):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Compare VASP and pymatgen recommended PBE pseudopotentials."
+        description="Compare VASP and pymatgen recommended PBE pseudopotentials.",
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(
-        "element",
+        "element_symbol",
         help="Element symbol, eg. Ti.",
     )
 
     args = parser.parse_args()
 
-    element = args.element
+    element_symbol = args.element_symbol
 
-    potcar_pbe_compare(element=element)
+    potcar_pbe_compare(element_symbol=element_symbol)

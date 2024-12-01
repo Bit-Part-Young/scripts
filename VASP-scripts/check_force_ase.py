@@ -1,41 +1,19 @@
 #!/usr/bin/env python3
 
 """
-Check the force convergence in OUTCAR with ASE program.
+检查 OUTCAR 中的原子受力收敛情况（使用 ASE 程序）
 
 reference: http://bbs.keinsci.com/thread-19985-1-1.html
-
-Author: YSL
-Version: v0.1
-Date: May 21, 2024
 """
 
 import argparse
 import os
-import re
-from pathlib import Path
-from typing import Tuple
 
 import numpy as np
 from ase.io import read
 
 
-def check_outcar(outcar_path: Path):
-    """Checks whether the OUTCAR file exists."""
-
-    outcar = os.path.join(outcar_path, "OUTCAR")
-
-    if not os.path.exists(outcar):
-        dashline = "-" * 79
-        warning_str = (
-            "OUTCAR file does NOT exist! Please check your directory."
-        )
-        warning_info = "\n".join((dashline, warning_str, dashline))
-
-        raise SystemExit(warning_info)
-
-
-def grab_info(outcar_path: Path) -> Tuple[int, np.ndarray, np.ndarray]:
+def grab_outcar_info(outcar_path: str) -> tuple[int, np.ndarray, np.ndarray]:
     """Grab the number of atoms, the force convergence criteria,
     position array and force array in all ion steps from the OUTCAR file.
 
@@ -93,28 +71,35 @@ def main():
     """
 
     parser = argparse.ArgumentParser(
-        description="Check the force convergence in OUTCAR."
+        description="Check the force convergence in OUTCAR.",
+        epilog="Author: SLY.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        allow_abbrev=True,
     )
+
     parser.add_argument(
-        "-ediffg",
-        type=float,
-        help="force convergence criteria. Default: 0.01.",
+        "-fcc",
+        "--ediffg",
+        nargs="?",
+        const=0.01,
         default=0.01,
+        type=float,
+        help="force convergence criteria",
     )
+
     parser.add_argument(
-        "OUTCAR_PATH",
-        type=Path,
-        help="OUTCAR file path. Default: .",
+        "outcar_path",
+        nargs="?",
         default=".",
+        type=str,
+        help="OUTCAR path.",
     )
     args = parser.parse_args()
 
-    outcar_path = args.OUTCAR_PATH
     ediffg = args.ediffg
+    outcar_path = args.outcar_path
 
-    check_outcar(outcar_path)
-
-    natoms, _, force_array = grab_info(outcar_path=outcar_path)
+    natoms, _, force_array = grab_outcar_info(outcar_path=outcar_path)
 
     print(f"OUTCAR info: {natoms} atoms, {force_array.shape[0]} ion steps.\n")
 
