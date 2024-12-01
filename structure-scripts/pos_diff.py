@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
 
-"""
-查看两个构型之间的变化/差异（主要为弛豫前后）
+"""查看两个构型之间的原子坐标变化/差异（主要为弛豫前后）"""
 
-Usage:
-    pos_diff.py POSCAR1 POSCAR2      # 显示所有原子的坐标变化
-    pos_diff.py POSCAR1 POSCAR2 3    # 显示第 4 个原子的坐标变化
-    pos_diff.py POSCAR1 POSCAR2 3 4  # 显示第 4、5 个原子的坐标变化
-"""
-
-import sys
+import argparse
 
 import numpy as np
 import pandas as pd
@@ -19,9 +12,9 @@ from ase.io import read
 def pos_diff(
     structure1_fn: str,
     structure2_fn: str,
-    atom_sequence: int | list[int] | None = None,
+    atom_index: int | list[int] | None = None,
 ) -> np.ndarray:
-    """查看两个构型之间的变化/差异（主要为弛豫前后）"""
+    """查看两个构型之间的原子坐标变化/差异（主要为弛豫前后）"""
 
     atoms1 = read(structure1_fn)
     atoms2 = read(structure2_fn)
@@ -65,29 +58,53 @@ def pos_diff(
 
     df = pd.DataFrame(data).round(5)
 
-    if atom_sequence is None:
+    if atom_index is None:
         print(df)
-    elif isinstance(atom_sequence, int) or isinstance(atom_sequence, list):
-        print(df.iloc[atom_sequence])
+    elif isinstance(atom_index, int) or isinstance(atom_index, list):
+        print(df.iloc[atom_index])
 
 
 if __name__ == "__main__":
-    structure1_fn = sys.argv[1]
-    structure2_fn = sys.argv[2]
 
-    atoms1 = read(structure1_fn)
-    atoms2 = read(structure2_fn)
+    parser = argparse.ArgumentParser(
+        description="Show atomic positions difference between two structures (for relaxation).",
+        epilog="Author: SLY.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        allow_abbrev=True,
+    )
 
-    if len(sys.argv) == 3:
-        pos_diff(
-            structure1_fn=structure1_fn,
-            structure2_fn=structure2_fn,
-        )
-    elif len(sys.argv) > 3:
-        atom_sequence = [int(arg) for arg in sys.argv[3:]]
+    parser.add_argument(
+        "structure1_fn",
+        nargs="?",
+        type=str,
+        default="CONTCAR",
+        help="Structure1 filename (After relaxation).",
+    )
 
-        pos_diff(
-            structure1_fn=structure1_fn,
-            structure2_fn=structure2_fn,
-            atom_sequence=atom_sequence,
-        )
+    parser.add_argument(
+        "structure2_fn",
+        nargs="?",
+        type=str,
+        default="POSCAR",
+        help="Structure2 filename (Before relaxation).",
+    )
+
+    parser.add_argument(
+        "-ai",
+        "--atom_index",
+        nargs="*",
+        type=int,
+        help="Atom index.",
+    )
+
+    args = parser.parse_args()
+
+    structure1_fn = args.structure1_fn
+    structure2_fn = args.structure2_fn
+    atom_index = args.atom_index
+
+    pos_diff(
+        structure1_fn=structure1_fn,
+        structure2_fn=structure2_fn,
+        atom_index=atom_index,
+    )

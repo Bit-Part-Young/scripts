@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
 
-"""
-识别每个原子所在的原子层
+"""识别原子层及其对应的原子"""
 
-Usage:
-    identify_layer.py POSCAR      # 显示所有原子的原子层
-    identify_layer.py POSCAR 3    # 显示第 3 个原子层为的所有原子
-    identify_layer.py POSCAR 3 4  # 显示第 3、4 个原子层为的所有原子
-"""
-
-import sys
+import argparse
 
 import numpy as np
 import pandas as pd
@@ -23,7 +16,7 @@ def identify_layer(
     precision: float = 0.001,
 ):
     """
-    识别每个原子所在的原子层
+    识别原子层及其对应的原子
     """
 
     structure = Structure.from_file(structure_fn)
@@ -70,11 +63,33 @@ def identify_layer(
 
 if __name__ == "__main__":
 
-    structure_fn = sys.argv[1]
-    layer_index = int(sys.argv[2]) if len(sys.argv) == 3 else None
+    parser = argparse.ArgumentParser(
+        description="Identify atomic layer.",
+        epilog="Author: SLY.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        allow_abbrev=True,
+    )
 
-    if len(sys.argv) > 3:
-        layer_index = [int(arg) for arg in sys.argv[2:]]
+    parser.add_argument(
+        "structure_fn",
+        nargs="?",
+        type=str,
+        default="POSCAR",
+        help="Structure filename.",
+    )
+
+    parser.add_argument(
+        "-li",
+        "--layer_index",
+        type=int,
+        nargs="*",
+        help="Atomic layer index.",
+    )
+
+    args = parser.parse_args()
+
+    structure_fn = args.structure_fn
+    layer_index = args.layer_index
 
     identify_layer(
         structure_fn=structure_fn,

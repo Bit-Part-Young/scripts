@@ -1,13 +1,8 @@
 #!/usr/bin/env python
 
-"""
-统计原子层数目及每层原子数
+"""统计原子层数目及每层原子数"""
 
-Usage:
-    layers_count.py POSCAR
-"""
-
-import sys
+import argparse
 
 import numpy as np
 import pandas as pd
@@ -47,6 +42,23 @@ def layers_count(
 
 
 if __name__ == "__main__":
-    structure_fn = sys.argv[1]
+
+    parser = argparse.ArgumentParser(
+        description="Count atomic layers and the number of atoms in each layer.",
+        epilog="Author: SLY.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+
+    parser.add_argument(
+        "structure_fn",
+        nargs="?",
+        type=str,
+        default="POSCAR",
+        help="Structure filename.",
+    )
+
+    args = parser.parse_args()
+
+    structure_fn = args.structure_fn
 
     layers_count(structure_fn)
