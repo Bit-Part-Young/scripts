@@ -7,10 +7,9 @@ from pymatgen.core.structure import Structure
 
 def fix_layer(
     structure: Structure,
-    layer_index: int | list[int] | None = None,
-    fixed_axis: int | list[int] | None = None,
+    layer_index: list[int] | None = None,
+    fixed_axes: list[str] = ["T", "T", "T"],
     precision: float = 0.001,
-    to_poscar: bool = False,
 ) -> Structure:
     """
     固定（特定）原子层 x/y/z 轴
@@ -32,9 +31,9 @@ def fix_layer(
     # 获取每个原子所在的原子层
     layer_index_list = []
     for z_coord in z_coords_rounded:
-        for i, z in enumerate(z_unique, start=1):
+        for axis_index, z in enumerate(z_unique, start=1):
             if np.isclose(z, z_coord):
-                layer_index_list.append(i)
+                layer_index_list.append(axis_index)
 
     data = {
         "x": positions[:, 0],
@@ -47,31 +46,23 @@ def fix_layer(
     if layer_index is None:
         fixed_layer_index = df.index
 
-        print("All atoms are fixed.")
-    elif isinstance(layer_index, int):
-        fixed_layer_index = df[df["layer_index"] == layer_index].index
-
-        print(
-            f"No. {layer_index} layer, total {len(fixed_layer_index)} atoms are fixed."
-        )
+        print(f"All {len(fixed_layer_index)} atoms are fixed.")
     elif isinstance(layer_index, list):
         fixed_layer_index = df[df["layer_index"].isin(layer_index)].index
 
         print(
-            f"No. {layer_index} layers, total {len(fixed_layer_index)} atoms are fixed."
+            f"No. {layer_index} layer(s), total {len(fixed_layer_index)} atoms are fixed."
         )
 
     selective_dynamics = np.ones((natoms, 3))
 
-    if isinstance(fixed_axis, int):
-        selective_dynamics[fixed_layer_index, fixed_axis] = 0
-    elif isinstance(fixed_axis, list):
-        selective_dynamics[np.ix_(fixed_layer_index, fixed_axis)] = 0
+    for axis_index, fixed_string in enumerate(fixed_axes):
+        if fixed_string == "F":
+            selective_dynamics[fixed_layer_index, axis_index] = 0
+
+    print(f"Axes fixed: {fixed_axes}.\n")
 
     structure.add_site_property("selective_dynamics", selective_dynamics)
-
-    if to_poscar:
-        structure.to("POSCAR", fmt="poscar")
 
     return structure
 
@@ -79,24 +70,27 @@ def fix_layer(
 if __name__ == "__main__":
 
     # 示例
-    structure_fn = "POSCAR_1"
+    structure_fn = "POSCAR"
     structure = Structure.from_file(structure_fn)
 
     # 移除原子坐标轴原有的固定信息
     structure.remove_site_property(property_name="selective_dynamics")
 
+    # 固定所有原子层
+    layer_index = None
     # 固定单个原子层
-    layer_index = 1
+    # layer_index = [1]
     # 固定多个原子层
-    layer_index = [1, 2]
+    # layer_index = [1, 2]
     # 固定 x 轴
-    fixed_axis = 0
+    fixed_axis = ["F", "T", "T"]
     # 固定 x、y 轴
-    fixed_axis = [0, 1]
+    # fixed_axis = ["F", "F", "T"]
 
-    fix_layer(
+    structure_fixed = fix_layer(
         structure=structure,
         layer_index=layer_index,
-        fixed_axis=fixed_axis,
-        to_poscar=True,
+        fixed_axes=fixed_axis,
     )
+
+    structure_fixed.to("POSCAR_fixed", fmt="poscar")
