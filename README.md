@@ -121,6 +121,15 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 
 ---
 
+- `atomsk/`: atomsk 程序使用
+
+```bash
+1-Al-polycrystal/                    # FCC Al 多晶模型构建
+2-Fe-Cr-Ni-polycrystal/              # Fe-Cr-Ni 多晶模型构建
+```
+
+---
+
 - `HPC/`: 超算用脚本
 
 ```bash
