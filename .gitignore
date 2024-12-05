@@ -2,21 +2,32 @@
 
 __pycache__/
 
+# 临时文件
 test*
 tmp*
 *.db
 !test.db
 
+# VASP 输入输出文件
 KPOINTS
 POSCAR
 CONTCAR
 OUTCAR
+
+# 构型文件格式
 *.vasp
 *.lmp
 *.xyz
 *.dump
 *.lammpstrj
 *.cif
+*.xsf
+
 dpmd_raw/
 
 fake-vasp/
+
+# atomsk 多晶模型构建相关
+*id-size.txt
+*param.txt
+*size-dist.txt
