@@ -30,6 +30,7 @@ ase_eos.ipynb                        # 拟合 EOS 方程并绘制曲线
 ase_rdf.ipynb                        # 计算并绘制 RDF
 ase_outcar.ipynb                     # 获取 OUTCAR 文件中数据（离子步构型、能量及受力）
 ase_phase_diagram.ipynb              # 使用 ase phasediagram 模块绘制相图
+surface_generation_fcc.sh            # FCC (100), (110), (111) 表面模型构建
 ```
 
 ---
@@ -121,11 +122,12 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 
 ---
 
-- `atomsk/`: atomsk 程序使用
+- `atomsk-usage/`: atomsk 程序使用
 
 ```bash
 1-Al-polycrystal/                    # FCC Al 多晶模型构建
 2-Fe-Cr-Ni-polycrystal/              # Fe-Cr-Ni 多晶模型构建
+surface_generation_fcc.sh            # FCC (100), (110), (111) 表面模型构建
 ```
 
 ---
