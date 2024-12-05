@@ -17,7 +17,15 @@ def layers_count(
     统计原子层数目及每层原子数
     """
 
-    atoms = read(structure_fn)
+    if structure_fn.endswith("lmp"):
+        atoms = read(
+            structure_fn,
+            format="lammps-data",
+            units="metal",
+            atom_style="atomic",
+        )
+    else:
+        atoms = read(structure_fn)
 
     positions = atoms.positions
 
