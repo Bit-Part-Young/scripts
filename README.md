@@ -129,6 +129,7 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 2-Fe-Cr-Ni-polycrystal/              # Fe-Cr-Ni 多晶模型构建
 surface_generation_fcc.sh            # FCC (100), (110), (111) 表面模型构建
 surface_generation_bcc.sh            # BCC (100), (110), (111) 表面模型构建
+twin_generation.sh                   # 孪晶模型构建
 ```
 
 ---
