@@ -1,6 +1,15 @@
+"""
+读取 MTP 的 cfg 格式文件并转换为 ase.Atoms 对象
+
+Author: SLY
+Date: 2024-12-08
+"""
+
 from collections import deque
 
 import numpy as np
+from ase.atoms import Atoms
+from ase.calculators.singlepoint import SinglePointCalculator
 from ase.parallel import paropen
 from ase.utils import string2index
 
@@ -12,13 +21,44 @@ def get_max_index(index):
         return index.stop if (index.stop is not None) else float("inf")
 
 
-# TODO: 待完成
-def cfg_to_ase_atoms():
+def cfg_to_ase_atoms(
+    symbols,
+    cell,
+    positions,
+    info=None,
+    pbc=True,
+    forces=None,
+    energy=None,
+    stress=None,
+):
     """将 cfg 文件转换为 ase.Atoms 对象"""
 
+    ase_atoms = Atoms(
+        symbols=symbols,
+        positions=positions,
+        cell=cell,
+        pbc=pbc,
+        info=info,
+    )
 
-# 写法参考 ase.io.lammpsrun 模块中的 ead_lammps_dump_text() 函数
-def read_cfg(infileobj, index=-1):
+    if forces is not None:
+        calculator = SinglePointCalculator(
+            ase_atoms,
+            forces=forces,
+            energy=energy,
+            stress=stress,
+        )
+        ase_atoms.calc = calculator
+
+    return ase_atoms
+
+
+# 写法参考 ase.io.lammpsrun 模块中的 read_lammps_dump_text() 函数
+def read_mtp_cfg(
+    infileobj: str,
+    index=-1,
+    symbols_map=dict[int, str],
+):
     """读取 MTP 的 cfg 格式文件"""
 
     if isinstance(index, str):
@@ -34,10 +74,10 @@ def read_cfg(infileobj, index=-1):
     images = []
 
     natoms = None
-    lattice = None
-    array = None
+    cell = None
+    array_total = None
     energy = None
-    stress_list = None
+    stress = None
     dft_code = None
     mindist = None
     while len(lines) > 0:
@@ -48,23 +88,21 @@ def read_cfg(infileobj, index=-1):
             natoms = int(line.strip())
 
         if "Supercell" in line:
-            lattice = []
+            cell = []
             for i in range(3):
                 line = lines.popleft()
-                lattice.append([float(x) for x in line.split()])
-            lattice = np.array(lattice)
+                cell.append([float(x) for x in line.split()])
+            cell = np.array(cell)
 
-        # TODO: 待解析原子类型、坐标和受力
         if "AtomData" in line:
-            array = []
+            array_total = []
             for i in range(natoms):
                 line = lines.popleft()
-                array.append([float(x) for x in line.split()])
-            # print(positions)
-            array = np.array(array)
-            atoms_type = array[:, 1]
-            positions_array = array[:, 2:5]
-            force_array = array[:, 5:8]
+                array_total.append([float(x) for x in line.split()])
+            array_total = np.array(array_total)
+            atoms_type = array_total[:, 1]
+            positions = array_total[:, 2:5]
+            forces = array_total[:, 5:8]
 
         if "Energy" in line:
             line = lines.popleft()
@@ -72,25 +110,31 @@ def read_cfg(infileobj, index=-1):
 
         if "PlusStress" in line:
             line = lines.popleft()
-            stress_list = [float(x) for x in line.split()]
+            stress = [float(x) for x in line.split()]
+            stress = np.array(stress)
+
+            symbols = [symbols_map[x] for x in atoms_type]
+            out_atoms = cfg_to_ase_atoms(
+                symbols=symbols,
+                cell=cell,
+                positions=positions,
+                forces=forces,
+                energy=energy,
+                stress=stress,
+            )
+            images.append(out_atoms)
 
         if "Feature   EFS_by" in line:
             dft_code = line.split()[2]
+
+        # 该 Feature 不一定有
         if "Feature   mindist" in line:
             mindist = float(line.split()[2])
-            data = {
-                "natoms": natoms,
-                "lattice": lattice,
-                "atoms_type": atoms_type,
-                "positions": positions_array,
-                "forces": force_array,
-                "energy": energy,
-                "stress": stress_list,
+
+            out_atoms.info = {
                 "dft_code": dft_code,
                 "mindist": mindist,
             }
-
-            images.append(data)
 
         if len(images) > index_end >= 0:
             break
@@ -99,13 +143,17 @@ def read_cfg(infileobj, index=-1):
 
 
 if __name__ == "__main__":
+    cfg_fn = "example.cfg"
 
-    # fn = "test.cfg"
-    # fn = "test2.cfg"
-    fn = "ZrSn.cfg"
-    # read_cfg(fn)
-    # test = read_cfg(infileobj=fn, index="8:10")
-    test = read_cfg(infileobj=fn, index=-1)
+    symbols_map = {0: "Zr", 1: "Sn"}
 
-    print(test)
-    print(len(test))
+    atoms_list = read_mtp_cfg(cfg_fn, index=":", symbols_map=symbols_map)
+
+    print(f"Total {len(atoms_list)} configurations.\n")
+
+    atoms = atoms_list[0]
+
+    print(f"No. 1 configuration:\n {atoms}")
+    print(f"Energy: {atoms.get_potential_energy()}")
+    print(f"Forces:\n{atoms.get_forces()}")
+    print(f"Stress: {atoms.get_stress()}")
