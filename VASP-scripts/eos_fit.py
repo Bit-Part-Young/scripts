@@ -15,26 +15,26 @@ import pandas as pd
 from scipy.optimize import leastsq
 
 
-def Birch_Murnaghan(params, volume):
-    """Birch-Murnaghan 状态方程"""
+def Birch_Murnaghan(params, volumes):
+    """Birch-Murnaghan EOS 状态方程"""
 
     E0, V0, B0, B1 = params
-    eta = (V0 / volume) ** (2 / 3)
+    eta = (V0 / volumes) ** (2 / 3)
 
     return E0 + (9 * V0 * B0 / 16) * (
         ((eta - 1) ** 3) * B1 + ((eta - 1) ** 2) * (6 - 4 * eta)
     )
 
 
-def error(params, volume, energy):
+def error(params, volumes, energies):
     """误差函数"""
 
-    return Birch_Murnaghan(params, volume) - energy
+    return Birch_Murnaghan(params, volumes) - energies
 
 
-def initial_guess(volume, energy):
+def initial_guess(volumes, energies):
     """初始值猜测"""
-    a, b, c = np.polyfit(volume, energy, 2)
+    a, b, c = np.polyfit(volumes, energies, 2)
 
     V0 = -b / (2 * a)
     E0 = a * V0**2 + b * V0 + c
@@ -46,22 +46,22 @@ def initial_guess(volume, energy):
     return params_init
 
 
-def fit(volume, energy):
+def fit(volumes, energies):
     """EOS 拟合"""
 
-    x0 = initial_guess(volume, energy)
+    x0 = initial_guess(volumes, energies)
 
     fitted_params = leastsq(
         func=error,
         x0=x0,
-        args=(volume, energy),
+        args=(volumes, energies),
     )
 
     E0, V0, B0, _ = fitted_params[0]
-    coeffs_GPa = 1.60217662e-19 / (1e-30 * 1e9)
+    coeffs_GPa = 1.602176634e-19 / (1e-30 * 1e9)
     B0 = round(B0 * coeffs_GPa, 1)
 
-    print("EOS fitting results:\n")
+    print("Birch-Murnaghan EOS fitting results:\n")
 
     print(f"E0: {round(E0, 5): >10} eV/atom")
     print(f"V0: {round(V0, 5): >10} Å^3/atom")

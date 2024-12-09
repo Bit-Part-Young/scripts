@@ -90,7 +90,8 @@ potcar_pbe_compare.py                # 比较 VASP 和 pymatgen 推荐的常用�
 get_potcar.py                        # 生成 VASP 和 pymatgen 推荐的赝势 POTCAR 文件
 get_vasp_data.py                     # 获取 VASP 计算目录的数据
 
-fit_ev.py                            # Birch-Murnaghan EOS 拟合
+plot_ev.py                           # EV（能量-体积）曲线绘制
+eos_fit.py                            # Birch-Murnaghan EOS 拟合
 
 # BandStructure-DOS/ 目录
 dos_bs_inputs.py                     # 生成 DOS 和 BandStructure 计算的输入文件
@@ -251,7 +252,6 @@ git diff cb92b24 cec4770
 - `plots/`: 绘图示例
 
 ```bash
-plot_ev.py                           # EV（能量-体积）曲线绘制
 matplotlib_basic.ipynb               # 各种绘图示例
 colors.ipynb                         # 绘图配色
 corr_heatmap.ipynb                   # 相关性热图绘制
