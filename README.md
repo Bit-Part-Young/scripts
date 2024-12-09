@@ -90,6 +90,8 @@ potcar_pbe_compare.py                # 比较 VASP 和 pymatgen 推荐的常用�
 get_potcar.py                        # 生成 VASP 和 pymatgen 推荐的赝势 POTCAR 文件
 get_vasp_data.py                     # 获取 VASP 计算目录的数据
 
+fit_ev.py                            # Birch-Murnaghan EOS 拟合
+
 # BandStructure-DOS/ 目录
 dos_bs_inputs.py                     # 生成 DOS 和 BandStructure 计算的输入文件
 plot_bs_pymatgen.py                  # 使用 pymatgen 模块绘制能带结构
