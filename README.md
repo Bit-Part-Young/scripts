@@ -249,6 +249,7 @@ git diff cb92b24 cec4770
 - `plots/`: 绘图示例
 
 ```bash
+plot_ev.py                           # EV（能量-体积）曲线绘制
 matplotlib_basic.ipynb               # 各种绘图示例
 colors.ipynb                         # 绘图配色
 corr_heatmap.ipynb                   # 相关性热图绘制
