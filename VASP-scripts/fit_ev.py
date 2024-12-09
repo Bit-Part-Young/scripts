@@ -91,8 +91,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    csv_fn = args.data_fn
-    df = pd.read_csv(csv_fn, sep=None, engine="python")
+    data_fn = args.data_fn
+    df = pd.read_csv(data_fn, sep=None, engine="python")
 
     df_volume = df.iloc[:, 1]
     df_energy = df.iloc[:, 2]
