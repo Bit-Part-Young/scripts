@@ -3,6 +3,7 @@
 """查看两个构型之间的原子坐标变化/差异（主要为弛豫前后）"""
 
 import argparse
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -12,6 +13,7 @@ from ase.io import read
 def pos_diff(
     structure1_fn: str,
     structure2_fn: str,
+    wrap: Union[0, 1] = 0,
     atom_index: int | list[int] | None = None,
 ) -> np.ndarray:
     """查看两个构型之间的原子坐标变化/差异（主要为弛豫前后）"""
@@ -38,11 +40,12 @@ def pos_diff(
         f"\nCoordinate difference between {structure1_fn} with {structure2_fn}:\n"
     )
 
-    position1 = atoms1.get_positions(wrap=True)
-    position2 = atoms2.get_positions(wrap=True)
+    wrap_bool = bool(wrap)
+    position1 = atoms1.get_positions(wrap=wrap_bool)
+    position2 = atoms2.get_positions(wrap=wrap_bool)
 
-    scaled_positions1 = atoms1.get_scaled_positions(wrap=True)
-    scaled_positions2 = atoms2.get_scaled_positions(wrap=True)
+    scaled_positions1 = atoms1.get_scaled_positions(wrap=wrap_bool)
+    scaled_positions2 = atoms2.get_scaled_positions(wrap=wrap_bool)
 
     diff = position1 - position2
     scaled_diff = scaled_positions1 - scaled_positions2
@@ -90,6 +93,14 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "-w",
+        "--wrap",
+        type=int,
+        choices=[0, 1],
+        help="Wrap atomic positions into the cell.",
+    )
+
+    parser.add_argument(
         "-ai",
         "--atom_index",
         nargs="*",
@@ -102,9 +113,11 @@ if __name__ == "__main__":
     structure1_fn = args.structure1_fn
     structure2_fn = args.structure2_fn
     atom_index = args.atom_index
+    wrap = args.wrap
 
     pos_diff(
         structure1_fn=structure1_fn,
         structure2_fn=structure2_fn,
         atom_index=atom_index,
+        wrap=wrap,
     )
