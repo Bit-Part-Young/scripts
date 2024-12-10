@@ -1,5 +1,10 @@
+#!/usr/bin/env python3
+
 """
 获取结构的对称性信息
+
+已知问题: 对于 8g NbI、8g NbII、8g NbIII 的 Nb3Si 结构，程序将其统计成了 24g，是错误的
+解决方式: 添加 -v 选项，进一步查看 Equivalent Site Group 信息进行检查
 
 reference: https://github.com/nanyanshouhu/Defect_generator/blob/main/wyckoff_position_finder.py
 """
@@ -17,6 +22,7 @@ def symmetry_info(
     structure_fn: str = "POSCAR",
     symprec: float = 0.01,
     angle_tolerance: float = 5,
+    verbose: bool = False,
 ):
     """获取结构的对称性信息"""
 
@@ -65,6 +71,19 @@ def symmetry_info(
         )
         print(f"{element}: {wyckoff_summary}")
 
+    if verbose:
+        # 获取对称性等同的原子位置
+        equivalent_sites = sga.get_symmetrized_structure().equivalent_sites
+        print("\nEquivalent Sites:")
+        for i, sites in enumerate(equivalent_sites):
+            print(f"\nEquivalent Site Group {i + 1}:")
+            for site in sites:
+                print(f"  - {site.species_string} at {site.frac_coords}")
+    else:
+        print(
+            "\nWyckoff info maybe incorrect, please add `-v` option to check Equivalent Site Group."
+        )
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -80,7 +99,21 @@ if __name__ == "__main__":
         help="Structure filename",
     )
 
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        type=int,
+        nargs="?",
+        const=1,
+        choices=[0, 1],
+        default=None,
+        help="Whether to show Equivalent Site Group info",
+    )
+
     args = parser.parse_args()
 
     structure_fn = args.structure_fn
-    symmetry_info(structure_fn=structure_fn)
+    symmetry_info(
+        structure_fn=structure_fn,
+        verbose=args.verbose,
+    )

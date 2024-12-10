@@ -3,7 +3,6 @@
 """查看两个构型之间的原子坐标变化/差异（主要为弛豫前后）"""
 
 import argparse
-from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -13,7 +12,7 @@ from ase.io import read
 def pos_diff(
     structure1_fn: str,
     structure2_fn: str,
-    wrap: Union[0, 1] = 0,
+    wrap: bool = False,
     atom_index: int | list[int] | None = None,
 ) -> np.ndarray:
     """查看两个构型之间的原子坐标变化/差异（主要为弛豫前后）"""
@@ -40,12 +39,11 @@ def pos_diff(
         f"\nCoordinate difference between {structure1_fn} with {structure2_fn}:\n"
     )
 
-    wrap_bool = bool(wrap)
-    position1 = atoms1.get_positions(wrap=wrap_bool)
-    position2 = atoms2.get_positions(wrap=wrap_bool)
+    position1 = atoms1.get_positions(wrap=wrap)
+    position2 = atoms2.get_positions(wrap=wrap)
 
-    scaled_positions1 = atoms1.get_scaled_positions(wrap=wrap_bool)
-    scaled_positions2 = atoms2.get_scaled_positions(wrap=wrap_bool)
+    scaled_positions1 = atoms1.get_scaled_positions(wrap=wrap)
+    scaled_positions2 = atoms2.get_scaled_positions(wrap=wrap)
 
     diff = position1 - position2
     scaled_diff = scaled_positions1 - scaled_positions2
@@ -96,8 +94,11 @@ if __name__ == "__main__":
         "-w",
         "--wrap",
         type=int,
+        nargs="?",
+        const=1,
         choices=[0, 1],
-        help="Wrap atomic positions into the cell.",
+        default=None,
+        help="Whether to wrap atomic positions into the cell.",
     )
 
     parser.add_argument(
