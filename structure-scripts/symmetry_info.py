@@ -78,7 +78,9 @@ def symmetry_info(
         for i, sites in enumerate(equivalent_sites):
             print(f"\nEquivalent Site Group {i + 1}:")
             for site in sites:
-                print(f"  - {site.species_string} at {site.frac_coords}")
+                print(
+                    f"  - {site.species_string} at {site.frac_coords.round(5)}"
+                )
     else:
         print(
             "\nWyckoff info maybe incorrect, please add `-v` option to check Equivalent Site Group."
