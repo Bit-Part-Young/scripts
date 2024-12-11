@@ -83,7 +83,9 @@ read_force.py                        # 解析每个目录下的 vasprun.xml 文�
 extract_outcar.ipynb                 # 使用正则表达式提取 OUTCAR 文件中的数据（练习用）
 
 CheckVaspDone                        # 检查 VASP 计算是否完成
+CheckVaspDoneAll                     # 处理当前多个计算目录
 CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（力 + 能量）
+CheckOptConvergedAll                 # 处理当前多个计算目录
 sigma.sh                             # 确定 entropy T*S 是否小于 1 meV/atom
 
 potcar_pbe_compare.py                # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)

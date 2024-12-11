@@ -1,0 +1,8 @@
+#!/bin/bash
+
+for item in $(ls); do
+  if [[ -d ${item} ]]; then
+    ${HOME}/bin/CheckVaspDone ${item}
+  fi
+done
+
