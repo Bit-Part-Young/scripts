@@ -108,7 +108,16 @@ def main():
         force_criteria=float(ediffg),
     )
 
-    for step, column in enumerate(boolen_array, start=1):
+    ion_steps = boolen_array.shape[0]
+
+    # 只输出最后 5 个离子步的受力收敛信息
+    if ion_steps < 5:
+        start = 1
+    else:
+        boolen_array = boolen_array[-5:, :]
+        start = ion_steps - 4
+
+    for step, column in enumerate(boolen_array, start=start):
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
         print(
