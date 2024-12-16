@@ -54,7 +54,7 @@ def main():
         nargs="?",
         default=".",
         type=str,
-        help="VASP OUTCAR path.",
+        help="VASP OUTCAR path",
     )
 
     parser.add_argument(
@@ -75,7 +75,9 @@ def main():
 
     ion_steps = forces_array.shape[0]
 
-    print(f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps.\n")
+    print(
+        f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n"
+    )
 
     boolen_array = calcuate_force(
         force_array=forces_array,
@@ -90,6 +92,7 @@ def main():
         start = ion_steps - 4
 
     for step, column in enumerate(boolen_array, start=start):
+        # 原子索引从 1 开始
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
         print(

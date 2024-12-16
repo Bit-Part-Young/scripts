@@ -5,13 +5,13 @@ reference: http://bbs.keinsci.com/thread-19985-1-1.html
 """
 
 import argparse
+import os
 import re
-from pathlib import Path
 
 import numpy as np
 
 
-def grab_info(outcar_path: Path) -> tuple[
+def grab_info(outcar_path: str) -> tuple[
     int,
     float,
     np.ndarray,
@@ -25,7 +25,8 @@ def grab_info(outcar_path: Path) -> tuple[
     force_list = []
     line_list = []
 
-    with open(outcar_path, "r") as f:
+    outcar_fn = os.path.join(outcar_path, "OUTCAR")
+    with open(outcar_fn, "r") as f:
         for index, line in enumerate(f):
             line_list.append(line.strip().split())
 
@@ -72,14 +73,11 @@ def main():
         nargs="?",
         default=".",
         type=str,
-        help="VASP OUTCAR path.",
+        help="VASP OUTCAR path",
     )
 
     parser.add_argument(
         "--ediffg",
-        nargs="?",
-        const=0.01,
-        default=0.01,
         type=float,
         help="force convergence criteria",
     )
@@ -89,10 +87,15 @@ def main():
     outcar_path = args.outcar_path
     ediffg = args.ediffg
 
-    natoms, ediffg, force_array = grab_info(outcar_path=outcar_path)
+    if ediffg is None:
+        natoms, ediffg, force_array = grab_info(outcar_path=outcar_path)
+    else:
+        natoms, _, force_array = grab_info(outcar_path=outcar_path)
 
     ion_steps = force_array.shape[0]
-    print(f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps.\n")
+    print(
+        f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n"
+    )
 
     boolen_array = calcuate_force(
         force_array=force_array,
@@ -107,6 +110,7 @@ def main():
         start = ion_steps - 4
 
     for step, column in enumerate(boolen_array, start=start):
+        # 原子索引从 1 开始
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
         print(

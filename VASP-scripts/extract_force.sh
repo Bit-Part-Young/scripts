@@ -1,8 +1,22 @@
 #!/bin/bash
 
-# TODO: 提取力数据失败，待检查
-# reference: https://github.com/K4ys4r/VASP_Scripts/tree/master/Extract_Forces
+: '
+提取 VASP OUTCAR 文件中指定离子步中的指定原子的位置、受力信息
 
+reference: https://github.com/K4ys4r/VASP_Scripts/tree/master/Extract_Forces
+
+使用:
+  # 提取所有离子步中的所有原子的位置、受力信息，并保存到文件中
+  extract_force.sh -outcar=OUTCAR -iter=1 -atom=1 -out=output.txt
+  extract_force.sh -outcar=OUTCAR -out=output.txt
+  # 提取第 1 个离子步中的所有原子的位置、受力信息
+  extract_force.sh -outcar=OUTCAR -iter=1
+  # 提取第 1 个离子步中的第 1 个 原子的位置、受力信息
+  extract_force.sh -outcar=OUTCAR -iter=1 -atom=1
+'
+
+
+#------------------     帮助信息     ------------------
 Usage() {
   printf "\nExtract forces and atoms positions from VASP OUTCAR File.\n\n"
   printf "Usage:\n"
@@ -17,6 +31,8 @@ Usage() {
   printf "E-mail: hilal_balout@hotmail.com\n"
 }
 
+
+#------------------     命令行参数解析     ------------------
 for i in "$@"; do
   case $i in
   -atom=*)
@@ -55,13 +71,16 @@ if [[ -z "${Inp}" ]] || [[ ! -f "${Inp}" ]]; then
   Usage
   exit 0
 else
-  N_ions=$(grep NIONS ${Inp} | awk '{printf"%d",$NF}')
+  N_ions=$(grep NIONS "${Inp}" | awk '{printf"%d",$NF}')
 fi
 
+
+#------------------     提取原子位置、受力信息     ------------------
+# 注意单双引号的使用
 awk '/TOTAL-FORCE \(eV\/Angst\)/{
     n++
     getline  # skip one line
-    if (n=='${Iter}'){
+    if (n=="'${Iter}'"){
             printf("\nN_iteration : %5d\n",n)
             printf("%5s %10s %10s %10s %12s %12s %12s\n","atom","X","Y","Z","Fx","Fy","Fz")
             for(i=1;i<='${N_ions}';i++){
@@ -72,17 +91,17 @@ awk '/TOTAL-FORCE \(eV\/Angst\)/{
                     printf("%5d %10.5f %10.5f %10.5f %12.6f %12.6f %12.6f\n",i,$1,$2,$3,$4,$5,$6)
                 }
             }
-    } else if ('${Iter}'=="all"){
+    } else if ("'${Iter}'"=="all"){
         printf("\nN_iteration : %5d\n",n)
         printf("%5s %10s %10s %10s %12s %12s %12s\n","atom","X","Y","Z","Fx","Fy","Fz")
         for(i=1;i<='${N_ions}';i++){
             getline
             if (i=='${Atom}'){
                 printf("%5d %10.5f %10.5f %10.5f %12.6f %12.6f %12.6f\n",i,$1,$2,$3,$4,$5,$6)
-            } else if ('${Atom}'=="all") {
+            } else if ("'${Atom}'"=="all") {
                 printf("%5d %10.5f %10.5f %10.5f %12.6f %12.6f %12.6f\n",i,$1,$2,$3,$4,$5,$6)
             }
         }
 
     }
-}' ${Inp} | tee ${Out}
+}' "${Inp}" | tee "${Out}"
