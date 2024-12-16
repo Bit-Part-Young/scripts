@@ -35,9 +35,7 @@ def pos_diff(
     print(f"{structure1_fn} info: {structure1_info}")
     print(f"{structure2_fn} info: {structure2_info}")
 
-    print(
-        f"\nCoordinate difference between {structure1_fn} with {structure2_fn}:\n"
-    )
+    print(f"\nCoordinate difference between {structure1_fn} with {structure2_fn}:\n")
 
     position1 = atoms1.get_positions(wrap=wrap)
     position2 = atoms2.get_positions(wrap=wrap)

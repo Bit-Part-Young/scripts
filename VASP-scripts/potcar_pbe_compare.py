@@ -101,12 +101,8 @@ def get_potcar_info(psp_symbol: str):
     functional_subdir = "POT_GGA_PAW_PBE"
 
     paths_to_try: list[str] = [
-        os.path.join(
-            PMG_VASP_PSP_DIR, functional_subdir, f"POTCAR.{psp_symbol}"
-        ),
-        os.path.join(
-            PMG_VASP_PSP_DIR, functional_subdir, psp_symbol, "POTCAR"
-        ),
+        os.path.join(PMG_VASP_PSP_DIR, functional_subdir, f"POTCAR.{psp_symbol}"),
+        os.path.join(PMG_VASP_PSP_DIR, functional_subdir, psp_symbol, "POTCAR"),
     ]
 
     for path in paths_to_try:

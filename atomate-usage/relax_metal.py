@@ -3,10 +3,9 @@
 from atomate.common.powerups import add_namefile, add_tags
 from atomate.vasp.powerups import add_modify_incar, add_modify_kpoints
 from atomate.vasp.workflows.presets.core import wf_structure_optimization
+from fireworks.core.launchpad import LaunchPad
 from pymatgen.core.structure import Structure
 from pymatgen.io.vasp.inputs import Kpoints
-
-from fireworks.core.launchpad import LaunchPad
 
 structure = Structure.from_prototype(
     prototype="bcc",

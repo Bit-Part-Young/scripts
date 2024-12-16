@@ -7,9 +7,7 @@ def read_POSCAR(filename):
 
         comment = lines[0].strip()
         scale = float(lines[1].strip())
-        lattice = np.array(
-            [list(map(float, x.strip().split())) for x in lines[2:5]]
-        )
+        lattice = np.array([list(map(float, x.strip().split())) for x in lines[2:5]])
         symbols = lines[5].strip().split()
         natoms_list = list(map(int, lines[6].strip().split()))
 
@@ -20,9 +18,7 @@ def read_POSCAR(filename):
             coord_type = lines[7].strip()
             coords = lines[8:]
 
-        coord = np.array(
-            [list(map(float, x.strip().split()[:3])) for x in coords]
-        )
+        coord = np.array([list(map(float, x.strip().split()[:3])) for x in coords])
         selective_dynamics = [x.strip().split()[3:] for x in coords]
         selective_dynamics = np.array(
             [[1 if i == "T" else 0 for i in x] for x in selective_dynamics]

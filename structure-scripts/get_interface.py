@@ -3,9 +3,7 @@
 import os
 
 import numpy as np
-from pymatgen.analysis.interfaces.coherent_interfaces import (
-    CoherentInterfaceBuilder,
-)
+from pymatgen.analysis.interfaces.coherent_interfaces import CoherentInterfaceBuilder
 
 # from pymatgen.symmetry.analyzer import SpacegroupAnalyzer as Analyzer
 from pymatgen.analysis.interfaces.zsl import ZSLGenerator
@@ -76,9 +74,7 @@ def Get_Interface(
         interface.film.to(fmt="poscar", filename=fname_film)
 
         # 将未进行原子固定处理的界面结构保存成poscar文件
-        fname_interface_unfixed = (
-            f"{saved_poscar_path}/{prefix}_{count}_unfixed.poscar"
-        )
+        fname_interface_unfixed = f"{saved_poscar_path}/{prefix}_{count}_unfixed.poscar"
         interface.to(fmt="poscar", filename=fname_interface_unfixed)
 
         # num_sites 界面的原子数  给界面所有原子设置[1 1 1]的坐标形式，方便后面的numpy计算 以及表示所有原子都是非固定的 True
@@ -148,12 +144,8 @@ def Get_Interface(
         lattice_film = np.array(list(interface.film.lattice.abc))
         lattice_interface = np.array(list(interface.lattice.abc))
 
-        misfit_lattice_sub_in = (
-            (lattice_interface - lattice_substrate) / lattice_substrate
-        )[0:2]
-        misfit_lattice_film_in = (
-            (lattice_interface - lattice_film) / lattice_film
-        )[0:2]
+        misfit_lattice_sub_in = ((lattice_interface - lattice_substrate) / lattice_substrate)[0:2]
+        misfit_lattice_film_in = ((lattice_interface - lattice_film) / lattice_film)[0:2]
 
         # print(termination)
         print(

@@ -50,9 +50,7 @@ def fix_layer(
     elif isinstance(layer_index, list):
         fixed_layer_index = df[df["layer_index"].isin(layer_index)].index
 
-        print(
-            f"No. {layer_index} layer(s), total {len(fixed_layer_index)} atoms are fixed."
-        )
+        print(f"No. {layer_index} layer(s), total {len(fixed_layer_index)} atoms are fixed.")
 
     selective_dynamics = np.ones((natoms, 3))
 

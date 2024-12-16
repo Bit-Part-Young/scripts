@@ -57,9 +57,7 @@ def interlayer_separations_cal(
             "Interlayer_Separations": interlayer_separations,
             "Ratio(%)": ratio,
         }
-        index = [
-            f"{i}-{i+1}" for i in range(1, len(interlayer_separations) + 1)
-        ]
+        index = [f"{i}-{i+1}" for i in range(1, len(interlayer_separations) + 1)]
 
         interlayer_separations_info = pd.DataFrame(
             data=data,

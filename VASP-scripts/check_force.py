@@ -43,8 +43,8 @@ def grab_info(outcar_path: str) -> tuple[
                 force_list += line_list[-natoms - 2 : index - 1]
 
     # 原子位置分量是前 3 列，原子受力分量是后 3 列
-    position_array = np.asfarray(force_list).reshape(-1, natoms, 6)[:, :, :3]
-    force_array = np.asfarray(force_list).reshape(-1, natoms, 6)[:, :, 3:]
+    position_array = np.asarray(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, :3]
+    force_array = np.asarray(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, 3:]
 
     return (natoms, ediffg, force_array)
 
@@ -95,9 +95,7 @@ def main():
         natoms, _, force_array = grab_info(outcar_path=outcar_path)
 
     ion_steps = force_array.shape[0]
-    print(
-        f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n"
-    )
+    print(f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n")
 
     boolen_array = calcuate_force(
         force_array=force_array,
@@ -115,9 +113,7 @@ def main():
         # 原子索引从 1 开始
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
-        print(
-            f"Step {step}: total {len(atom_index)} atoms force did NOT converge. Index:"
-        )
+        print(f"Step {step}: total {len(atom_index)} atoms force did NOT converge. Index:")
 
         print(atom_index)
 

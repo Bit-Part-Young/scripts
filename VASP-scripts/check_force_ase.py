@@ -75,9 +75,7 @@ def main():
 
     ion_steps = forces_array.shape[0]
 
-    print(
-        f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n"
-    )
+    print(f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n")
 
     boolen_array = calcuate_force(
         force_array=forces_array,
@@ -95,9 +93,7 @@ def main():
         # 原子索引从 1 开始
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
-        print(
-            f"Step {step}: Total {len(atom_index)} atoms force did NOT converge. Index:"
-        )
+        print(f"Step {step}: Total {len(atom_index)} atoms force did NOT converge. Index:")
         print(atom_index)
 
 

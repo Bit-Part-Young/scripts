@@ -21,9 +21,7 @@ def Birch_Murnaghan(params, volumes):
     E0, V0, B0, B1 = params
     eta = (V0 / volumes) ** (2 / 3)
 
-    return E0 + (9 * V0 * B0 / 16) * (
-        ((eta - 1) ** 3) * B1 + ((eta - 1) ** 2) * (6 - 4 * eta)
-    )
+    return E0 + (9 * V0 * B0 / 16) * (((eta - 1) ** 3) * B1 + ((eta - 1) ** 2) * (6 - 4 * eta))
 
 
 def error(params, volumes, energies):
