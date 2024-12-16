@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 检查 VASP OUTCAR 文件中的每个离子步原子受力收敛情况（使用 re 正则内置模块）
 
