@@ -3,6 +3,8 @@
 """
 检查 VASP OUTCAR 文件中的每个离子步原子受力收敛情况（使用 re 正则内置模块）
 
+#TODO: 不知道为什么是力的任一分量模的值大于 EDIFFG 值就判断为 False
+
 reference: http://bbs.keinsci.com/thread-19985-1-1.html
 """
 
@@ -70,6 +72,7 @@ def main():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         allow_abbrev=True,
     )
+
     parser.add_argument(
         "outcar_path",
         nargs="?",
