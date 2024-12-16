@@ -1,5 +1,5 @@
 """
-检查 OUTCAR 中的原子受力收敛情况
+检查 VASP OUTCAR 文件中的每个离子步原子受力收敛情况（使用 re 正则内置模块）
 
 reference: http://bbs.keinsci.com/thread-19985-1-1.html
 """
@@ -11,35 +11,12 @@ from pathlib import Path
 import numpy as np
 
 
-def check_outcar(outcar_path: Path):
-    """Checks whether the OUTCAR file exists."""
-
-    if not outcar_path.is_file():
-        dashline = "-" * 79
-        warning_str = (
-            "OUTCAR file does NOT exist! Please check your directory."
-        )
-        warning_info = "\n".join((dashline, warning_str, dashline))
-
-        raise SystemExit(warning_info)
-
-
 def grab_info(outcar_path: Path) -> tuple[
     int,
     float,
     np.ndarray,
-    np.ndarray,
 ]:
-    """Grab the number of atoms, the force convergence criteria,
-    position array and force array in all ion steps from the OUTCAR file.
-
-    Returns
-    -------
-    position_array: numpy 3D array
-        The array of atom posistion in all ion steps with unit of angstrom
-    force_array: numpy 3D array
-        The array of the atom force in all ion steps with unit of eV/Angst
-    """
+    """获取原子数、每个离子步中每个原子的受力（向量）"""
 
     patten_natoms = re.compile(r"\s+\w+\s+NIONS =\s+(\d+)")
     patten_ediffg = re.compile(r"\s+EDIFFG =(\s[-+]?\.\w+[-+]?\d+)")
@@ -59,31 +36,21 @@ def grab_info(outcar_path: Path) -> tuple[
                 ediffg = float(match.group(1))
 
             elif patten_force.search(line):
+                # 获取一个离子步中的每个原子受力信息
                 force_list += line_list[-natoms - 2 : index - 1]
 
+    # 原子位置分量是前 3 列，原子受力分量是后 3 列
     position_array = np.asfarray(force_list).reshape(-1, natoms, 6)[:, :, :3]
     force_array = np.asfarray(force_list).reshape(-1, natoms, 6)[:, :, 3:]
 
-    return (natoms, ediffg, position_array, force_array)
+    return (natoms, ediffg, force_array)
 
 
 def calcuate_force(
     force_array: np.ndarray,
     force_criteria: float,
-):
-    """Calculate the force for each atom and compare with the force convergence criteria.
-
-    Parameters
-    ----------
-    force_array: numpy 3D array
-        The array of atom posistion in all ion steps with unit of angstrom
-
-    Returns
-    -------
-    Boolean array
-        The Boolean array that True represents the force of the atom
-    does NOT converged.
-    """
+) -> np.ndarray:
+    """计算每个离子步中每个原子的受力（数值），并判断是否达到 EDIFFG 收敛判据"""
 
     F = np.sqrt(np.power(force_array, 2).sum(axis=-1))
 
@@ -93,46 +60,59 @@ def calcuate_force(
 
 
 def main():
-    """Workflow
-    1) check whether the OUTCAR file exists or not;
-    2) grab the number of atoms, the convergence criteria, and the force
-       components of each atom from the OUTCAR file;
-    3) calculate the force for each atom;
-    4) print the steps and atoms with the force that larger than
-       the convergence criteria.
-    """
 
     parser = argparse.ArgumentParser(
-        description="Check the force convergence in OUTCAR.",
+        description="Check the force convergence of every atom in every ion step in VASP OUTCAR.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        allow_abbrev=True,
     )
     parser.add_argument(
         "outcar_path",
-        type=Path,
-        help="OUTCAR path",
-        default="OUTCAR",
+        nargs="?",
+        default=".",
+        type=str,
+        help="VASP OUTCAR path.",
     )
+
+    parser.add_argument(
+        "--ediffg",
+        nargs="?",
+        const=0.01,
+        default=0.01,
+        type=float,
+        help="force convergence criteria",
+    )
+
     args = parser.parse_args()
 
     outcar_path = args.outcar_path
+    ediffg = args.ediffg
 
-    check_outcar(outcar_path)
+    natoms, ediffg, force_array = grab_info(outcar_path=outcar_path)
 
-    natoms, ediffg, _, force_array = grab_info(outcar_path=outcar_path)
-
-    print(f"OUTCAR info: {natoms} atoms, {force_array.shape[0]} ion steps.\n")
+    ion_steps = force_array.shape[0]
+    print(f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps.\n")
 
     boolen_array = calcuate_force(
         force_array=force_array,
         force_criteria=ediffg,
     )
 
-    for step, column in enumerate(boolen_array, start=1):
+    # 只输出最后 5 个离子步的受力收敛信息
+    if ion_steps < 5:
+        start = 1
+    else:
+        boolen_array = boolen_array[-5:, :]
+        start = ion_steps - 4
+
+    for step, column in enumerate(boolen_array, start=start):
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
         print(
-            f"Step {step}: total {len(atom_index)} atoms force did NOT converge, index: {atom_index}."
+            f"Step {step}: total {len(atom_index)} atoms force did NOT converge. Index:"
         )
+
+        print(atom_index)
 
 
 if __name__ == "__main__":
