@@ -60,6 +60,7 @@ def calcuate_force(
 
 
 def main():
+    """主函数"""
 
     parser = argparse.ArgumentParser(
         description="Check the force convergence of every atom in every ion step in VASP OUTCAR.",
