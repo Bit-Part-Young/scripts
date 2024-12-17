@@ -45,8 +45,8 @@ def grab_info(outcar_path: str) -> tuple[
                 force_list += line_list[-natoms - 2 : index - 1]
 
     # 原子位置分量是前 3 列，原子受力分量是后 3 列
-    position_array = np.asarray(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, :3]
-    force_array = np.asarray(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, 3:]
+    position_array = np.array(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, :3]
+    force_array = np.array(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, 3:]
 
     return (natoms, ediffg, force_array)
 
