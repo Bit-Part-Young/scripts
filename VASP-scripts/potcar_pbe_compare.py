@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)"""
+"""比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP.5.4.4)"""
 
 import argparse
 import os
@@ -133,7 +133,7 @@ def get_potcar_info(psp_symbol: str):
 
 
 def potcar_pbe_compare(element_symbol: str):
-    """比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)"""
+    """比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP.5.4.4)"""
 
     psp_vasp = pbe_dict_vasp[element_symbol]
     psp_pymatgen = pbe_dict_pymatgen[element_symbol]
@@ -165,7 +165,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "element_symbol",
-        help="Element symbol, eg. Ti.",
+        help="Element symbol, eg. Ti",
     )
 
     args = parser.parse_args()

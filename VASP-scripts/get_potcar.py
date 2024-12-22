@@ -126,20 +126,20 @@ if __name__ == "__main__":
         default="vasp",
         type=str,
         choices=["vasp", "pymatgen"],
-        help="Recommended pseudopotential source.",
+        help="Recommended pseudopotential type",
     )
 
     parser.add_argument(
-        "structure_file",
+        "structure_fn",
         nargs="?",
         default="POSCAR",
         type=str,
-        help="Structure file with POSCAR format.",
+        help="Structure filename with POSCAR format",
     )
 
     args = parser.parse_args()
 
-    structure_fn = args.structure_file
+    structure_fn = args.structure_fn
     psp_recommended = args.psp_recommended
 
     get_potcar(

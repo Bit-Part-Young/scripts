@@ -4,7 +4,7 @@
 
 注意事项：
 
-- 本仓库代码主要依赖 ASE、pymatgen、atomate 等 Python 包
+- 本仓库代码主要依赖 ASE、pymatgen、atomate 等 Python 包，以及 atomsk、vaspkit 等工具
 
 - 使用脚本前，请先阅读源码及其中的注释！
 
@@ -75,10 +75,10 @@ pymatgen_old_api.ipynb               # 旧 api 模块使用
 ```bash
 VASP-Official-Tutorials-2017.pdf     # VASP 官方教程 2017 版；来自 https://github.com/tamaswells/VASP_script
 
-check_force.py                       # 检查 OUTCAR 文件中的原子受力收敛性
-check_force_ase.py                   # 检查 OUTCAR 文件中的原子受力收敛性；基于 ASE
-read_force_pymatgen.ipynb            # 使用 pymatgen 读取 OUTCAR 文件中的原子位置与受力
-extract_force.sh                     # 提取原子位置及受力，可指定原子、离子步步数
+check_force.py                       # 检查 OUTCAR 文件中离子步的原子受力收敛性；基于内置 re 模块
+check_force_ase.py                   # 检查 OUTCAR 文件中离子步的原子受力收敛性；基于 ASE 程序
+check_force_pymatgen.py              # 检查 OUTCAR 文件中离子步的原子受力收敛性；基于 pymatgen 程序
+extract_force.sh                     # 提取离子步中的原子位置及受力，可指定原子、离子步步数
 read_force.py                        # 解析每个目录下的 vasprun.xml 文件，提取受力并统计最大受力
 extract_outcar.ipynb                 # 使用正则表达式提取 OUTCAR 文件中的数据（练习用）
 
@@ -122,6 +122,7 @@ atat.py                              # 解析 ATAT 中的 str.out 文件（单�
 hexa2ortho.py                        # 将六方胞转换为正交胞
 build_structure_spacegroup.ipynb     # PyXtal、ASE、pymatgen 通过空间群构建复杂结构
 symmetry_info.py                     # 获取结构的对称性信息
+sg_info.py                           # 获取结构的空间群信息
 get_interface.py                     # 生成界面结构（待优化）
 read_poscar.py                       # 读取 POSCAR 文件（练习用）
 build_structure.ipynb                # 构建晶体结构（练习用）
