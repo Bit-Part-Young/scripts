@@ -94,7 +94,9 @@ get_vasp_data.py                     # 获取 VASP 计算目录的输出数据
 get_vasp_data.sh                     # 获取多个 VASP 计算目录的输出数据
 
 plot_ev.py                           # EV（能量-体积）曲线绘制
-eos_fit.py                            # Birch-Murnaghan EOS 拟合
+eos_fit.py                           # Birch-Murnaghan EOS 拟合
+
+hdf5.ipynb                           # 读取 vaspout.h5 格式数据文件内容（无法获取具体数值）
 
 # BandStructure-DOS/ 目录
 dos_bs_inputs.py                     # 生成 DOS 和 BandStructure 计算的输入文件
