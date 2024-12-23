@@ -123,7 +123,11 @@ hexa2ortho.py                        # 将六方胞转换为正交胞
 build_structure_spacegroup.ipynb     # PyXtal、ASE、pymatgen 通过空间群构建复杂结构
 symmetry_info.py                     # 获取结构的对称性信息
 sg_info.py                           # 获取结构的空间群信息
+spglib_python.ipynb                  # 使用 spglib 的 Python API 获取对称性信息
+spglib_julia.ipynb                   # 使用 spglib 的 Julia API 获取对称性信息
+
 get_interface.py                     # 生成界面结构（待优化）
+
 read_poscar.py                       # 读取 POSCAR 文件（练习用）
 build_structure.ipynb                # 构建晶体结构（练习用）
 ```
