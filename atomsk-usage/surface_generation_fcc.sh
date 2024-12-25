@@ -12,19 +12,41 @@ vacuum2=$((2 * vacuum))
 
 
 # (100) 表面
-atomsk --create fcc ${a} ${symbol} orient "[010]" "[001]" "[100]" -duplicate 10 10 6 -shift 0 0 ${vacuum} -cell add ${vacuum2} z lmp
+atomsk --create fcc ${a} ${symbol} \
+       orient "[010]" "[001]" "[100]" \
+       -duplicate 10 10 6 \
+       -shift 0 0 ${vacuum} \
+       -cell add ${vacuum2} z \
+       -fractional -sort species pack vasp
+    #    lmp
 
-mv ${symbol}.lmp ${symbol}_100.lmp
+# mv ${symbol}.lmp ${symbol}_100.lmp
+mv POSCAR ${symbol}_100.vasp
 
 # (110) 表面
-atomsk --create fcc ${a} ${symbol} orient "[1-10]" "[001]" "[110]" -duplicate 10 10 6 -shift 0 0 ${vacuum} -cell add ${vacuum2} z lmp
+atomsk --create fcc ${a} ${symbol} \
+       orient "[1-10]" "[001]" "[110]" \
+       -duplicate 10 10 6 \
+       -shift 0 0 ${vacuum} \
+       -cell add ${vacuum2} z \
+       -fractional -sort species pack vasp
+    #    lmp
 
-mv ${symbol}.lmp ${symbol}_110.lmp
+# mv ${symbol}.lmp ${symbol}_110.lmp
+mv POSCAR ${symbol}_110.vasp
 
 # (111) 表面
-atomsk --create fcc ${a} ${symbol} orient "[11-2]" "[-110]" "[111]" -duplicate 10 10 6 -shift 0 0 ${vacuum} -cell add ${vacuum2} z lmp
+atomsk --create fcc ${a} ${symbol} \
+       orient "[11-2]" "[-110]" "[111]" \
+       -duplicate 10 10 6 \
+       -shift 0 0 ${vacuum} \
+       -cell add ${vacuum2} z \
+       -fractional -sort species pack vasp
+    #    lmp
 
-mv ${symbol}.lmp ${symbol}_111.lmp
+# mv ${symbol}.lmp ${symbol}_111.lmp
+mv POSCAR ${symbol}_111.vasp
 
 mkdir -p surfaces-atomsk
-mv ${symbol}_100.lmp ${symbol}_110.lmp ${symbol}_111.lmp surfaces-atomsk
+# mv ${symbol}_100.lmp ${symbol}_110.lmp ${symbol}_111.lmp surfaces-atomsk
+mv ${symbol}_100.vasp ${symbol}_110.vasp ${symbol}_111.vasp surfaces-atomsk
