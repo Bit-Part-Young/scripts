@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 
-"""获取 VASP 计算目录的数据"""
+"""获取 VASP 计算目录输出数据（利用 atomate package）"""
 
 import argparse
 
+import pandas as pd
 from atomate.vasp.drones import VaspDrone
 from pymatgen.core.structure import Structure
 
 
-def get_vasp_data(vasp_folder: str) -> dict:
-    """获取 VASP 计算目vasp_folder"""
+def get_vasp_data(path: str = ".") -> dict:
+    """获取 VASP 计算目录输出数据"""
 
     drone = VaspDrone()
-    document = drone.assimilate(path=vasp_folder)
+    document = drone.assimilate(path=path)
 
     energy = document["output"]["energy"]
 
@@ -27,29 +28,31 @@ def get_vasp_data(vasp_folder: str) -> dict:
         "c": lattice[2],
     }
 
-    return data_dict
+    df = pd.DataFrame(data_dict, index=[0]).round(5)
+
+    return df
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Get data from VASP calculation directory with atomate package.",
+        description="Get data from VASP calculation path with atomate package.",
         epilog="Author: SLY.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument(
-        "vasp_folder",
+        "path",
         nargs="?",
         type=str,
         default=".",
-        help="VASP calculation directory.",
+        help="VASP calculation path",
     )
 
     args = parser.parse_args()
 
-    vasp_folder = args.path
+    path = args.path
 
-    data_dict = get_vasp_data(vasp_folder)
+    df = get_vasp_data(path)
 
-    print(data_dict)
+    print(df)

@@ -15,6 +15,7 @@ CONTCAR
 OUTCAR
 
 # 构型文件格式
+map.in
 *.vasp
 *.lmp
 *.xyz

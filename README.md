@@ -90,11 +90,14 @@ sigma.sh                             # 确定 entropy T*S 是否小于 1 meV/ato
 
 potcar_pbe_compare.py                # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)
 get_potcar.py                        # 生成 VASP 和 pymatgen 推荐的赝势 POTCAR 文件
-get_vasp_data.py                     # 获取 VASP 计算目录的输出数据
+get_vasp_data.py                     # 获取 VASP 计算目录的输出数据（利用 atomate package）
+get_vasp_data2.py                     # 获取 VASP 计算目录的输出数据（利用 pymatgen package）
 get_vasp_data.sh                     # 获取多个 VASP 计算目录的输出数据
 
 plot_ev.py                           # EV（能量-体积）曲线绘制
-eos_fit.py                            # Birch-Murnaghan EOS 拟合
+eos_fit.py                           # Birch-Murnaghan EOS 拟合
+
+hdf5.ipynb                           # 读取 vaspout.h5 格式数据文件内容（无法获取具体数值）
 
 # BandStructure-DOS/ 目录
 dos_bs_inputs.py                     # 生成 DOS 和 BandStructure 计算的输入文件
@@ -123,7 +126,11 @@ hexa2ortho.py                        # 将六方胞转换为正交胞
 build_structure_spacegroup.ipynb     # PyXtal、ASE、pymatgen 通过空间群构建复杂结构
 symmetry_info.py                     # 获取结构的对称性信息
 sg_info.py                           # 获取结构的空间群信息
+spglib_python.ipynb                  # 使用 spglib 的 Python API 获取对称性信息
+spglib_julia.ipynb                   # 使用 spglib 的 Julia API 获取对称性信息
+
 get_interface.py                     # 生成界面结构（待优化）
+
 read_poscar.py                       # 读取 POSCAR 文件（练习用）
 build_structure.ipynb                # 构建晶体结构（练习用）
 ```
