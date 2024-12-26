@@ -40,6 +40,7 @@ read_mtp_cfg.py                      # 使用 ASE 读取 MTP 训练集中的 cfg
 
 ```bash
 pymatgen_periodic_table.ipynb        # periodic_table 模块使用；元素周期表 tui 版本绘制
+pyamtgen_composition.ipynb           # pyamtgen composition 模块 使用
 
 pymatgen_eos.ipynb                   # 拟合 EOS 方程并绘制曲线
 pymatgen_unit.ipynb                  # unit 模块使用
