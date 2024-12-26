@@ -263,6 +263,7 @@ git diff cb92b24 cec4770
 - `plots/`: 绘图示例
 
 ```bash
+gamma_surface_plot.ipynb             # GSFE gamma surface 绘制
 matplotlib_basic.ipynb               # 各种绘图示例
 colors.ipynb                         # 绘图配色
 corr_heatmap.ipynb                   # 相关性热图绘制
