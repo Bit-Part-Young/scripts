@@ -4,7 +4,7 @@
 获取结构的对称性信息
 
 已知问题: 对于 8g NbI、8g NbII、8g NbIII 的 Nb3Si 结构，程序将其统计成了 24g，是错误的
-解决方式: 添加 -v 选项，进一步查看 Equivalent Site Group 信息进行检查
+解决方式: 添加 -v/--verbose 选项，进一步查看 Equivalent Site Group 信息进行检查
 
 reference: https://github.com/nanyanshouhu/Defect_generator/blob/main/wyckoff_position_finder.py
 """
@@ -80,9 +80,8 @@ def symmetry_info(
             for site in sites:
                 print(f"  - {site.species_string} at {site.frac_coords.round(5)}")
     else:
-        print(
-            "\nWyckoff info maybe incorrect, please add `-v` option to check Equivalent Site Group."
-        )
+        print("\nWyckoff info maybe incorrect.", end=" ")
+        print("Use -v/--verbose option to check Equivalent Site Group info.")
 
 
 if __name__ == "__main__":
@@ -102,12 +101,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "-v",
         "--verbose",
-        type=int,
-        nargs="?",
-        const=1,
-        choices=[0, 1],
-        default=None,
-        help="Whether to show Equivalent Site Group info",
+        action="store_true",
+        help="Show Equivalent Site Group info",
     )
 
     args = parser.parse_args()

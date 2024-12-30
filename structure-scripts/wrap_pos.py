@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""将 VASP POSCAR 原子 Direct 坐标范围 wrap 在 0-1 之间"""
+"""将 VASP POSCAR 分数坐标范围 wrap 在 0-1 之间"""
 
 import argparse
 
@@ -8,7 +8,7 @@ from ase.io import read, write
 
 
 def wrap_pos(structure_fn: str):
-    """将 VASP POSCAR 原子 Direct 坐标 wrap 在 0-1 之间"""
+    """将 VASP POSCAR 分数坐标 wrap 在 0-1 之间"""
 
     atoms = read(structure_fn)
     atoms.wrap()
@@ -26,7 +26,7 @@ def wrap_pos(structure_fn: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Wrap the atomic Direct coordinates with POSCAR format to 0-1.",
+        description="Wrap the atomic direct coordinates with POSCAR format to 0-1.",
         epilog="Author: SLY.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         nargs="?",
         type=str,
         default="POSCAR",
-        help="Structure filename.",
+        help="Structure filename",
     )
 
     args = parser.parse_args()

@@ -23,13 +23,13 @@ def pos_diff(
     structure1_info = {
         "natom": len(atoms1),
         "cell": atoms1.cell,
-        "volume": round(atoms1.get_volume(), 1),
+        "volume": float(round(atoms1.get_volume(), 1)),
     }
 
     structure2_info = {
         "natom": len(atoms2),
         "cell": atoms2.cell,
-        "volume": round(atoms2.get_volume(), 1),
+        "volume": float(round(atoms2.get_volume(), 1)),
     }
 
     print(f"{structure1_fn} info: {structure1_info}")
@@ -77,7 +77,7 @@ if __name__ == "__main__":
         nargs="?",
         type=str,
         default="CONTCAR",
-        help="Structure1 filename (After relaxation).",
+        help="Structure1 filename after relaxation",
     )
 
     parser.add_argument(
@@ -85,18 +85,14 @@ if __name__ == "__main__":
         nargs="?",
         type=str,
         default="POSCAR",
-        help="Structure2 filename (Before relaxation).",
+        help="Structure2 filename before relaxation",
     )
 
     parser.add_argument(
         "-w",
         "--wrap",
-        type=int,
-        nargs="?",
-        const=1,
-        choices=[0, 1],
-        default=None,
-        help="Whether to wrap atomic positions into the cell.",
+        action="store_true",
+        help="wrap atomic positions into box",
     )
 
     parser.add_argument(
@@ -104,7 +100,7 @@ if __name__ == "__main__":
         "--atom_index",
         nargs="*",
         type=int,
-        help="Atom index.",
+        help="Atom index",
     )
 
     args = parser.parse_args()
