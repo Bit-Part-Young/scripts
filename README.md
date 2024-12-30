@@ -119,8 +119,9 @@ layers_count.py                      # 统计原子层数及每层原子数
 interlayer_separations.py            # 统计原子层间距变化（适用于表面/界面模型弛豫前后的原子层间距变化）
 identify_layer.py                    # 识别每个原子所在的原子层
 fix_layer.py                         # 固定（特定）原子层 x/y/z 轴
-wrap_pos.py                          # 将 VASP POSCAR 中原子 Direct 坐标范围 wrap 在 0-1 之间
+wrap_pos.py                          # 将 VASP POSCAR 中分数坐标范围 wrap 在 0-1 之间
 pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
+get_distance.py                      # 获取构型中原子对的最小和最大距离
 posconv.py                           # 构型文件格式互相转换（基于 ASE，支持 ASE 大部分可识别的格式）
 atat.py                              # 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
 hexa2ortho.py                        # 将六方胞转换为正交胞
