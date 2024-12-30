@@ -22,20 +22,15 @@ def get_distance(
 
     if natoms == 1:
         print("Number of atom is 1, no atomic pair.")
-
-    elif natoms == 2 or len(np.unique(distances)) == 2:
-        min_dist = np.unique(distances)[1]
-        max_dist = min_dist
-
-        print(f"Number of atom is {natoms} or all distances are same.")
-        print(f"Distance: {round(min_dist, 5)} Å.")
-
     else:
         min_dist = np.unique(distances)[1]
         max_dist = np.unique(distances)[-1]
 
         print(f"Minimum distance: {round(min_dist, 5)} Å.")
         print(f"Maximum distance: {round(max_dist, 5)} Å.")
+
+        if natoms == 2 or len(np.unique(distances)) == 2:
+            print(f"Number of atom is {natoms} or all distances are same.")
 
 
 if __name__ == "__main__":
