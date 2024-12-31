@@ -13,9 +13,7 @@ def get_interlayer_distance(
     structure_fn: str,
     precision: float = 0.001,
 ) -> tuple[np.ndarray, int]:
-    """
-    统计原子层间距
-    """
+    """统计原子层间距"""
 
     atoms = read(structure_fn)
 
@@ -36,9 +34,7 @@ def interlayer_separations_cal(
     structure2_fn: str,
     precision: float = 0.001,
 ) -> pd.DataFrame:
-    """
-    计算原子层间距变化（适用于表面/界面模型弛豫前后的原子层间距变化）
-    """
+    """计算原子层间距变化（适用于表面/界面模型弛豫前后的原子层间距变化）"""
 
     distance1, layer1_count = get_interlayer_distance(structure1_fn, precision)
     distance2, layer2_count = get_interlayer_distance(structure2_fn, precision)
@@ -83,14 +79,14 @@ if __name__ == "__main__":
         nargs="?",
         default="CONTCAR",
         type=str,
-        help="Structure file (after relaxation), eg. CONTCAR.",
+        help="Structure file after relaxation",
     )
     parser.add_argument(
         "structure2_fn",
         nargs="?",
         default="POSCAR",
         type=str,
-        help="Structure file (before relaxation), eg. POSCAR.",
+        help="Structure file before relaxation",
     )
 
     args = parser.parse_args()
@@ -98,8 +94,8 @@ if __name__ == "__main__":
     structure1_fn = args.structure1_fn
     structure2_fn = args.structure2_fn
 
-    interlayer_separations_info = interlayer_separations_cal(
+    info = interlayer_separations_cal(
         structure1_fn=structure1_fn,
         structure2_fn=structure2_fn,
     )
-    print(interlayer_separations_info)
+    print(info)

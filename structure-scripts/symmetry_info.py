@@ -26,18 +26,8 @@ def symmetry_info(
 ):
     """获取结构的对称性信息"""
 
-    ase_formats = ["xyz", "lammps-data", "lmp"]
-
-    structure_fn_format = structure_fn.split(".")[-1]
-    if structure_fn_format in ase_formats:
-        if structure_fn_format == "lmp":
-            atoms = read(structure_fn, format="lammps-data")
-        else:
-            atoms = read(structure_fn, format=structure_fn_format)
-
-        structure = Structure.from_ase_atoms(atoms)
-    else:
-        structure = Structure.from_file(structure_fn)
+    atoms = read(structure_fn)
+    structure = Structure.from_ase_atoms(atoms)
 
     sga = SpacegroupAnalyzer(
         structure=structure,

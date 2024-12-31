@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 """统计原子层数目及每层原子数"""
 
@@ -13,19 +13,9 @@ def layers_count(
     structure_fn: str,
     precision: float = 0.001,
 ):
-    """
-    统计原子层数目及每层原子数
-    """
+    """统计原子层数目及每层原子数"""
 
-    if structure_fn.endswith("lmp"):
-        atoms = read(
-            structure_fn,
-            format="lammps-data",
-            units="metal",
-            atom_style="atomic",
-        )
-    else:
-        atoms = read(structure_fn)
+    atoms = read(structure_fn)
 
     positions = atoms.positions
 
@@ -62,7 +52,7 @@ if __name__ == "__main__":
         nargs="?",
         type=str,
         default="POSCAR",
-        help="Structure filename.",
+        help="Structure filename",
     )
 
     args = parser.parse_args()
