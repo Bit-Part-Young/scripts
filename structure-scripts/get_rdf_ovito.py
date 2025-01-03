@@ -24,12 +24,11 @@ def rdf_cal(
     pipeline: Pipeline
     print("Number of MD frames:", pipeline.num_frames)
 
-    # Print the list of input particle types.
-    # They are represented by ParticleType objects attached to the 'Particle Type' particle property.
+    # 输出体系的原子种类及其 ID
     for type in pipeline.compute().particles.particle_types.types:
-        print("Type %i: %s" % (type.id, type.name))
+        print(f"Type {type.id}: {type.name}")
 
-    # Insert the RDF calculation modifier into the pipeline:
+    # 添加  RDF 计算 modifier
     pipeline.modifiers.append(
         CoordinationAnalysisModifier(
             cutoff=cutoff,
@@ -38,11 +37,10 @@ def rdf_cal(
         )
     )
 
-    # Insert the time-averaging modifier into the pipeline, which accumulates
-    # the instantaneous DataTable produced by the previous modifier and computes a mean histogram.
+    # 对所有帧的 RDF 数据进行时间平均
     pipeline.modifiers.append(TimeAveragingModifier(operate_on="table:coordination-rdf"))
 
-    # Data export method 1: Convert to NumPy array and write data to a text file:
+    # 导出
     export_file(
         data=pipeline,
         file=output_fn,
@@ -99,7 +97,7 @@ if __name__ == "__main__":
         "-p",
         "--partial",
         action="store_true",
-        help="whether to get partial element",
+        help="whether to get partial element RDF",
     )
 
     args = parser.parse_args()
