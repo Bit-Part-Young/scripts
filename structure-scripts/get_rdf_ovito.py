@@ -1,0 +1,119 @@
+#!/usr/bin/env python3
+
+"""
+利用 ovito 计算 RDF（单帧和多帧构型/轨迹数据）
+reference: https://gitee.com/mayuan_JLUPHY/my_script/blob/master/lammps-toolkit/getRDFovito.py
+"""
+
+import argparse
+
+from ovito.io import export_file, import_file
+from ovito.modifiers import CoordinationAnalysisModifier, TimeAveragingModifier
+from ovito.pipeline import Pipeline
+
+
+def rdf_cal(
+    trajectory_fn: str,
+    cutoff: float,
+    num_bins: int,
+    output_fn: str,
+    partial: bool,
+):
+
+    pipeline = import_file(trajectory_fn)
+    pipeline: Pipeline
+    print("Number of MD frames:", pipeline.num_frames)
+
+    # Print the list of input particle types.
+    # They are represented by ParticleType objects attached to the 'Particle Type' particle property.
+    for type in pipeline.compute().particles.particle_types.types:
+        print("Type %i: %s" % (type.id, type.name))
+
+    # Insert the RDF calculation modifier into the pipeline:
+    pipeline.modifiers.append(
+        CoordinationAnalysisModifier(
+            cutoff=cutoff,
+            number_of_bins=num_bins,
+            partial=partial,
+        )
+    )
+
+    # Insert the time-averaging modifier into the pipeline, which accumulates
+    # the instantaneous DataTable produced by the previous modifier and computes a mean histogram.
+    pipeline.modifiers.append(TimeAveragingModifier(operate_on="table:coordination-rdf"))
+
+    # Data export method 1: Convert to NumPy array and write data to a text file:
+    export_file(
+        data=pipeline,
+        file=output_fn,
+        format="txt/table",
+        key="coordination-rdf[average]",
+    )
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(
+        description="Calculate (average) RDF with ovito Python package.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        allow_abbrev=True,
+    )
+
+    parser.add_argument(
+        "-i",
+        "--input_fn",
+        default="XDATCAR",
+        required=True,
+        metavar="trajectory_fn",
+        help="configuration/trajectory filename",
+    )
+
+    parser.add_argument(
+        "-c",
+        "--cutoff",
+        default=5.0,
+        type=float,
+        metavar="cutoff",
+        help="cutoff radius",
+    )
+
+    parser.add_argument(
+        "-n",
+        "--num_bins",
+        default=100,
+        type=int,
+        metavar="num_bins",
+        help="number of bins",
+    )
+
+    parser.add_argument(
+        "-o",
+        "--output_fn",
+        default="rdf.txt",
+        type=str,
+        metavar="output_fn",
+        help="output filename",
+    )
+
+    parser.add_argument(
+        "-p",
+        "--partial",
+        action="store_true",
+        help="whether to get partial element",
+    )
+
+    args = parser.parse_args()
+
+    input_fn = args.input_fn
+    cutoff = args.cutoff
+    num_bins = args.num_bins
+    output_fn = args.output_fn
+    partial = args.partial
+
+    rdf_cal(
+        trajectory_fn=input_fn,
+        cutoff=cutoff,
+        num_bins=num_bins,
+        output_fn=output_fn,
+        partial=partial,
+    )
