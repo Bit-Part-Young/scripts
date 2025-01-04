@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-利用 ovito 计算 RDF（单帧和多帧构型/轨迹数据）
+计算轨迹文件平均 RDF
 reference: https://gitee.com/mayuan_JLUPHY/my_script/blob/master/lammps-toolkit/getRDFovito.py
 """
 

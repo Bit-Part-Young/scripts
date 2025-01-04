@@ -143,6 +143,13 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 
 ---
 
+- `ovito-usage/`: ovito Python 使用
+
+```bash
+get_point_defects.py                 # 获取轨迹文件中每帧构型的点缺陷（空位、间隙）数目
+get_rdf_ovito.py                     # 计算轨迹文件平均 RDF
+```
+
 - `atomsk-usage/`: atomsk 程序使用
 
 ```bash
