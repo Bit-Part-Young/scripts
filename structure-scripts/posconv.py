@@ -16,8 +16,6 @@ def posconv(
 
     atoms: Atoms = read(input_fn)
 
-    print(atoms.get_chemical_symbols())
-
     output_format = output_fn.split(".")[-1]
     if output_format in ["vasp", "POSCAR"]:
         write(
