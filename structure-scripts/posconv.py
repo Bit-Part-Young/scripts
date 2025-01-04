@@ -1,52 +1,48 @@
 #!/usr/bin/env python3
 
-"""构型格式转换"""
+"""构型文件格式转换"""
 
 import argparse
 
+from ase.atoms import Atoms
 from ase.io import read, write
 
 
 def posconv(
-    input_file: str,
-    output_file: str,
+    input_fn: str,
+    output_fn: str,
 ):
-    """构型格式转换"""
+    """构型文件格式转换"""
 
-    atoms = read(input_file)
+    atoms: Atoms = read(input_fn)
 
-    if (output_file == "POSCAR") or output_file.endswith("vasp"):
+    print(atoms.get_chemical_symbols())
 
+    output_format = output_fn.split(".")[-1]
+    if output_format in ["vasp", "POSCAR"]:
         write(
-            output_file,
+            output_fn,
             images=atoms,
             format="vasp",
             direct=True,
             sort=True,
         )
-
-    elif output_file.endswith("xsd"):
+    elif output_format in ["lammps-data", "lmp"]:
         write(
-            output_file,
+            output_fn,
             images=atoms,
-            format="xsd",
+            format="lammps-data",
+            atom_style="atomic",
+            masses=True,
+        )
+    else:
+        write(
+            output_fn,
+            images=atoms,
+            format=output_format,
         )
 
-    elif output_file.endswith("xyz"):
-        write(
-            output_file,
-            images=atoms,
-            format="xyz",
-        )
-
-    elif (input_file == "OUTCAR") & output_file.endswith("xyz"):
-        write(
-            output_file,
-            images=atoms,
-            format="extxyz",
-        )
-
-    print(f"\nConvert {input_file} to {output_file} done!")
+    print(f"\nConvert {input_fn} to {output_fn}!")
 
 
 if __name__ == "__main__":
@@ -58,41 +54,23 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-i",
-        "--input_file",
+        "input_fn",
         type=str,
-        required=True,
-        choices=[
-            "POSCAR",
-            "CONTCAR",
-            "OUTCAR",
-            "*.vasp",
-            "*.xsd",
-            "*.xyz",
-        ],
-        help="Input file.",
+        help="Input filename, include: POSCAR, CONTCAR, *.vasp, *.xsd, *.xyz, *.lammps-data, ...",
     )
 
     parser.add_argument(
-        "-o",
-        "--output_file",
+        "output_fn",
         type=str,
-        required=True,
-        choices=[
-            "POSCAR",
-            "*.vasp",
-            "*.xsd",
-            "*.xyz",
-        ],
-        help="Output file.",
+        help="Output filename, include: POSCAR, *.vasp, *.xsd, *.xyz, *.lammps-data, ...",
     )
 
     args = parser.parse_args()
 
-    input_file = args.input_file
-    output_file = args.output_file
+    input_fn = args.input_fn
+    output_fn = args.output_fn
 
     posconv(
-        input_file=input_file,
-        output_file=output_file,
+        input_fn=input_fn,
+        output_fn=output_fn,
     )
