@@ -1,16 +1,16 @@
 # CMS Scripts
 
-计算材料科学相关脚本。
+计算材料科学相关代码/脚本（脚本总数：100+）。
 
 注意事项：
 
-- 本仓库代码主要依赖 ASE、pymatgen、atomate 等 Python 包，以及 atomsk、vaspkit 等工具
+- 本仓库代码主要依赖 ASE、pymatgen、atomate、PyXtal、spglib 等 Python 包，以及 atomsk、vaspkit 等工具
 
 - 使用脚本前，请先阅读源码及其中的注释！
 
-- 对于 ipynb 格式脚本文件，可使用 [nbviewer](https://nbviewer.org/) 在线查看
+- 部分脚本可解析命令行参数，使用 `python xxx.py -h` 或 `./xxx.py -h` 查看帮助信息
 
-- 部分代码可解析命令行参数
+- 对于 ipynb 格式脚本文件，可使用 [nbviewer](https://nbviewer.org/) 在线查看
 
 ---
 
@@ -226,34 +226,12 @@ image_crop.py                        # 裁切图片多余空白
 
 ---
 
-- 其他
-
-```bash
-clease.ipynb                         # clease 程序使用
-dpdata.ipynb                         # dpdata 程序使用
-pyxtal.ipynb                         # pyxtal 程序使用
-pandas.ipynb                         # pandas 程序使用
-```
-
----
-
 - `shell-scripts/`: Shell 脚本
 
 ```bash
 pull.sh                              # 对个人常用的 Git 仓库进行批量 pull 操作
 shell_set.ipynb                      # Shell set 命令测试
 awk.ipynb                            # awk 命令使用
-```
-
----
-
-- `misc/`: 其他脚本
-
-```bash
-coord_transform.ipynb                # 分数坐标与直角坐标互相转换
-index_transform.ipynb                # 三、四指数坐标转换
-interatomic_potential_schematic.ipynb  # 势函数示意图绘制
-at2wt.ipynb                          # 将 Ti-22Al-23Nb-1Mo-1Zr 格式化学式原子百分比转化成质量百分比
 ```
 
 ---
@@ -273,15 +251,21 @@ gamma_surface_plot.ipynb             # GSFE gamma surface 绘制
 matplotlib_basic.ipynb               # 各种绘图示例
 colors.ipynb                         # 绘图配色
 corr_heatmap.ipynb                   # 相关性热图绘制
-eriodic_table_plot.ipynb             # 元素周期表绘制
+periodic_table_plot.ipynb             # 元素周期表绘制
 misc_plot.ipynb                      # 其他绘图示例
 ```
 
 ---
 
-- `deprecated/`: 弃用脚本
+- `misc/`: 其他脚本
 
 ```bash
-xsd2vasp.py                          # xsd POSCAR 构型文件格式互相转换
+clease.ipynb                         # clease 程序使用
+dpdata.ipynb                         # dpdata 程序使用
+pyxtal.ipynb                         # pyxtal 程序使用
+pandas.ipynb                         # pandas 程序使用
+
+coord_transform.ipynb                # 分数坐标与直角坐标互相转换
+interatomic_potential_schematic.ipynb  # 势函数示意图绘制
 at2wt.py                             # 将 Ti-22Al-23Nb-1Mo-1Zr 格式化学式原子百分比转化成质量百分比
 ```
