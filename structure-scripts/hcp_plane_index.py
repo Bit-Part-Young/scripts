@@ -21,6 +21,11 @@ import numpy as np
 def f2t(four_index: list[int]) -> list[int]:
     """四指数坐标 -> 三指数坐标"""
 
+    if len(four_index) != 4:
+        raise ValueError("The length of four index must be 4. Exit!")
+    elif sum(four_index[:-1]) != 0:
+        raise ValueError("The sum of the first three index must be 0. Exit!")
+
     matrix = np.array([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
 
     three_index = matrix @ np.array(four_index).T
@@ -30,6 +35,9 @@ def f2t(four_index: list[int]) -> list[int]:
 
 def t2f(three_index: list[int]) -> list[int]:
     """三指数坐标 -> 四指数坐标"""
+
+    if len(three_index) != 3:
+        raise ValueError("The length of three index must be 3. Exit!")
 
     matrix = np.array([[1, 0, 0], [0, 1, 0], [-1, -1, 0], [0, 0, 1]])
 
