@@ -30,7 +30,7 @@ def f2t(four_index: list[int]) -> list[int]:
 
     three_index = matrix @ np.array(four_index).T
 
-    return three_index.astype(int).tolist()
+    return three_index.tolist()
 
 
 def t2f(three_index: list[int]) -> list[int]:
@@ -43,7 +43,7 @@ def t2f(three_index: list[int]) -> list[int]:
 
     four_index = matrix @ np.array(three_index).T
 
-    return four_index.astype(int).tolist()
+    return four_index.tolist()
 
 
 if __name__ == "__main__":

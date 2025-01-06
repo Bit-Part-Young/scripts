@@ -28,18 +28,13 @@ def f2t(four_index: list[int]) -> list[int]:
         raise ValueError("The length of four index must be 4. Exit!")
     elif sum(four_index[:-1]) != 0:
         raise ValueError("The sum of the first three index must be 0. Exit!")
-    elif abs(four_index[-1]) not in [0, 1, 3, 6]:
-        raise ValueError("The abs number of last index must be 0, 1, 3 or 6. Exit!")
 
     matrix = np.array([[1, 0, -1, 0], [0, 1, -1, 0], [0, 0, 0, 1]])
 
     three_index = matrix @ np.array(four_index).T
-    three_index = three_index.astype(int)
 
     if np.all(three_index % 3 == 0):
         three_index = three_index // 3
-    elif np.all(three_index % 6 == 0):
-        three_index = three_index // 6
 
     return three_index.tolist()
 
@@ -50,18 +45,12 @@ def t2f(three_index: list[int]) -> list[int]:
     if len(three_index) != 3:
         raise ValueError("The length of three index must be 3. Exit!")
 
-    matrix = np.array([[2, -1, 0], [-1, 2, 0], [-1, -1, 0], [0, 0, 3]]) / 3
+    matrix = np.array([[2, -1, 0], [-1, 2, 0], [-1, -1, 0], [0, 0, 3]])
 
     four_index = matrix @ np.array(three_index).T
 
-    # 非零
-    four_index_tmp = four_index[np.abs(four_index) > 0.01]
-    if np.any(np.abs(four_index_tmp) > 0.17) and np.any(np.abs(four_index_tmp) < 0.34):
-        four_index = four_index * 3
-    elif np.all(np.abs(four_index_tmp) < 0.17):
-        four_index = four_index * 6
-
-    four_index = four_index.astype(int)
+    if np.all(four_index % 3 == 0):
+        four_index = four_index // 3
 
     return four_index.tolist()
 
