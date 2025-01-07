@@ -11,7 +11,7 @@ from ase.io import read, write
 def stack_structure(
     structure1_fn: str,
     structure2_fn: str,
-    spacing: float = 2.0,
+    spacing: float = 0.0,
     output_fn: str = "AB.vasp",
 ):
     """在 z 方向上堆叠/合并两个相同的结构（第一个结构在下层，第二个结构在上层）"""
@@ -30,9 +30,7 @@ def stack_structure(
     atoms1.set_cell(cell_stack, scale_atoms=False)
     atoms2.set_cell(cell_stack, scale_atoms=False)
 
-    # TODO: 在第一个结构的 z 方向晶格常数 还是 z 方向的最大坐标值
-    z_translation = z_cell1 - atoms2.positions[:, 2].min() + spacing
-    # z_translation = atoms1.positions[:, 2].max() - atoms2.positions[:, 2].min() + spacing
+    z_translation = atoms1.positions[:, 2].max() - atoms2.positions[:, 2].min() + spacing
 
     atoms2.translate((0, 0, z_translation))
 
