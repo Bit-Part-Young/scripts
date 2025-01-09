@@ -24,6 +24,13 @@ map.in
 *.cif
 *.xsf
 
+*.png
+*.jpg
+
+ISF/
+ESF/
+TWIN/
+
 dpmd_raw/
 
 fake-vasp/

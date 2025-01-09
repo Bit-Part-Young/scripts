@@ -155,12 +155,17 @@ get_rdf_ovito.py                     # 计算轨迹文件平均 RDF
 - `atomsk-usage/`: atomsk 程序使用
 
 ```bash
-1-Al-polycrystal/                    # FCC Al 多晶模型构建
-2-Fe-Cr-Ni-polycrystal/              # Fe-Cr-Ni 多晶模型构建
+# 1-Surface/ 目录
 surface_bcc.sh                       # BCC (100), (110), (111) 表面模型构建
 surface_fcc.sh                       # FCC (100), (110), (111) 表面模型构建
 surface_diamond.sh                   # Diamond (100), (110), (111) 表面模型构建
-twin_generation.sh                   # 孪晶模型构建
+
+# 2-Stacking-Fault/ 目录
+sf_fcc.sh                            # FCC 晶体的 ISF（本征堆垛层错）, ESF（非本征堆垛层错） 和 TWIN（孪晶）层错模型构建
+twin_fcc.sh                          # FCC 孪晶模型构建
+
+1-Al-polycrystal/                    # FCC Al 多晶模型构建
+2-Fe-Cr-Ni-polycrystal/              # Fe-Cr-Ni 多晶模型构建
 ```
 
 ---
@@ -259,9 +264,10 @@ git diff cb92b24 cec4770
 ```bash
 gamma_surface_plot.ipynb             # GSFE gamma surface 绘制
 matplotlib_basic.ipynb               # 各种绘图示例
-colors.ipynb                         # 绘图配色
+colors_template.py                   # 绘图配色
+colors_template2.py                  # 绘图配色 2
 corr_heatmap.ipynb                   # 相关性热图绘制
-periodic_table_plot.ipynb             # 元素周期表绘制
+periodic_table_plot.ipynb            # 元素周期表绘制
 misc_plot.ipynb                      # 其他绘图示例
 ```
 
