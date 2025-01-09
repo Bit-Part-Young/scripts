@@ -1,20 +1,24 @@
 #!/bin/bash
 
-# BCC (100), (110), (111) 表面模型构建
+# FCC (100), (110), (111) 表面模型构建
 
-symbol="Nb"
+symbol="Cu"
 # 晶格常数
-a=3.32
+a=3.615
+size_x=1
+size_y=1
+size_z=1
 # 一侧真空层厚度
-vacuum=10
+vacuum=20
 # 两侧真空层厚度
 vacuum2=$((2 * vacuum))
 
 
 # (100) 表面
-atomsk --create bcc ${a} ${symbol} \
+# 或使用 "[01-1]" "[011]" "[100]" 位向
+atomsk --create fcc ${a} ${symbol} \
        orient "[010]" "[001]" "[100]" \
-       -duplicate 1 1 3 \
+       -duplicate ${size_x} ${size_y} ${size_z} \
        -shift 0 0 ${vacuum} \
        -cell add ${vacuum2} z \
        -fractional -sort species pack vasp
@@ -24,9 +28,9 @@ atomsk --create bcc ${a} ${symbol} \
 mv POSCAR ${symbol}_100.vasp
 
 # (110) 表面
-atomsk --create bcc ${a} ${symbol} \
+atomsk --create fcc ${a} ${symbol} \
        orient "[1-10]" "[001]" "[110]" \
-       -duplicate 1 1 3 \
+       -duplicate ${size_x} ${size_y} ${size_z} \
        -shift 0 0 ${vacuum} \
        -cell add ${vacuum2} z \
        -fractional -sort species pack vasp
@@ -35,10 +39,10 @@ atomsk --create bcc ${a} ${symbol} \
 # mv ${symbol}.lmp ${symbol}_110.lmp
 mv POSCAR ${symbol}_110.vasp
 
-# # (111) 表面
-atomsk --create bcc ${a} ${symbol} \
+# (111) 表面
+atomsk --create fcc ${a} ${symbol} \
        orient "[11-2]" "[-110]" "[111]" \
-       -duplicate 1 1 2 \
+       -duplicate ${size_x} ${size_y} ${size_z} \
        -shift 0 0 ${vacuum} \
        -cell add ${vacuum2} z \
        -fractional -sort species pack vasp

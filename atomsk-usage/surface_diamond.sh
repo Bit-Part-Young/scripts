@@ -1,10 +1,13 @@
 #!/bin/bash
 
-# FCC (100), (110), (111) 表面模型构建
+# Diamond (100), (110), (111) 表面模型构建
 
-symbol="Cu"
+symbol="Si"
 # 晶格常数
-a=3.615
+a=5.43
+size_x=1
+size_y=1
+size_z=1
 # 一侧真空层厚度
 vacuum=20
 # 两侧真空层厚度
@@ -12,9 +15,10 @@ vacuum2=$((2 * vacuum))
 
 
 # (100) 表面
-atomsk --create fcc ${a} ${symbol} \
+# 或使用 "[01-1]" "[011]" "[100]" 位向
+atomsk --create diamond ${a} ${symbol} \
        orient "[010]" "[001]" "[100]" \
-       -duplicate 10 10 6 \
+       -duplicate ${size_x} ${size_y} ${size_z} \
        -shift 0 0 ${vacuum} \
        -cell add ${vacuum2} z \
        -fractional -sort species pack vasp
@@ -24,9 +28,9 @@ atomsk --create fcc ${a} ${symbol} \
 mv POSCAR ${symbol}_100.vasp
 
 # (110) 表面
-atomsk --create fcc ${a} ${symbol} \
+atomsk --create diamond ${a} ${symbol} \
        orient "[1-10]" "[001]" "[110]" \
-       -duplicate 10 10 6 \
+       -duplicate ${size_x} ${size_y} ${size_z} \
        -shift 0 0 ${vacuum} \
        -cell add ${vacuum2} z \
        -fractional -sort species pack vasp
@@ -36,9 +40,9 @@ atomsk --create fcc ${a} ${symbol} \
 mv POSCAR ${symbol}_110.vasp
 
 # (111) 表面
-atomsk --create fcc ${a} ${symbol} \
+atomsk --create diamond ${a} ${symbol} \
        orient "[11-2]" "[-110]" "[111]" \
-       -duplicate 10 10 6 \
+       -duplicate ${size_x} ${size_y} ${size_z} \
        -shift 0 0 ${vacuum} \
        -cell add ${vacuum2} z \
        -fractional -sort species pack vasp
