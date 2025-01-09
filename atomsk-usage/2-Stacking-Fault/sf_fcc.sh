@@ -1,7 +1,7 @@
 #!/bin/bash
 
 : '
-生成 FCC 晶体的 ISF（本征堆垛层错）, ESF（非本征堆垛层错） 和 TWIN（孪晶）层错模型
+FCC 晶体的 ISF（本征堆垛层错）, ESF（非本征堆垛层错） 和 TWIN（孪晶）层错模型构建
 
 reference:
 - https://mp.weixin.qq.com/s/o0ldM-87tGulOEIBFXSsSw
