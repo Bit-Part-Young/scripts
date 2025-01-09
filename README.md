@@ -138,6 +138,7 @@ hcp_plane_index.py                   # HCP 面指数的三指数和四指数坐�
 get_interface.py                     # 生成界面结构（待优化）
 
 read_poscar.py                       # 读取 POSCAR 文件（练习用）
+build_structure.py                   # 构建晶体结构
 build_structure.ipynb                # 构建晶体结构（练习用）
 ```
 
@@ -155,8 +156,9 @@ get_rdf_ovito.py                     # 计算轨迹文件平均 RDF
 ```bash
 1-Al-polycrystal/                    # FCC Al 多晶模型构建
 2-Fe-Cr-Ni-polycrystal/              # Fe-Cr-Ni 多晶模型构建
-surface_generation_fcc.sh            # FCC (100), (110), (111) 表面模型构建
-surface_generation_bcc.sh            # BCC (100), (110), (111) 表面模型构建
+surface_bcc.sh                       # BCC (100), (110), (111) 表面模型构建
+surface_fcc.sh                       # FCC (100), (110), (111) 表面模型构建
+surface_diamond.sh                   # Diamond (100), (110), (111) 表面模型构建
 twin_generation.sh                   # 孪晶模型构建
 ```
 

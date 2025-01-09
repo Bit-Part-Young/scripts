@@ -1,5 +1,5 @@
 """
-生成晶体结构
+构建晶体结构
 
 reference: [python学习之创建LAMMPS可读取的晶体结构模型](https://mp.weixin.qq.com/s/6bkomDigE4krXxc80-Oaiw)
 """
@@ -30,6 +30,7 @@ base_atoms = (
     * lattice_constant
 )
 
+# 扩胞
 # 超胞尺寸
 system_size = 2
 
