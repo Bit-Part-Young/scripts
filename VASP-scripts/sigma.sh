@@ -1,9 +1,12 @@
 #!/bin/bash
 
-# To determinr whether entropy T*S is less than 1 mev
-# reference: https://github.com/tamaswells/VASP_script/blob/master/sigma.sh
+: '
+检查 entropy T*S 是否小于 1 meV/atom
 
-entropy=$(grep 'entropy T\*S' OUTCAR | tail -n 1 | awk '{print $5}')
+reference: https://github.com/tamaswells/VASP_script/blob/master/sigma.sh
+'
+
+entropy=$(grep 'entropy T\*S' OUTCAR | tail -1 | awk '{print $5}')
 natoms=$(grep 'NIONS' OUTCAR | tail -1 | awk '{print $12}')
 
 entropy_average=$(echo "scale=5; ${entropy}/${natoms}" | bc)
