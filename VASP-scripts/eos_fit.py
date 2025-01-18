@@ -66,7 +66,7 @@ def fit(volumes, energies):
     print(f"B0: {B0: >10} GPa")
 
     print("\nAssuming cubic box:")
-    for i in range(1, 5):
+    for i in range(1, 9):
         lattice_a = np.power(V0 * i, 1 / 3)
         print(f"If {i} atoms per cell, a = {lattice_a:.5f} Å")
 
@@ -84,7 +84,15 @@ if __name__ == "__main__":
         type=str,
         nargs="?",
         default="ev.dat",
-        help="File containing volume (Col2) and energy (Col3) data",
+        help="EOS data filename",
+    )
+
+    parser.add_argument(
+        "cols",
+        type=int,
+        nargs=2,
+        default=[2, 3],
+        help="Column numbers for volume and energy data",
     )
 
     args = parser.parse_args()
@@ -92,7 +100,8 @@ if __name__ == "__main__":
     data_fn = args.data_fn
     df = pd.read_csv(data_fn, sep=None, engine="python")
 
-    df_volume = df.iloc[:, 1]
-    df_energy = df.iloc[:, 2]
+    cols = args.cols
+    df_volume = df.iloc[:, cols[0] - 1]
+    df_energy = df.iloc[:, cols[1] - 1]
 
     fit(df_volume, df_energy)
