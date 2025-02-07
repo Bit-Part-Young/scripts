@@ -32,6 +32,16 @@ def get_kgrid(kspacing: float):
     ]
     print("KGRID for KSPACING {} Å^-1: {} {} {}".format(kspacing, *kgrid))
 
+    with open("KPOINTS", "w") as f:
+        f.write(f"K-Spacing Value to Generate K-Mesh: {kspacing:.2f}\n")
+        f.write("0\n")
+        f.write("Gamma\n")
+        f.write("  ".join(map(str, kgrid)))
+        f.write("\n")
+        f.write("0.0  0.0  0.0\n")
+
+    print("\nKPOINTS generated.")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
