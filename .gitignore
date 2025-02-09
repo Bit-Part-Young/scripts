@@ -8,6 +8,8 @@ tmp*
 *.db
 !test.db
 
+*.slurm
+
 # VASP 输入输出文件
 KPOINTS
 POSCAR

@@ -174,13 +174,7 @@ twin_fcc.sh                          # FCC 孪晶模型构建
 - `HPC/`: 超算用脚本
 
 ```bash
-# 1-SiYuan、2-Pi 中的任务提交脚本
-# 超算编译好的 LAMMPS 中安装的 package 很少，不推荐使用
-vasp_local.slurm                     # 使用本地编译的 VASP
-vasp.slurm                           # module load 加载超算编译好的 VASP
-lammps_local.slurm                   # 使用本地编译的 LAMMPS
-job_universal.slurm                  # 通用任务（Python、Shell 等）提交脚本
-
+slurm_generation.py                  # 生成 VASP/LAMMPS/Python/Bash 任务 slurm 提交脚本
 sruns                                # 根据超算类型申请计算节点
 checkjob                             # 检查在队列中的 job 任务信息
 print_help.sh                        # 定义 print_help 函数，供其他 Shell 脚本调用
