@@ -1,7 +1,0 @@
-#!/bin/bash
-
-for item in $(ls); do
-  if [[ -d ${item} ]]; then
-    ${HOME}/bin/CheckOptConverged ${item}
-  fi
-done

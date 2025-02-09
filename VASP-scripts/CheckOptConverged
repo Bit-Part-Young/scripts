@@ -5,10 +5,10 @@
 script_name=$(basename "$0")
 show_help() {
   echo "Check VASP structure optimization calculation folder is converged or not."
-  echo -e "\nUsage: ${script_name} [FOLDERS...]"
+  echo -e "\nUsage: ${script_name} [folders...]"
   echo -e "\nOptions:"
-  echo "    -h, --help    Show this help message and exit."
-  echo "    FOLDERS       VASP calculation folders."
+  echo "    -h, --help    show this help message and exit"
+  echo "    folders       VASP calculation folders"
 }
 
 if [ $# -eq 0 ]; then
@@ -21,16 +21,31 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   exit 0
 fi
 
-for dir in "$@"; do
-  outcar_file="$dir/OUTCAR"
 
-  if [ ! -f "$outcar_file" ]; then
-    echo "Directory $dir OUTCAR doesn't exsists!"
-  else
-    if grep -q "reached required accuracy" "$outcar_file"; then
-      echo "Folder $dir VASP Structure Optimization Calulation is converged!"
+check_opt() {
+  for dir in "$@"; do
+    outcar_fn="$dir/OUTCAR"
+
+    if [ ! -f "$outcar_fn" ]; then
+      echo "Folder $dir OUTCAR doesn't exsists!"
     else
-      echo "Folder $dir VASP Structure Optimization Calulation isn't converged."
+      if grep -q "reached required accuracy" "$outcar_fn"; then
+        echo "Folder $dir VASP Structure Optimization Calulation is converged!"
+      else
+        echo "Folder $dir VASP Structure Optimization Calulation isn't converged."
+      fi
     fi
-  fi
-done
+  done
+}
+
+
+if [[ "$1" == "." ]]; then
+  for item in ./*; do
+    if [[ -d ${item} ]]; then
+      item=$(basename "${item}")
+      check_opt "${item}"
+    fi
+  done
+else
+  check_opt "$@"
+fi

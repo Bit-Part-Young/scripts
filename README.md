@@ -84,10 +84,8 @@ extract_force.sh                     # 提取离子步中的原子位置及受�
 read_force.py                        # 解析每个目录下的 vasprun.xml 文件，提取受力并统计最大受力
 extract_outcar.ipynb                 # 使用正则表达式提取 OUTCAR 文件中的数据（练习用）
 
-CheckVaspDone                        # 检查 VASP 计算是否完成
-CheckVaspDoneAll                     # 处理当前多个计算目录
-CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（力 + 能量）
-CheckOptConvergedAll                 # 处理当前多个计算目录
+CheckVaspDone                        # 检查 VASP 计算是否完成（可多个目录）
+CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（可多个目录）
 sigma.sh                             # 检查 entropy T*S 是否小于 1 meV/atom
 
 potcar_pbe_compare.py                # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)
@@ -136,6 +134,7 @@ spglib_julia.ipynb                   # 使用 spglib 的 Julia API 获取对称�
 get_pearson_symbol.py                # 获取结构的 Pearson 符号
 hcp_direction_index.py               # HCP 方向指数的三指数和四指数坐标转换
 hcp_plane_index.py                   # HCP 面指数的三指数和四指数坐标转换
+get_cn.py                            # 计算原子配位数
 
 
 get_interface.py                     # 生成界面结构（待优化）
