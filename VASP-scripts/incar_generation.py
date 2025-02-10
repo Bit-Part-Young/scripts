@@ -30,7 +30,7 @@ def incar_template(
         f.write("LCHARG  = .FALSE.\n")
         f.write("LWAVE   = .FALSE.\n")
 
-        if calculation_type == "phonon":
+        if calculation_type in ["relax_elastic", "phonon"]:
             f.write("ADDGRID = .TRUE.\n")
 
         f.write("PREC    = Accurate\n")
@@ -98,6 +98,16 @@ def incar_generation(
                 "ibrion": 2,
             }
         )
+    elif calculation_type == "relax_elastic":
+        incar_dict.update(
+            {
+                "system": "Relax_Elastic",
+                "encut": 700,
+                "nsw": 100,
+                "ismear": 1,
+                "ibrion": 2,
+            }
+        )
     elif calculation_type == "dos":
         incar_dict.update(
             {
@@ -143,6 +153,7 @@ if __name__ == "__main__":
         const="scf",
         default="scf",
         type=str,
+        choices=["scf", "relax", "relax_elastic", "dos", "band", "phonon"],
         help="Calculation type",
     )
 
