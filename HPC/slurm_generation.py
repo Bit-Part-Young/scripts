@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """生成 VASP/LAMMPS/Python/Bash 任务 slurm 提交脚本"""
 
 import argparse
@@ -39,7 +41,6 @@ def slurm_generation(
             f.write(f"mpirun {vasp_cmd}\n")
 
         elif calculation_type == "LAMMPS":
-
             lammps_cmd = "${HOME}/yangsl/bin/lmp_all"
 
             f.write("module load intel-oneapi-compilers/2021.4.0\n")
