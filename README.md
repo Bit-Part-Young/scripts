@@ -93,8 +93,9 @@ get_potcar.py                        # 生成 VASP 和 pymatgen 推荐的赝势 
 get_vasp_data.py                     # 获取 VASP 计算目录的输出数据（利用 atomate package）
 get_vasp_data2.py                    # 获取 VASP 计算目录的输出数据（利用 pymatgen package）
 get_vasp_data.sh                     # 获取多个 VASP 计算目录的输出数据
-kgrid2kspacing.py                    # 从 KPOINTS 和 POSCAR 文件获取 KSPACING 数值
-kspacing2kgrid.py                    # 从 KSPACING 数值 and POSCAR 文件获取 KGRID 数值
+kgrid2kspacing.py                    # 从 KPOINTS 和 POSCAR 文件获取 K-spacing 数值
+kspacing2kgrid.py                    # 从 K-spacing 数值和 POSCAR 获取 K-grid 数值
+incar_generation.py                  # 根据计算类型生成 VASP INCAR 文件
 
 plot_ev.py                           # EV（能量-体积）曲线绘制
 eos_fit.py                           # Birch-Murnaghan EOS 拟合
