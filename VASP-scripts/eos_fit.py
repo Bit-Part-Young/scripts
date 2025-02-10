@@ -79,20 +79,9 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
+    parser.add_argument("data_fn", type=str, nargs="?", default="ev.dat", help="EOS data filename")
     parser.add_argument(
-        "data_fn",
-        type=str,
-        nargs="?",
-        default="ev.dat",
-        help="EOS data filename",
-    )
-
-    parser.add_argument(
-        "cols",
-        type=int,
-        nargs=2,
-        default=[2, 3],
-        help="Column numbers for volume and energy data",
+        "cols", type=int, nargs=2, default=[2, 3], help="Column numbers for volume and energy data"
     )
 
     args = parser.parse_args()

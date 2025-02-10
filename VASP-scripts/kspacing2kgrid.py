@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Get KGRID values from KSPACING value and POSCAR file
+Get K-grid values from K-spacing value and POSCAR
 
 reference: https://github.com/Tonner-Zech-Group/VASP-tools/blob/main/src/tools4vasp/kspacing2kgrid.py
 """
@@ -12,8 +12,8 @@ import numpy as np
 from ase.io import read
 
 
-def get_kgrid(kspacing: float):
-    """Get KGRID values from KSPACING value and POSCAR file"""
+def get_kgrid(kspacing: float, ouput: bool = False):
+    """Get K-grid values from K-spacing value and POSCAR"""
 
     atoms = read("POSCAR")
 
@@ -30,17 +30,18 @@ def get_kgrid(kspacing: float):
         int(max(1, np.ceil(np.linalg.norm(cell_reciprocal[i]) * 2 * np.pi / kspacing)))
         for i in range(3)
     ]
-    print("KGRID for KSPACING {} Å^-1: {} {} {}".format(kspacing, *kgrid))
+    print("K-grid for K-spacing {} Å^-1: {} {} {}".format(kspacing, *kgrid))
 
-    with open("KPOINTS", "w") as f:
-        f.write(f"K-Spacing Value to Generate K-Mesh: {kspacing:.2f}\n")
-        f.write("0\n")
-        f.write("Gamma\n")
-        f.write("  ".join(map(str, kgrid)))
-        f.write("\n")
-        f.write("0.0  0.0  0.0\n")
+    if ouput:
+        with open("KPOINTS", "w") as f:
+            f.write(f"K-Spacing Value to Generate K-Mesh: {kspacing:.2f}\n")
+            f.write("0\n")
+            f.write("Gamma\n")
+            f.write("  ".join(map(str, kgrid)))
+            f.write("\n")
+            f.write("0.0  0.0  0.0\n")
 
-    print("\nKPOINTS generated.")
+        print("\nKPOINTS generated.")
 
 
 if __name__ == "__main__":
@@ -48,12 +49,9 @@ if __name__ == "__main__":
         description="Get KGRID values from KSPACING value and POSCAR file.",
     )
 
-    parser.add_argument(
-        "kspacing",
-        type=float,
-        help="KSPACING value",
-    )
+    parser.add_argument("kspacing", type=float, help="K-spacing value")
+    parser.add_argument("-o", "--output", action="store_true", help="Generate KPOINTS")
 
     args = parser.parse_args()
 
-    get_kgrid(args.kspacing)
+    get_kgrid(args.kspacing, args.output)
