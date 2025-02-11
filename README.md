@@ -96,6 +96,7 @@ get_vasp_data.sh                     # 获取多个 VASP 计算目录的输出�
 kgrid2kspacing.py                    # 从 KPOINTS 和 POSCAR 文件获取 K-spacing 数值
 kspacing2kgrid.py                    # 从 K-spacing 数值和 POSCAR 获取 K-grid 数值
 incar_generation.py                  # 根据计算类型生成 VASP INCAR 文件
+get_kpts_atomate.py                  # 获取 atomate 中不同 workflows 的默认 kpts 设置
 
 plot_ev.py                           # EV（能量-体积）曲线绘制
 eos_fit.py                           # Birch-Murnaghan EOS 拟合
