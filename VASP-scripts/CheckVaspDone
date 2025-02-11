@@ -1,6 +1,16 @@
 #!/bin/bash
 
-# 检查 VASP 计算目录是否完成计算
+####################################################################
+#                                                                   #
+# 检查 VASP 计算目录是否完成计算                                        #
+# 使用示例                                                           #
+# CheckVaspDone ${PWD}             # 当前目录                        #
+# CheckVaspDone test1              # 单个目录                        #
+# CheckVaspDone test1 test2        # 多个目录                        #
+# CheckVaspDone .                  # 当前目录下的所有子目录            #
+#                                                                  #
+####################################################################
+
 
 script_name=$(basename "$0")
 show_help() {
@@ -25,6 +35,8 @@ fi
 check_done() {
   for dir in "$@"; do
     outcar_fn="$dir/OUTCAR"
+
+    dir=$(basename "${dir}")
 
     if [ ! -f "$outcar_fn" ]; then
       echo "Folder $dir OUTCAR doesn't exist!"
