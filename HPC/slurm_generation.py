@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""生成 VASP/LAMMPS/Python/Bash 任务 slurm 提交脚本"""
+"""生成 VASP/LAMMPS/Python/Bash/gpu_test 任务 slurm 提交脚本"""
 
 import argparse
 
@@ -13,16 +13,25 @@ def slurm_generation(
     time: str = "72:00:00",
     input_fn: str = "in.lmp",
 ):
-    """生成 VASP/LAMMPS/Python/Bash 任务 slurm 提交脚本"""
+    """生成 VASP/LAMMPS/Python/Bash/gpu_test 任务 slurm 提交脚本"""
 
     with open(slurm_file, "w") as f:
         f.write("#!/bin/bash\n\n")
+
+        if calculation_type == "gpu_test":
+            partition = "debuga100"
+            num_cpus = 4
 
         f.write(f"#SBATCH -J {calculation_type}\n")
         f.write(f"#SBATCH -p {partition}\n")
         f.write("#SBATCH -N 1\n")
         f.write(f"#SBATCH --ntasks-per-node={num_cpus}\n")
         f.write(f"#SBATCH -t {time}\n")
+
+        if calculation_type == "gpu_test":
+            f.write("#SBATCH --cpus-per-task=4\n")
+            f.write("#SBATCH --gres=gpu:1\n")
+
         f.write("#SBATCH -o %j.out\n")
         f.write("#SBATCH -e %j.err\n\n")
 
@@ -58,12 +67,18 @@ def slurm_generation(
         elif calculation_type == "Bash":
             f.write(f"bash {input_fn}\n")
 
+        elif calculation_type == "gpu_test":
+            f.write("module load gcc\n")
+            f.write("module load cuda/11.1.0\n")
+            # [ ] 可添加哪些内容
+            # f.write("nep\n")
+
     print(f"\n{calculation_type} submission file generated.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Generate submission file for VASP/LAMMPS/Python/Bash calculation in HPC.",
+        description="Generate submission file for VASP/LAMMPS/Python/Bash/gpu_test calculation in HPC.",
         epilog="Author: SLY.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -75,7 +90,7 @@ if __name__ == "__main__":
         const="VASP",
         default="VASP",
         type=str,
-        choices=["VASP", "LAMMPS", "Python", "Bash"],
+        choices=["VASP", "LAMMPS", "Python", "Bash", "gpu_test"],
         help="Calculation type",
     )
 

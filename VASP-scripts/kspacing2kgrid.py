@@ -12,7 +12,7 @@ import numpy as np
 from ase.io import read
 
 
-def get_kgrid(kspacing: float, ouput: bool = False):
+def get_kgrid(kspacing: float, save: bool = False):
     """Get K-grid values from K-spacing value and POSCAR"""
 
     atoms = read("POSCAR")
@@ -32,7 +32,7 @@ def get_kgrid(kspacing: float, ouput: bool = False):
     ]
     print("K-grid for K-spacing {} Å^-1: {} {} {}".format(kspacing, *kgrid))
 
-    if ouput:
+    if save:
         with open("KPOINTS", "w") as f:
             f.write(f"K-Spacing Value to Generate K-Mesh: {kspacing:.2f}\n")
             f.write("0\n")
@@ -46,12 +46,15 @@ def get_kgrid(kspacing: float, ouput: bool = False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Get KGRID values from KSPACING value and POSCAR file.",
+        description="Get K-grid values from K-spacing value and POSCAR file.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("kspacing", type=float, help="K-spacing value")
-    parser.add_argument("-o", "--output", action="store_true", help="Generate KPOINTS")
+    parser.add_argument(
+        "kspacing", nargs="?", const=0.15, default=0.15, type=float, help="K-spacing value"
+    )
+    parser.add_argument("-s", "--save", action="store_true", help="Save KPOINTS")
 
     args = parser.parse_args()
 
-    get_kgrid(args.kspacing, args.output)
+    get_kgrid(args.kspacing, args.save)
