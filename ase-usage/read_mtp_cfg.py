@@ -3,6 +3,7 @@
 
 Author: SLY
 Date: 2024-12-08
+Updated: 2025-02-15
 """
 
 from collections import deque
@@ -29,7 +30,6 @@ def cfg_to_ase_atoms(
     pbc=True,
     forces=None,
     energy=None,
-    stress=None,
 ):
     """将 cfg 文件转换为 ase.Atoms 对象"""
 
@@ -46,7 +46,6 @@ def cfg_to_ase_atoms(
             ase_atoms,
             forces=forces,
             energy=energy,
-            stress=stress,
         )
         ase_atoms.calc = calculator
 
@@ -77,7 +76,7 @@ def read_mtp_cfg(
     cell = None
     array_total = None
     energy = None
-    stress = None
+    plusstress = None
     dft_code = None
     mindist = None
     while len(lines) > 0:
@@ -89,14 +88,14 @@ def read_mtp_cfg(
 
         if "Supercell" in line:
             cell = []
-            for i in range(3):
+            for _ in range(3):
                 line = lines.popleft()
                 cell.append([float(x) for x in line.split()])
             cell = np.array(cell)
 
         if "AtomData" in line:
             array_total = []
-            for i in range(natoms):
+            for _ in range(natoms):
                 line = lines.popleft()
                 array_total.append([float(x) for x in line.split()])
             array_total = np.array(array_total)
@@ -110,8 +109,19 @@ def read_mtp_cfg(
 
         if "PlusStress" in line:
             line = lines.popleft()
-            stress = [float(x) for x in line.split()]
-            stress = np.array(stress)
+            plusstress = [float(x) for x in line.split()]
+            virial = [
+                plusstress[0],
+                plusstress[5],
+                plusstress[4],
+                plusstress[5],
+                plusstress[1],
+                plusstress[3],
+                plusstress[4],
+                plusstress[3],
+                plusstress[2],
+            ]
+            virial_dict = {"virial": virial}
 
             symbols = [symbols_map[x] for x in atoms_type]
             out_atoms = cfg_to_ase_atoms(
@@ -120,21 +130,20 @@ def read_mtp_cfg(
                 positions=positions,
                 forces=forces,
                 energy=energy,
-                stress=stress,
+                info=virial_dict,
             )
             images.append(out_atoms)
 
         if "Feature   EFS_by" in line:
             dft_code = line.split()[2]
 
+            out_atoms.info["dft_code"] = dft_code
+
         # 该 Feature 不一定有
         if "Feature   mindist" in line:
             mindist = float(line.split()[2])
 
-            out_atoms.info = {
-                "dft_code": dft_code,
-                "mindist": mindist,
-            }
+            out_atoms.info["mindist"] = mindist
 
         if len(images) > index_end >= 0:
             break
@@ -154,6 +163,6 @@ if __name__ == "__main__":
     atoms = atoms_list[0]
 
     print(f"No. 1 configuration:\n {atoms}")
+    print(f"Info: {atoms.info}")
     print(f"Energy: {atoms.get_potential_energy()}")
     print(f"Forces:\n{atoms.get_forces()}")
-    print(f"Stress: {atoms.get_stress()}")
