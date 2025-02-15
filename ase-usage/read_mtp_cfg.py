@@ -121,7 +121,7 @@ def read_mtp_cfg(
                 plusstress[3],
                 plusstress[2],
             ]
-            virial_dict = {"virial": virial}
+            virial_dict = {"virial": " ".join(map(str, virial))}
 
             symbols = [symbols_map[x] for x in atoms_type]
             out_atoms = cfg_to_ase_atoms(

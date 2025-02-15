@@ -33,7 +33,20 @@ def json2extxyz(json_data: dict):
 
     atoms.arrays["forces"] = np.array(json_data["outputs"]["forces"])
     atoms.info["energy"] = json_data["outputs"]["energy"]
-    atoms.info["virial_stress"] = " ".join(map(str, json_data["outputs"]["virial_stress"]))
+    # 将 virial_stress 转换为 virial
+    plusstress = json_data["outputs"]["virial_stress"]
+    virial = [
+        plusstress[0],
+        plusstress[5],
+        plusstress[4],
+        plusstress[5],
+        plusstress[1],
+        plusstress[3],
+        plusstress[4],
+        plusstress[3],
+        plusstress[2],
+    ]
+    atoms.info["virial"] = " ".join(map(str, virial))
     # 可能没有部分 key
     atoms.info["element"] = json_data.get("element", "False")
     atoms.info["num_atoms"] = json_data.get("num_atoms", "False")
