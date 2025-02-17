@@ -18,27 +18,27 @@ def posconv(
 
     output_format = output_fn.split(".")[-1]
     if output_format in ["vasp", "POSCAR"]:
-        write(
-            output_fn,
-            images=atoms,
-            format="vasp",
-            direct=True,
-            sort=True,
-        )
+        param_dict = {
+            "format": "vasp",
+            "direct": True,
+            "sort": True,
+        }
     elif output_format in ["lammps-data", "lmp"]:
-        write(
-            output_fn,
-            images=atoms,
-            format="lammps-data",
-            atom_style="atomic",
-            masses=True,
-        )
-    else:
-        write(
-            output_fn,
-            images=atoms,
-            format=output_format,
-        )
+        param_dict = {
+            "format": "lammps-data",
+            "atom_style": "atomic",
+            "masses": True,
+        }
+    elif output_format in ["xyz", "extxyz"]:
+        param_dict = {
+            "format": "extxyz",
+        }
+
+    write(
+        output_fn,
+        images=atoms,
+        **param_dict,
+    )
 
     print(f"\nConvert {input_fn} to {output_fn}!")
 
