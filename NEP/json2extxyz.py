@@ -35,15 +35,28 @@ def json2extxyz(json_data: dict):
     atoms.info["energy"] = json_data["outputs"]["energy"]
     # 将 virial_stress 转换为 virial
     plusstress = json_data["outputs"]["virial_stress"]
+    # 若 viral_stress 是 MTP cfg 提取的
+    # virial = [
+    #     plusstress[0],
+    #     plusstress[5],
+    #     plusstress[4],
+    #     plusstress[5],
+    #     plusstress[1],
+    #     plusstress[3],
+    #     plusstress[4],
+    #     plusstress[3],
+    #     plusstress[2],
+    # ]
+    # 若 viral_stress 是 VASP OUTCAR 提取的
     virial = [
         plusstress[0],
+        plusstress[3],
         plusstress[5],
-        plusstress[4],
-        plusstress[5],
+        plusstress[3],
         plusstress[1],
-        plusstress[3],
         plusstress[4],
-        plusstress[3],
+        plusstress[5],
+        plusstress[4],
         plusstress[2],
     ]
     atoms.info["virial"] = " ".join(map(str, virial))
