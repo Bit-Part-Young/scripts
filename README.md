@@ -149,6 +149,23 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 
 ---
 
+- `NEP`: NEP 相关脚本
+
+```bash
+count_cfg.sh                         # 统计 cfg 构型文件帧数及总原子数
+count_xyz.sh                         # 统计 extxyz 构型文件帧数及总原子数
+
+json2extxyz.py                       # 将 json 构型及其数据文件转换为 extxyz 格式
+son2db.py                            # 将 json 构型及其数据文件转换为 ASE db 格式
+json2df.py                           # 将 json 构型及其数据文件转换为 Pandas DataFrame 格式
+
+relax.py                             # 结构弛豫 ASE 实现
+eos_cal_calorine.py                  # 使用 GPUMD & calorine 进行 EOS 计算
+nep_pca.py                           # 将描述符通过 PCA 降成 2 维
+```
+
+---
+
 - `ovito-usage/`: ovito Python 使用
 
 ```bash

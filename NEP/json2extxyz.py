@@ -33,7 +33,7 @@ def json2extxyz(json_data: dict):
 
     atoms.arrays["forces"] = np.array(json_data["outputs"]["forces"])
     atoms.info["energy"] = json_data["outputs"]["energy"]
-    # 将 virial_stress 转换为 virial
+    # 将 virial_stress 转换为 virial；需确定分量顺序
     plusstress = json_data["outputs"]["virial_stress"]
     # 若 viral_stress 是 MTP cfg 提取的
     # virial = [

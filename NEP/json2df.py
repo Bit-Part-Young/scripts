@@ -1,5 +1,5 @@
 """
-将 json 构型及其数据文件转换为 Pandas 的 DataFrame 格式
+将 json 构型及其数据文件转换为 Pandas DataFrame 格式
 
 文件格式: [{}, {}, ...]
 
