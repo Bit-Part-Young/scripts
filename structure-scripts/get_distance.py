@@ -5,32 +5,57 @@
 import argparse
 
 import numpy as np
+from ase.atoms import Atoms
 from ase.io import read
 
 
-def get_distance(
+def get_distance(atoms: Atoms, mic=False):
+    """获取构型中原子对的最小和最大距离"""
+
+    distances = atoms.get_all_distances(mic=mic).round(5)
+
+    min_dist = np.min(distances[distances > 0.0])
+    max_dist = np.max(distances)
+
+    return min_dist, max_dist
+
+
+def main(
     structure_fn: str = "POSCAR",
     mic: bool = False,
 ):
-    """获取构型中原子对的最小和最大距离"""
 
-    atoms = read(structure_fn)
+    fn_suffix = structure_fn.split(".")[-1]
+    if fn_suffix == "xyz":
+        atoms_list = read(structure_fn, index=":", format="extxyz")
 
-    natoms = len(atoms)
+        min_dist_list, max_dist_list = [], []
+        for atoms in atoms_list:
+            min_dist, max_dist = get_distance(atoms, mic=mic)
+            min_dist_list.append(min_dist)
+            max_dist_list.append(max_dist)
 
-    distances = atoms.get_all_distances(mic=mic)
+        min_dist_global = np.min(min_dist_list)
+        max_dist_global = np.max(max_dist_list)
 
-    if natoms == 1:
-        print("Number of atom is 1, no atomic pair.")
+        print(f"Global Minimum distance: {min_dist_global} Å.")
+        print(f"Global Maximum distance: {max_dist_global} Å.")
+
     else:
-        min_dist = np.unique(distances)[1]
-        max_dist = np.unique(distances)[-1]
+        atoms = read(structure_fn)
 
-        print(f"Minimum distance: {round(min_dist, 5)} Å.")
-        print(f"Maximum distance: {round(max_dist, 5)} Å.")
+        natoms = len(atoms)
 
-        if natoms == 2 or len(np.unique(distances)) == 2:
-            print(f"Number of atom is {natoms} or all distances are same.")
+        min_dist, max_dist = get_distance(atoms, mic=mic)
+
+        if natoms == 1:
+            print("Number of atom is 1, no atomic pair.")
+        else:
+            print(f"Minimum distance: {min_dist} Å.")
+            print(f"Maximum distance: {max_dist} Å.")
+
+            if natoms == 2 or np.isclose(min_dist, max_dist):
+                print(f"Number of atom is {natoms} or all distances are same.")
 
 
 if __name__ == "__main__":
@@ -60,7 +85,7 @@ if __name__ == "__main__":
     structure_fn = args.structure_fn
     mic = args.mic
 
-    get_distance(
+    main(
         structure_fn=args.structure_fn,
         mic=args.mic,
     )
