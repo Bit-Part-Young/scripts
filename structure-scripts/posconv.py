@@ -32,6 +32,7 @@ def posconv(
     elif output_format in ["xyz", "extxyz"]:
         param_dict = {
             "format": "extxyz",
+            "append": True,
         }
 
     write(
