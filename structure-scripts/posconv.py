@@ -21,7 +21,7 @@ def posconv(
     # 解析 OUTCAR 有时会报错
     if input_format in ["XDATCAR", "xml", "OUTCAR"]:
         atoms: list[Atoms] = read(input_fn, index=":")
-        print(len(atoms))
+        print(f"{input_fn} Frames: {len(atoms)}.")
     else:
         atoms: Atoms = read(input_fn)
 
