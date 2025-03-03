@@ -14,23 +14,28 @@ def posconv(
 ):
     """构型文件格式转换"""
 
-    atoms: Atoms = read(input_fn)
+    input_format = input_fn.split(".")[-1]
+
+    if input_format in ["XDATCAR", "OUTCAR"]:
+        atoms: Atoms = read(input_fn, index=":")
+    else:
+        atoms: Atoms = read(input_fn)
 
     output_format = output_fn.split(".")[-1]
     if output_format in ["vasp", "POSCAR"]:
-        param_dict = {
+        write_param_dict = {
             "format": "vasp",
             "direct": True,
             "sort": True,
         }
     elif output_format in ["lammps-data", "lmp"]:
-        param_dict = {
+        write_param_dict = {
             "format": "lammps-data",
             "atom_style": "atomic",
             "masses": True,
         }
     elif output_format in ["xyz", "extxyz"]:
-        param_dict = {
+        write_param_dict = {
             "format": "extxyz",
             "append": True,
         }
@@ -38,7 +43,7 @@ def posconv(
     write(
         output_fn,
         images=atoms,
-        **param_dict,
+        **write_param_dict,
     )
 
     print(f"\nConvert {input_fn} to {output_fn}!")
