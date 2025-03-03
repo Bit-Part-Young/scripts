@@ -3,6 +3,7 @@
 """构型文件格式转换"""
 
 import argparse
+import os
 
 from ase.atoms import Atoms
 from ase.io import read, write
@@ -14,14 +15,18 @@ def posconv(
 ):
     """构型文件格式转换"""
 
-    input_format = input_fn.split(".")[-1]
+    input_fn_base = os.path.basename(input_fn)
+    input_format = input_fn_base.split(".")[-1]
 
-    if input_format in ["XDATCAR", "OUTCAR"]:
-        atoms: Atoms = read(input_fn, index=":")
+    # 解析 OUTCAR 有时会报错
+    if input_format in ["XDATCAR", "xml", "OUTCAR"]:
+        atoms: list[Atoms] = read(input_fn, index=":")
+        print(len(atoms))
     else:
         atoms: Atoms = read(input_fn)
 
-    output_format = output_fn.split(".")[-1]
+    output_fn_base = os.path.basename(output_fn)
+    output_format = output_fn_base.split(".")[-1]
     if output_format in ["vasp", "POSCAR"]:
         write_param_dict = {
             "format": "vasp",
@@ -60,7 +65,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "input_fn",
         type=str,
-        help="Input filename, include: POSCAR, CONTCAR, *.vasp, *.xsd, *.xyz, *.lammps-data, ...",
+        help="Input filename, include: POSCAR, CONTCAR, XDATCAR、OUTCAR, vasprun.xml, *.vasp, *.xsd, *.xyz, *.lammps-data, ...",
     )
 
     parser.add_argument(
