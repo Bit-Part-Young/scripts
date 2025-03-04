@@ -163,8 +163,8 @@ relax.py                             # 结构弛豫 ASE 实现
 eos_cal_calorine.py                  # 使用 GPUMD & calorine 进行 EOS 计算
 nep_pca_plot.py                      # NEP 未归一化 & 归一化 描述符 PCA 2 维绘制
 
-plot_nep_loss.py                     # 绘制 NEP 训练 loss 演化与能量、力、virial RMSE 指标 DFT计算值 NEP 预测值对比图及其对应误差分布图
-plt_nep_train_results.py             # 绘制 NEP 训练 loss 演化与能量、力、virial/应力 RMSE 指标 DFT计算值 NEP 预测值对比图
+plot_nep_loss.py                     # 绘制 NEP 训练 loss 演化与能量、力、virial/应力 RMSE 指标 DFT计算值 NEP 预测值对比图及其对应误差分布图
+plt_nep_train.py                     # 绘制 NEP 训练 loss 演化与能量、力、virial/应力 RMSE 指标 DFT计算值 NEP 预测值对比图
 ```
 
 ---
