@@ -1,7 +1,5 @@
 """
-文件名: plot_loss_nep.py
-运行方法: python plot_loss_nep.py
-功能描述: 读取损失数据文件，并绘制每一代的损失函数变化图及其他指标的RMSE和误差分布图。
+绘制 NEP 训练 loss 演化与能量、力、virial RMSE 指标 DFT计算值 NEP 预测值对比图及其对应误差分布图
 
 reference:
 https://github.com/wangchr1617/learning/blob/main/scripts/plot/plot_loss_nep.py
