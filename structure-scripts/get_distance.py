@@ -31,7 +31,11 @@ def main(
 
         min_dist_list, max_dist_list = [], []
         for atoms in atoms_list:
-            min_dist, max_dist = get_distance(atoms, mic=mic)
+            if len(atoms) == 1:
+                print("Number of atom is 1, pass.")
+            else:
+                min_dist, max_dist = get_distance(atoms, mic=mic)
+
             min_dist_list.append(min_dist)
             max_dist_list.append(max_dist)
 
@@ -46,11 +50,11 @@ def main(
 
         natoms = len(atoms)
 
-        min_dist, max_dist = get_distance(atoms, mic=mic)
-
         if natoms == 1:
-            print("Number of atom is 1, no atomic pair.")
+            print("Number of atom is 1, no atomic pair, pass.")
         else:
+            min_dist, max_dist = get_distance(atoms, mic=mic)
+
             print(f"Minimum distance: {min_dist} Å.")
             print(f"Maximum distance: {max_dist} Å.")
 
