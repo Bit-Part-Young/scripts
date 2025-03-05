@@ -1,4 +1,10 @@
-"""NEP 未归一化 & 归一化 描述符 PCA 2 维绘制"""
+"""NEP 未归一化 & 归一化 描述符 PCA 2 维绘制
+
+测试 8762 frames, 509917 atoms 的构型训练集 xyz 文件
+Master 运行耗时 ~4 min（其中 描述符获取、处理耗时约 ~2 min，PCA 绘图耗时约 ~2 min）
+"""
+
+# [ ] 是否可进一步优化以节约耗时
 
 import os
 
@@ -55,7 +61,7 @@ def get_nep_descriptors(
     xyz_fn: str = "train.xyz",
     model_fn: str = "nep.txt",
 ):
-    """获取 NEP 描述符"""
+    """获取 NEP 未归一化 & 归一化 描述符"""
 
     atoms_list = read(xyz_fn, index=":", format="extxyz")
 
