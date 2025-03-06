@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# 计算 HPC 提交任务运行耗时
+
+for jobid in $(ls [0-9]*.out | sed 's/\.out$//'); do
+  out_file="${jobid}.out"
+  err_file="${jobid}.err"
+
+  out_time=$(stat -c %Y "$out_file")
+  err_time=$(stat -c %Y "$err_file")
+
+  time_diff=$((out_time - err_time))
+  hours=$((time_diff / 3600))
+  minutes=$(((time_diff % 3600) / 60))
+
+  echo "JOBID ${jobid} time cost: ${hours}h ${minutes}min"
+done

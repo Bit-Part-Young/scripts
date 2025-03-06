@@ -32,7 +32,6 @@ ase_outcar.ipynb                     # 获取 OUTCAR 文件中数据（离子步
 ase_phase_diagram.ipynb              # 使用 ase phasediagram 模块绘制相图
 surface_fcc.sh                       # FCC (100), (110), (111) 表面模型构建
 surface_bcc.sh                       # BCC (100), (110), (111) 表面模型构建
-read_mtp_cfg.py                      # 使用 ASE 读取 MTP 训练集中的 cfg 文件
 ```
 
 ---
@@ -152,7 +151,6 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 - `NEP`: NEP 相关脚本
 
 ```bash
-count_cfg.sh                         # 统计 cfg 构型文件帧数及总原子数
 count_xyz.sh                         # 统计 extxyz 构型文件帧数及总原子数
 
 json2extxyz.py                       # 将 json 构型及其数据文件转换为 extxyz 格式
@@ -165,6 +163,16 @@ nep_pca_plot.py                      # NEP 未归一化 & 归一化 描述符 PC
 
 plot_nep_loss.py                     # 绘制 NEP 训练 loss 演化与能量、力、virial/应力 RMSE 指标 DFT计算值 NEP 预测值对比图及其对应误差分布图
 plt_nep_train.py                     # 绘制 NEP 训练 loss 演化与能量、力、virial/应力 RMSE 指标 DFT计算值 NEP 预测值对比图
+```
+
+---
+
+- `MTP`: MTP 相关脚本
+
+```bash
+count_cfg.sh                         # 统计 cfg 构型文件帧数及总原子数
+read_mtp_cfg.py                      # 读取 MTP 的 cfg 格式文件并转换为 ase.Atoms 对象
+extract_cfg.py                       # 提取 MTP cfg 文件 中的能量、力和应力数据
 ```
 
 ---
@@ -197,6 +205,7 @@ twin_fcc.sh                          # FCC 孪晶模型构建
 - `HPC/`: 超算用脚本
 
 ```bash
+time_cost                            # 计算 HPC 提交任务运行耗时
 slurm_generation.py                  # 生成 VASP/LAMMPS/Python/Bash 任务 slurm 提交脚本
 sruns                                # 根据超算类型申请计算节点
 checkjob                             # 检查在队列中的 job 任务信息
