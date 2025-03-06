@@ -122,21 +122,26 @@ layers_count.py                      # 统计原子层数及每层原子数
 interlayer_separations.py            # 统计原子层间距变化（适用于表面/界面模型弛豫前后的原子层间距变化）
 identify_layer.py                    # 识别每个原子所在的原子层
 fix_layer.py                         # 固定（特定）原子层 x/y/z 轴
+
 wrap_pos.py                          # 将 VASP POSCAR 中分数坐标范围 wrap 在 0-1 之间
 pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
-get_distance.py                      # 获取构型中原子对的最小和最大距离
 posconv.py                           # 构型文件格式互相转换（基于 ASE，支持 ASE 大部分可识别的格式）
 atat.py                              # 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
 hexa2ortho.py                        # 将六方胞转换为正交胞
 build_structure_spacegroup.ipynb     # PyXtal、ASE、pymatgen 通过空间群构建复杂结构
+
 symmetry_info.py                     # 获取结构的对称性信息
 sg_info.py                           # 获取结构的空间群信息
 spglib_python.ipynb                  # 使用 spglib 的 Python API 获取对称性信息
 spglib_julia.ipynb                   # 使用 spglib 的 Julia API 获取对称性信息
 get_pearson_symbol.py                # 获取结构的 Pearson 符号
+
 hcp_direction_index.py               # HCP 方向指数的三指数和四指数坐标转换
 hcp_plane_index.py                   # HCP 面指数的三指数和四指数坐标转换
+
 get_cn.py                            # 计算原子配位数
+get_nn.py                            # 获取 BCC/FCC/Diamond/HCP 晶体结构的最近邻距离
+get_distance.py                      # 获取构型中原子对的最小和最大距离
 
 
 get_interface.py                     # 生成界面结构（待优化）
@@ -161,6 +166,7 @@ relax.py                             # 结构弛豫 ASE 实现
 eos_cal_calorine.py                  # 使用 GPUMD & calorine 进行 EOS 计算
 nep_pca_plot.py                      # NEP 未归一化 & 归一化 描述符 PCA 2 维绘制
 
+rmse_cal.py                          # 计算势函数预测与DFT 计算的能量、力、应力、位力指标的 RMSE
 plot_nep_loss.py                     # 绘制 NEP 训练 loss 演化与能量、力、virial/应力 RMSE 指标 DFT计算值 NEP 预测值对比图及其对应误差分布图
 plt_nep_train.py                     # 绘制 NEP 训练 loss 演化与能量、力、virial/应力 RMSE 指标 DFT计算值 NEP 预测值对比图
 ```
