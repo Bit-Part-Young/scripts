@@ -22,7 +22,7 @@ def get_max_index(index):
         return index.stop if (index.stop is not None) else float("inf")
 
 
-def cfg_to_ase_atoms(
+def cfg_to_atoms(
     symbols,
     cell,
     positions,
@@ -33,7 +33,7 @@ def cfg_to_ase_atoms(
 ):
     """将 cfg 文件转换为 ase.Atoms 对象"""
 
-    ase_atoms = Atoms(
+    atoms = Atoms(
         symbols=symbols,
         positions=positions,
         cell=cell,
@@ -41,15 +41,19 @@ def cfg_to_ase_atoms(
         info=info,
     )
 
+    volume = atoms.get_volume()
+    stress = -np.array(info["virial"]) / volume
+
     if forces is not None:
         calculator = SinglePointCalculator(
-            ase_atoms,
-            forces=forces,
+            atoms=atoms,
             energy=energy,
+            forces=forces,
+            stress=stress,
         )
-        ase_atoms.calc = calculator
+        atoms.calc = calculator
 
-    return ase_atoms
+    return atoms
 
 
 # 写法参考 ase.io.lammpsrun 模块中的 read_lammps_dump_text() 函数
@@ -124,12 +128,12 @@ def read_mtp_cfg(
             virial_dict = {"virial": " ".join(map(str, virial))}
 
             symbols = [symbols_map[x] for x in atoms_type]
-            out_atoms = cfg_to_ase_atoms(
+            out_atoms = cfg_to_atoms(
                 symbols=symbols,
                 cell=cell,
                 positions=positions,
-                forces=forces,
                 energy=energy,
+                forces=forces,
                 info=virial_dict,
             )
             images.append(out_atoms)
@@ -166,3 +170,5 @@ if __name__ == "__main__":
     print(f"Info: {atoms.info}")
     print(f"Energy: {atoms.get_potential_energy()}")
     print(f"Forces:\n{atoms.get_forces()}")
+    print(f"Stress:\n{atoms.get_stress()}")
+    print(f"Virial:\n{atoms.info['virial']}")

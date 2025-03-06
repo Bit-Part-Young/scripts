@@ -15,16 +15,14 @@ def set_spcalculator(atoms: Atoms):
     energy = atoms.get_potential_energy()
     forces = atoms.arrays["force"]
 
-    # [ ] virial 是否等同于 stress，待确认
+    # xyz 格式中 virial 等同于 MTP cfg 中的 PlusStress
+    # 用 virial 代替 stress
     virial = atoms.info["virial"]
-    # volume = atoms.get_volume()
-    # stress = -virial / volume
 
     spcalculator = SinglePointCalculator(
         atoms=atoms,
         energy=energy,
         forces=forces,
-        # stress=stress,
         stress=virial,
     )
 
@@ -54,7 +52,7 @@ def write_cfg(
 
         energy = atoms.get_potential_energy()
         forces = atoms.get_forces()
-        stress = atoms.get_stress(voigt=False)
+        plusstress = atoms.get_stress(voigt=False)
 
         ff.write("""BEGIN_CFG\n""")
         ff.write(""" Size\n""")
@@ -86,12 +84,12 @@ def write_cfg(
         )
         ff.write(
             "     {:15.10f} {:15.10f} {:15.10f} {:15.10} {:15.10f} {:15.10}\n".format(
-                stress[0, 0],
-                stress[1, 1],
-                stress[2, 2],
-                stress[1, 2],
-                stress[0, 2],
-                stress[0, 1],
+                plusstress[0, 0],
+                plusstress[1, 1],
+                plusstress[2, 2],
+                plusstress[1, 2],
+                plusstress[0, 2],
+                plusstress[0, 1],
             )
         )
         ff.write("""END_CFG\n""")

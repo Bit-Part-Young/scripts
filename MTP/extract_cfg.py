@@ -1,4 +1,8 @@
-"""提取 MTP cfg 文件 中的能量、力和应力数据"""
+"""
+提取 MTP cfg 文件 中的能量、力和应力数据
+
+energy_train.out、force_train.out、stress_train.out 列的顺序对应 NEP 训练的输出文件
+"""
 
 import numpy as np
 
@@ -34,6 +38,7 @@ def extract_cfg(cfg_fn: str = "train.cfg") -> tuple[
                 energy = float(line.split()[0]) / natoms
                 energy_list.append(energy)
 
+            # PlusStress 实际对应 virial
             if "PlusStress" in line:
                 line = f.readline()
                 # MTP cfg stress 分量顺序
