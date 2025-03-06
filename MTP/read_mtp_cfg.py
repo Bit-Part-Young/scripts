@@ -160,7 +160,7 @@ if __name__ == "__main__":
 
     print(f"Total {len(atoms_list)} configurations.\n")
 
-    atoms = atoms_list[0]
+    atoms: Atoms = atoms_list[0]
 
     print(f"No. 1 configuration:\n {atoms}")
     print(f"Info: {atoms.info}")

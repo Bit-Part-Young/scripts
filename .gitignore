@@ -44,3 +44,5 @@ fake-vasp/
 
 nep*.txt
 *.npy
+*.out
+*.cfg
