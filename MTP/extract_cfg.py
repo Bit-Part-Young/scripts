@@ -55,9 +55,9 @@ def extract_cfg(cfg_fn: str = "train.cfg") -> tuple[
             # PlusStress 实际对应 virial
             if "PlusStress" in line:
                 line = f.readline()
-                # MTP cfg stress 分量顺序
+                # MTP cfg stress 分量顺序 xx yy zz yz xz xy
                 plus_stress_mtp = np.array(list(map(float, line.split())))
-                # xyz stress 分量顺序
+                # xyz stress 分量顺序 xx yy zz xy yz xz
                 virial = [
                     plus_stress_mtp[0],
                     plus_stress_mtp[1],
@@ -69,7 +69,7 @@ def extract_cfg(cfg_fn: str = "train.cfg") -> tuple[
                 virial_pa = np.array(virial) / natoms
                 virial_list.append(virial_pa)
 
-                stress = -1 * np.array(virial) / volume / GPa
+                stress = -1 * (np.array(virial) / volume) / GPa
                 stress_list.append(stress)
 
                 flag += 1
