@@ -4,7 +4,7 @@
 
 if [[ -f "OUTCAR" ]]; then
   grep -A2 'FORCE on cell' OUTCAR | awk 'NR <= 3'
-  grep -A20 'FORCE on cell' OUTCAR | grep 'Total'
+  grep -A20 'FORCE on cell' OUTCAR | grep 'Total '
   echo
   grep -A2 'FORCE on cell' OUTCAR | awk 'NR <= 3'
   grep -A20 'FORCE on cell' OUTCAR | grep 'in kB'
