@@ -7,8 +7,18 @@ reference: https://github.com/huiju-lee/HT-Phonon-MLIP/blob/main/calc_phonon.py
 import phonopy
 from ase.calculators import calculator
 from ase.calculators.vasp import Vasp
+from ase.dft.kpoints import get_special_points
 from mace.calculators import MACECalculator, mace_mp
 from phonopy import Phonopy
+from phonopy.file_IO import (
+    parse_disp_yaml,
+    parse_FORCE_CONSTANTS,
+    parse_FORCE_SETS,
+    write_disp_yaml,
+    write_disp_yaml_from_dataset,
+    write_FORCE_CONSTANTS,
+    write_FORCE_SETS,
+)
 from phonopy.interface.calculator import read_crystal_structure
 from phonopy.structure.atoms import PhonopyAtoms
 from pymatgen.core.structure import Structure
@@ -67,7 +77,7 @@ def write_force_constants():
     phonon.save()
 
 
-def write_band_yaml():
+def misc():
     phonon = phonopy.load()
     phonon.auto_band_structure()
 
@@ -77,3 +87,15 @@ def write_thermal_properties_yaml():
     phonon.run_mesh()
     phonon.run_thermal_properties()
     phonon.write_yaml_thermal_properties()
+
+
+def misc():
+    phonon = phonopy.load()
+    phonon.auto_band_structure()
+    phonon.run_total_dos()
+    phonon.run_projected_dos()
+    phonon.get_band_structure_dict()
+    phonon.get_band_structure()
+    phonon.get_total_DOS()
+    phonon.get_partial_DOS()
+    phonon.thermal_properties.write_yaml()
