@@ -13,6 +13,8 @@ import numpy as np
 import pandas as pd
 from spt.plot_params import set_roman_plot_params
 
+# [ ] 添加提取能量并绘制的功能
+
 
 def extract_forces(outcar_fn: str = "OUTCAR") -> pd.DataFrame:
     """提取 OUTCAR 文件中的每个离子步中的每个原子受力数据"""
