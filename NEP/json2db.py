@@ -9,9 +9,8 @@ outputs 数据中的 key
 dict_keys(['energy', 'forces', 'virial_stress'])
 """
 
-import json
-
 from ase.db import connect
+from monty.serialization import loadfn
 from pymatgen.core.structure import Structure
 
 db_fn = "quinary.db"
@@ -19,14 +18,12 @@ db = connect(db_fn)
 
 # 文件共 9848 个构型
 json_fn = "quinary.json"
-
-with open(json_fn, "r") as f:
-    json_data_list = json.load(f)
+json_data_list = loadfn(json_fn)
 
 
 flag = 0
 for json_data in json_data_list:
-    structure = Structure.from_dict(json_data["structure"])
+    structure: Structure = json_data["structure"]
     atoms = structure.to_ase_atoms()
 
     del json_data["structure"]

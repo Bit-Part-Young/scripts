@@ -9,14 +9,11 @@ outputs 数据中的 key
 dict_keys(['energy', 'forces', 'virial_stress'])
 """
 
-import json
-
 import pandas as pd
+from monty.serialization import loadfn
 
 json_fn = "quinary.json"
-
-with open(json_fn, "r") as f:
-    json_data_list = json.load(f)
+json_data_list = loadfn(json_fn)
 
 general_info_list = []
 

@@ -9,26 +9,16 @@ outputs 数据中的 key
 dict_keys(['energy', 'forces', 'virial_stress'])
 """
 
-import json
-
 import numpy as np
 from ase.io import write
+from monty.serialization import loadfn
 from pymatgen.core.structure import Structure
-
-# json_fn = "example.json"
-# extxyz_fn = "example.xyz"
-json_fn = "quinary.json"
-extxyz_fn = "quinary.xyz"
-
-
-with open(json_fn, "r") as f:
-    json_data_list = json.load(f)
 
 
 def json2extxyz(json_data: dict):
     """将 json 结构文件转换为 extxyz 格式"""
 
-    structure = Structure.from_dict(json_data["structure"])
+    structure: Structure = json_data["structure"]
     atoms = structure.to_ase_atoms()
 
     atoms.arrays["forces"] = np.array(json_data["outputs"]["forces"])
@@ -71,6 +61,12 @@ def json2extxyz(json_data: dict):
 
 
 def main():
+
+    json_fn = "example.json"
+    extxyz_fn = "example.xyz"
+
+    json_data_list = loadfn(json_fn)
+
     flag = 0
     for json_data in json_data_list:
         atoms = json2extxyz(json_data)
