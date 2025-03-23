@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+"""
+HCP 结构常见类型自间隙原子构型生成
+
+O 八面体 BO 基面八面体
+T 四面体 BT 基面四面体
+C BC
+S BS
+"""
+
 import argparse
 
 import numpy as np
@@ -62,8 +71,8 @@ def hcp_sia_generation(
     a: float,
     c: float,
     sia_type: str,
-    size: list[int],
-    tranform: bool = False,
+    dimension: list[int],
+    transform: bool = False,
     wrap: bool = False,
     output_fn: str = "POSCAR",
 ):
@@ -73,10 +82,10 @@ def hcp_sia_generation(
 
     supercell = make_supercell(
         prim=atoms,
-        P=np.diag(size),
+        P=np.diag(dimension),
     )
 
-    sia_coords = np.array(hcp_sia_dict[sia_type]) / np.array(size)
+    sia_coords = np.array(hcp_sia_dict[sia_type]) / np.array(dimension)
     sia_coords_cartesian = sia_coords @ supercell.cell
 
     for i in range(sia_coords.shape[0]):
@@ -92,7 +101,7 @@ def hcp_sia_generation(
         del supercell[[atom.index for atom in supercell if np.allclose(atom.position, 0.0)]]
 
     # 将坐标轴夹角 60° 转变成 120°
-    if tranform:
+    if transform:
         matrix = np.array(
             [
                 [1, 0, 0],
@@ -111,9 +120,14 @@ def hcp_sia_generation(
     sia_conc = 1 / (len(supercell) - 1)
 
     print(f"SIA type: {sia_type}")
-    print(f"Supercell size: {size}, natoms: {len(supercell)}")
+    print(f"Supercell size: {dimension}, natoms: {len(supercell)}")
     print(f"SIA concentration: {sia_conc*100:.8f}%")
-    print("\nDefault degree of axes is 60°.")
+
+    if transform:
+        print("\nDegree of axes transform to 120°")
+    else:
+        print("\nDefault degree of axes is 60°")
+
     print(f"SIA direct coordinates: {sia_coords}")
     print(f"SIA cartesian coordinates: {sia_coords_cartesian}")
 
@@ -137,7 +151,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "-t",
-        "-tranform",
+        "--transform",
         action="store_true",
         help="Transform the angle of the axes from 60° to 120°",
     )
@@ -159,8 +173,8 @@ if __name__ == "__main__":
         a=args.lattice_constant[0],
         c=args.lattice_constant[1],
         sia_type=args.sia_type,
-        size=args.dim,
-        tranform=args.t,
+        dimension=args.dim,
+        transform=args.transform,
         wrap=args.wrap,
         output_fn=args.output_fn,
     )
