@@ -43,6 +43,10 @@ pbe_dict_pymatgen = {
     "Hf": "Hf_pv",
     "Ta": "Ta_pv",
     "W": "W_sv",
+    "Pt": "Pt",
+    "Au": "Au",
+    "Pb": "Pb_d",
+    "Ag": "Ag",
 }
 
 # Data source: https://www.vasp.at/wiki/index.php/Available_PAW_potentials
@@ -63,7 +67,7 @@ pbe_dict_vasp = {
     "Ca": "Ca_sv",
     "Sc": "Sc_sv",
     "Ti": "Ti_sv",
-    "V": "V",
+    "V": "V_sv",
     "Cr": "Cr_pv",
     "Mn": "Mn_pv",
     "Fe": "Fe",
@@ -78,6 +82,10 @@ pbe_dict_vasp = {
     "Hf": "Hf_pv",
     "Ta": "Ta_pv",
     "W": "W_sv",
+    "Pt": "Pt",
+    "Au": "Au",
+    "Pb": "Pb_d",
+    "Ag": "Ag",
 }
 
 
@@ -152,6 +160,8 @@ def potcar_pbe_compare(element_symbol: str):
             [psp_info_dict_vasp],
             index=["VASP/pymatgen"],
         )
+
+    df.index = df.index.map(lambda x: f"{x:<15}")
 
     print(df)
 
