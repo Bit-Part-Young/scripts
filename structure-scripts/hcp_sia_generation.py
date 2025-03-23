@@ -72,6 +72,7 @@ def hcp_sia_generation(
     c: float,
     sia_type: str,
     dimension: list[int],
+    random: bool = False,
     transform: bool = False,
     wrap: bool = False,
     output_fn: str = "POSCAR",
@@ -86,6 +87,25 @@ def hcp_sia_generation(
     )
 
     sia_coords = np.array(hcp_sia_dict[sia_type]) / np.array(dimension)
+    if random:
+        dimx_random = np.random.choice(
+            np.linspace(
+                0, dimension[0] / hcp_sia_dict[sia_type][0][0], dimension[0], endpoint=False
+            )
+        )
+        dimy_random = np.random.choice(
+            np.linspace(
+                0, dimension[1] / hcp_sia_dict[sia_type][0][1], dimension[1], endpoint=False
+            )
+        )
+        dimz_random = np.random.choice(
+            np.linspace(
+                0, dimension[2] / hcp_sia_dict[sia_type][0][2], dimension[2], endpoint=False
+            )
+        )
+
+        sia_coords = sia_coords * np.array([1 + dimx_random, 1 + dimy_random, 1 + dimz_random])
+
     sia_coords_cartesian = sia_coords @ supercell.cell
 
     for i in range(sia_coords.shape[0]):
@@ -156,6 +176,8 @@ if __name__ == "__main__":
         help="Transform the angle of the axes from 60° to 120°",
     )
 
+    parser.add_argument("-r", "--random", action="store_true", help="Random insertion")
+
     parser.add_argument("-w", "--wrap", action="store_true", help="Wrap the atoms into cell")
 
     parser.add_argument(
@@ -174,6 +196,7 @@ if __name__ == "__main__":
         c=args.lattice_constant[1],
         sia_type=args.sia_type,
         dimension=args.dim,
+        random=args.random,
         transform=args.transform,
         wrap=args.wrap,
         output_fn=args.output_fn,
