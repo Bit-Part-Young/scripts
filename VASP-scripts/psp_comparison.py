@@ -23,6 +23,7 @@ pbe_dict_pymatgen = {
     "Mg": "Mg_pv",
     "Al": "Al",
     "Si": "Si",
+    "P": "P",
     "S": "S",
     "Cl": "Cl",
     "Ca": "Ca_sv",
@@ -47,6 +48,7 @@ pbe_dict_pymatgen = {
     "Au": "Au",
     "Pb": "Pb_d",
     "Ag": "Ag",
+    "Pd": "Pd",
 }
 
 # Data source: https://www.vasp.at/wiki/index.php/Available_PAW_potentials
@@ -62,6 +64,7 @@ pbe_dict_vasp = {
     "Mg": "Mg",
     "Al": "Al",
     "Si": "Si",
+    "P": "P",
     "S": "S",
     "Cl": "Cl",
     "Ca": "Ca_sv",
@@ -86,6 +89,7 @@ pbe_dict_vasp = {
     "Au": "Au",
     "Pb": "Pb_d",
     "Ag": "Ag",
+    "Pd": "Pd",
 }
 
 

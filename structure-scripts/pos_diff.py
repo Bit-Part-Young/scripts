@@ -35,6 +35,13 @@ def pos_diff(
     print(f"{structure1_fn} info: {structure1_info}")
     print(f"{structure2_fn} info: {structure2_info}")
 
+    vol_diff = (
+        (structure1_info["volume"] - structure2_info["volume"])
+        / structure2_info["volume"]
+    ) * 100
+
+    print(f"\nVolume difference: {vol_diff:.5f}%")
+
     print(f"\nCoordinate difference between {structure1_fn} with {structure2_fn}:\n")
 
     position1 = atoms1.get_positions(wrap=wrap)
