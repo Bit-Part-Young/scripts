@@ -127,7 +127,7 @@ def get_potcar_info(psp_symbol: str):
             command = f"grep ZVAL {path} | awk '{{print $6}}'"
             zval = int(float(get_shell_outputs(command).strip()))
 
-            command = f"grep VRHFIN {path} | awk '{{print $3}}'"
+            command = f"grep VRHFIN {path} | awk -F':' '{{print $2}}'"
             vrhfin = get_shell_outputs(command).strip()
 
             psp_info_dict = {
@@ -161,6 +161,7 @@ def potcar_pbe_compare(element_symbol: str):
             index=["VASP/pymatgen"],
         )
 
+    # 索引行输出宽度设置为 15
     df.index = df.index.map(lambda x: f"{x:<15}")
 
     print(df)
@@ -169,7 +170,7 @@ def potcar_pbe_compare(element_symbol: str):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Compare VASP and pymatgen recommended PBE pseudopotentials.",
+        description="Compare VASP, pymatgen recommended PBE pseudopotentials.",
         epilog="Author: SLY.",
     )
 
@@ -180,6 +181,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    element_symbol = args.element_symbol
-
-    potcar_pbe_compare(element_symbol=element_symbol)
+    potcar_pbe_compare(element_symbol=args.element_symbol)

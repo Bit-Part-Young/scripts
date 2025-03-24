@@ -87,8 +87,8 @@ CheckVaspDone                        # 检查 VASP 计算是否完成（可多�
 CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（可多个目录）
 sigma.sh                             # 检查 entropy T*S 是否小于 1 meV/atom
 
-potcar_pbe_compare.py                # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)
-get_potcar.py                        # 生成 VASP 和 pymatgen 推荐的赝势 POTCAR 文件
+psp_comparison.py                    # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)
+get_psp.py                           # 生成 VASP 和 pymatgen 推荐的 PBE 赝势 POTCAR 文件
 get_vasp_data.py                     # 获取 VASP 计算目录的输出数据（利用 atomate package）
 get_vasp_data2.py                    # 获取 VASP 计算目录的输出数据（利用 pymatgen package）
 get_vasp_data.sh                     # 获取多个 VASP 计算目录的输出数据

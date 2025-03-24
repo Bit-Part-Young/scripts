@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""生成 VASP、pymatgen 推荐的赝势文件"""
+"""生成 VASP、pymatgen 推荐的 PBE 赝势 POTCAR 文件"""
 
 import argparse
 import os
@@ -40,6 +40,10 @@ pbe_dict_pymatgen = {
     "Hf": "Hf_pv",
     "Ta": "Ta_pv",
     "W": "W_sv",
+    "Pt": "Pt",
+    "Au": "Au",
+    "Pb": "Pb_d",
+    "Ag": "Ag",
 }
 
 # Data source: https://www.vasp.at/wiki/index.php/Available_PAW_potentials
@@ -60,7 +64,7 @@ pbe_dict_vasp = {
     "Ca": "Ca_sv",
     "Sc": "Sc_sv",
     "Ti": "Ti_sv",
-    "V": "V",
+    "V": "V_sv",
     "Cr": "Cr_pv",
     "Mn": "Mn_pv",
     "Fe": "Fe",
@@ -75,14 +79,18 @@ pbe_dict_vasp = {
     "Hf": "Hf_pv",
     "Ta": "Ta_pv",
     "W": "W_sv",
+    "Pt": "Pt",
+    "Au": "Au",
+    "Pb": "Pb_d",
+    "Ag": "Ag",
 }
 
 
-def get_potcar(
+def get_psp(
     structure_fn: str = "POSCAR",
     psp_recommended: str = "vasp",
 ):
-    """生成 VASP、pymatgen 推荐的赝势文件"""
+    """生成 VASP、pymatgen 推荐的 PBE 赝势 POTCAR 文件"""
 
     if os.path.exists("POTCAR"):
         os.remove("POTCAR")
@@ -112,9 +120,9 @@ def get_potcar(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Generate VASP, pymatgen recommended POTCAR.",
-        epilog="Author: SLY.",
+        description="Generate VASP, pymatgen recommended PBE pseudopotentials.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY.",
         allow_abbrev=True,
     )
 
@@ -134,7 +142,7 @@ if __name__ == "__main__":
         nargs="?",
         default="POSCAR",
         type=str,
-        help="Structure filename with POSCAR format",
+        help="Structure filename",
     )
 
     args = parser.parse_args()
@@ -142,7 +150,7 @@ if __name__ == "__main__":
     structure_fn = args.structure_fn
     psp_recommended = args.psp_recommended
 
-    get_potcar(
+    get_psp(
         structure_fn=structure_fn,
         psp_recommended=psp_recommended,
     )
