@@ -12,6 +12,8 @@
 
 - 对于 ipynb 格式脚本文件，可使用 [nbviewer](https://nbviewer.org/) 在线查看
 
+- 默认 xyz 文件为 extxyz 格式
+
 ---
 
 ## 脚本内容
@@ -156,11 +158,13 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 - `NEP`: NEP 相关脚本
 
 ```bash
-count_xyz.sh                         # 统计 extxyz 构型文件帧数及总原子数
+count_xyz.sh                         # 统计 xyz 构型文件帧数及总原子数
 
-json2extxyz.py                       # 将 json 构型及其数据文件转换为 extxyz 格式
+json2xyz.py                          # 将 json 构型及其数据文件转换为 xyz 文件
 son2db.py                            # 将 json 构型及其数据文件转换为 ASE db 格式
 json2df.py                           # 将 json 构型及其数据文件转换为 Pandas DataFrame 格式
+
+outcar2xyz_singleframe.sh            # 将 OUTCAR 转换为 xyz 文件（静态计算，单帧），作为 NEP 的训练集构型
 
 relax.py                             # 结构弛豫 ASE 实现
 eos_cal_calorine.py                  # 使用 GPUMD & calorine 进行 EOS 计算

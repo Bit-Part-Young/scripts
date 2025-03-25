@@ -1,5 +1,5 @@
 """
-将 json 构型及其数据文件转换为 extxyz 格式
+将 json 构型及其数据文件转换为 xyz 文件
 
 文件格式: [{}, {}, ...]
 
@@ -15,8 +15,8 @@ from monty.serialization import loadfn
 from pymatgen.core.structure import Structure
 
 
-def json2extxyz(json_data: dict):
-    """将 json 结构文件转换为 extxyz 格式"""
+def json2xyz(json_data: dict):
+    """将 json 结构文件转换为 xyz 文件"""
 
     structure: Structure = json_data["structure"]
     atoms = structure.to_ase_atoms()
@@ -63,20 +63,15 @@ def json2extxyz(json_data: dict):
 def main():
 
     json_fn = "example.json"
-    extxyz_fn = "example.xyz"
+    xyz_fn = "example.xyz"
 
     json_data_list = loadfn(json_fn)
 
     flag = 0
     for json_data in json_data_list:
-        atoms = json2extxyz(json_data)
+        atoms = json2xyz(json_data)
 
-        write(
-            extxyz_fn,
-            atoms,
-            format="extxyz",
-            append=True,
-        )
+        write(xyz_fn, atoms, format="extxyz", append=True)
 
         flag += 1
 
