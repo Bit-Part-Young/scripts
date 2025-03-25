@@ -164,6 +164,7 @@ json2xyz.py                          # 将 json 构型及其数据文件转换�
 son2db.py                            # 将 json 构型及其数据文件转换为 ASE db 格式
 json2df.py                           # 将 json 构型及其数据文件转换为 Pandas DataFrame 格式
 
+vaspout2xyz.py                       # 将 VASP 输出文件 OUTCAR/vasprun.xml 转换为 xyz 文件
 outcar2xyz_singleframe.sh            # 将 OUTCAR 转换为 xyz 文件（静态计算，单帧），作为 NEP 的训练集构型
 
 relax.py                             # 结构弛豫 ASE 实现
