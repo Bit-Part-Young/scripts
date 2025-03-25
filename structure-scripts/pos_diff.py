@@ -3,6 +3,7 @@
 """查看两个构型之间的原子坐标变化/差异（主要为弛豫前后）"""
 
 import argparse
+import pprint
 
 import numpy as np
 import pandas as pd
@@ -22,18 +23,20 @@ def pos_diff(
 
     structure1_info = {
         "natom": len(atoms1),
-        "cell": atoms1.cell,
+        "cell": atoms1.cell[:].round(5),
         "volume": float(round(atoms1.get_volume(), 1)),
     }
 
     structure2_info = {
         "natom": len(atoms2),
-        "cell": atoms2.cell,
+        "cell": atoms2.cell[:].round(5),
         "volume": float(round(atoms2.get_volume(), 1)),
     }
 
-    print(f"{structure1_fn} info: {structure1_info}")
-    print(f"{structure2_fn} info: {structure2_info}")
+    print(f"{structure1_fn} info:")
+    pprint.pprint(structure1_info)
+    print(f"\n{structure2_fn} info:")
+    pprint.pprint(structure2_info)
 
     vol_diff = (
         (structure1_info["volume"] - structure2_info["volume"])
@@ -96,19 +99,10 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-w",
-        "--wrap",
-        action="store_true",
-        help="wrap atomic positions into box",
+        "-w", "--wrap", action="store_true", help="Wrap atoms into cell"
     )
 
-    parser.add_argument(
-        "-ai",
-        "--atom_index",
-        nargs="*",
-        type=int,
-        help="Atom index",
-    )
+    parser.add_argument("-ai", "--atom_index", nargs="*", type=int, help="Atom index")
 
     args = parser.parse_args()
 
