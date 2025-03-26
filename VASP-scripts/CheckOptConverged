@@ -11,9 +11,9 @@ check_converged() {
     dir=$(basename "${dir}")
 
     if [ ! -f "$outcar_fn" ]; then
-      echo "Folder $dir OUTCAR doesn't exsists!"
+      echo "Folder $dir OUTCAR doesn't exist!"
     else
-      if grep -q "reached required accuracy" "$outcar_fn"; then
+      if grep -q 'reached required accuracy' "$outcar_fn"; then
         converged_dirs+=("$dir")
       else
         unconverged_dirs+=("$dir")

@@ -3,8 +3,8 @@
 
 #-------------------------------- 检查 VASP 静态/自洽/scf 计算目录是否计算完成 --------------------------------
 check_scf_done() {
-  converged_dirs=()
-  unconverged_dirs=()
+  completed_dirs=()
+  uncompleted_dirs=()
   latest_step_array=()
   for dir in "$@"; do
     outcar_fn="$dir/OUTCAR"
@@ -13,35 +13,35 @@ check_scf_done() {
     dir=$(basename "${dir}")
 
     if [ ! -f "$outcar_fn" ]; then
-      echo "Folder $dir OUTCAR doesn't exsists!"
+      echo "Folder $dir OUTCAR doesn't exist!"
     else
-      nsw=$(grep 'NSW' OUTCAR | awk '{print $3}')
+      nsw=$(grep 'NSW' "$outcar_fn" | awk '{print $3}')
       if [[ $nsw -eq 0 ]]; then
-        if grep -q "F=" "$oszicar_fn"; then
-          converged_dirs+=("$dir")
+        if grep -q 'F=' "$oszicar_fn"; then
+          completed_dirs+=("$dir")
         else
           latest_step=$(tail -n 1 "$oszicar_fn" | awk '{print $0}')
           latest_step_array+=("$latest_step")
 
-          unconverged_dirs+=("$dir")
+          uncompleted_dirs+=("$dir")
         fi
       else
-        unconverged_dirs+=("$dir")
+        uncompleted_dirs+=("$dir")
       fi
     fi
   done
 
-  echo "Converged dirs (${#converged_dirs[@]}):"
-  for dir in "${converged_dirs[@]}"; do
+  echo "Completed dirs (${#completed_dirs[@]}):"
+  for dir in "${completed_dirs[@]}"; do
     echo "  $dir"
   done
 
-  if [[ ${#unconverged_dirs[@]} -eq 0 ]]; then
-    echo -e "\nAll VASP relaxation/optimization calulations dirs are converged!"
+  if [[ ${#uncompleted_dirs[@]} -eq 0 ]]; then
+    echo -e "\nAll VASP scf calulations dirs are completed!"
   else
-    echo -e "\nUnconverged dirs (${#unconverged_dirs[@]}):"
-    for ((i=0; i<${#unconverged_dirs[@]}; i++)); do
-      echo "  ${unconverged_dirs[${i}]}, latest electronic step: ${latest_step_array[${i}]}"
+    echo -e "\nUncompleted dirs (${#uncompleted_dirs[@]}):"
+    for ((i=0; i<${#uncompleted_dirs[@]}; i++)); do
+      echo "  ${uncompleted_dirs[${i}]}, latest electronic step: ${latest_step_array[${i}]}"
     done
   fi
 
