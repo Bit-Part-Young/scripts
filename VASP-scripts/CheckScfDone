@@ -1,20 +1,30 @@
 #!/bin/bash
 
 
-#-------------------------------- 检查 VASP 弛豫计算目录是否达到收敛精度 --------------------------------
-check_converged() {
+#-------------------------------- 检查 VASP 静态/自洽/scf 计算目录是否计算完成 --------------------------------
+check_scf_done() {
   converged_dirs=()
   unconverged_dirs=()
+  latest_step_array=()
   for dir in "$@"; do
     outcar_fn="$dir/OUTCAR"
+    oszicar_fn="$dir/OSZICAR"
 
     dir=$(basename "${dir}")
 
     if [ ! -f "$outcar_fn" ]; then
       echo "Folder $dir OUTCAR doesn't exsists!"
     else
-      if grep -q "reached required accuracy" "$outcar_fn"; then
-        converged_dirs+=("$dir")
+      nsw=$(grep 'NSW' OUTCAR | awk '{print $3}')
+      if [[ $nsw -eq 0 ]]; then
+        if grep -q "F=" "$oszicar_fn"; then
+          converged_dirs+=("$dir")
+        else
+          latest_step=$(tail -n 1 "$oszicar_fn" | awk '{print $0}')
+          latest_step_array+=("$latest_step")
+
+          unconverged_dirs+=("$dir")
+        fi
       else
         unconverged_dirs+=("$dir")
       fi
@@ -30,8 +40,8 @@ check_converged() {
     echo -e "\nAll VASP relaxation/optimization calulations dirs are converged!"
   else
     echo -e "\nUnconverged dirs (${#unconverged_dirs[@]}):"
-    for dir in "${unconverged_dirs[@]}"; do
-      echo "  $dir"
+    for ((i=0; i<${#unconverged_dirs[@]}; i++)); do
+      echo "  ${unconverged_dirs[${i}]}, latest electronic step: ${latest_step_array[${i}]}"
     done
   fi
 
@@ -44,11 +54,11 @@ get_help() {
 
   echo -e "\nUsage: ${script_name} [dirs...]"
 
-  echo -e "\nCheck VASP relaxation/optimization calculation dirs whether converged."
+  echo -e "\nCheck VASP scf calculation dirs whether done."
 
   echo -e "\nOptions:"
   echo "    -h, --help    show this help message and exit"
-  echo "    dirs          VASP calculation dirs"
+  echo "    dirs          VASP scf calculation dirs"
 
   echo -e "\nExamples:"
   echo "    ${script_name} \${PWD}       # 当前目录"
@@ -72,10 +82,10 @@ elif [[ "$1" == "." ]]; then
   for item in ./*; do
     if [[ -d ${item} ]]; then
       item=$(basename "${item}")
-      check_converged "${item}"
+      check_scf_done "${item}"
     fi
   done
 
 else
-  check_converged "$@"
+  check_scf_done "$@"
 fi

@@ -21,7 +21,7 @@ check_completed() {
     fi
   done
 
-  echo "Completed dirs:"
+  echo "Completed dirs (${#completed_dirs[@]}):"
   for dir in "${completed_dirs[@]}"; do
     echo "  $dir"
   done
@@ -29,7 +29,7 @@ check_completed() {
   if [[ ${#uncompleted_dirs[@]} -eq 0 ]]; then
     echo -e "\nAll VASP calculation dirs are completed!"
   else
-    echo -e "\nUncompleted dirs:"
+    echo -e "\nUncompleted dirs (${#uncompleted_dirs[@]}):"
     for dir in "${uncompleted_dirs[@]}"; do
       echo "  $dir"
     done
