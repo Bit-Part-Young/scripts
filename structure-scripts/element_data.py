@@ -42,9 +42,9 @@ df = pd.DataFrame.from_dict(
     columns=[
         "atomic_mass",
         "atomic_radius",
-        "melting_point",
-        "density",
-        "energy_pa",
+        "melting_point(K)",
+        "density(g/cm^3)",
+        "energy_pa(eV/atom)",
     ],
 ).fillna("-")
 
