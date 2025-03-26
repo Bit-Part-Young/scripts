@@ -8,6 +8,9 @@ if [[ -f "OUTCAR" ]]; then
   echo
   grep -A2 'FORCE on cell' OUTCAR | awk 'NR <= 3'
   grep -A20 'FORCE on cell' OUTCAR | grep 'in kB'
+  echo
+  grep -A2 'FORCE on cell' OUTCAR | awk 'NR <= 3'
+  grep -A20 'FORCE on cell' OUTCAR | grep 'external pressure'
 fi
 
 if [[ -f "train.cfg" ]]; then
