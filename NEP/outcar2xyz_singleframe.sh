@@ -12,12 +12,17 @@
 outcar2xyz_singleframe(){
   outcar_fn="$1"
   xyz_fn="$2"
+  config_type="$3"
   if [ -z "$outcar_fn" ]; then
     outcar_fn="OUTCAR"
   fi
 
   if [ -z "$xyz_fn" ]; then
     xyz_fn="NEP-dataset.xyz"
+  fi
+
+  if [ -z "$config_type" ]; then
+    config_type="outcar2xyz"
   fi
 
   # 原子数
@@ -34,7 +39,7 @@ outcar2xyz_singleframe(){
   # virial 数据
   virial=$(grep -A 20 "FORCE on cell =-STRESS" ${outcar_fn} | grep "Total " | tail -1 | awk '{print $2,$5,$7,$5,$3,$6,$7,$6,$4}')
 
-  echo "pbc=\"T T T\" energy=${energy} Lattice=\"${lattice}\" virial=\"${virial}\" Properties=species:S:1:pos:R:3:forces:R:3" >> $xyz_fn
+  echo "config_type=\"${config_type}\" pbc=\"T T T\" energy=${energy} Lattice=\"${lattice}\" virial=\"${virial}\" Properties=species:S:1:pos:R:3:forces:R:3" >> $xyz_fn
 
   # 元素对应数目
   ion_number_array=($(grep "ions per type"  ${outcar_fn} | tail -1 | awk -F"=" '{print $2}'))
@@ -63,18 +68,19 @@ outcar2xyz_singleframe(){
 get_help(){
   script_name=$(basename $0)
 
-  echo -e "\nUsage: $script_name [outcar_fn] [xyz_fn]"
+  echo -e "\nUsage: $script_name [outcar_fn] [xyz_fn] [config_type]"
 
   echo -e "\nConvert OUTCAR to xyz file for NEP training."
 
   echo -e "\nOptions:"
   echo "    -h, --help    show this help message and exit"
-  echo "    outcar_fn     OUTCAR filename"
-  echo "    xyz_fn        xyz filename"
+  echo "    outcar_fn     OUTCAR filename, default OUTCAR"
+  echo "    xyz_fn        xyz filename, default NEP-dataset.xyz"
+  echo "    config_type   config type tag, default 'outcar2xyz'"
 
   echo -e "\nExamples:"
   echo "    $script_name"
-  echo "    $script_name OUTCAR NEP-dataset.xyz"
+  echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz'"
   exit 0
 }
 
@@ -83,8 +89,8 @@ get_help(){
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   get_help
 
-elif [[ $# -eq 2 ]]; then
-  outcar2xyz_singleframe "$1" "$2"
+elif [[ $# -eq 3 ]]; then
+  outcar2xyz_singleframe "$1" "$2" "$3"
 
 elif [[ $# -eq 0 ]]; then
   outcar2xyz_singleframe
