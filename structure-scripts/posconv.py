@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 
-"""构型文件格式转换"""
+"""
+构型文件格式转换
+
+支持的输入格式: POSCAR, CONTCAR, XDATCAR, OUTCAR, vasprun.xml, *.vasp, *.xsd, *.xyz, *.lammps-data, ...
+
+支持的输出格式: POSCAR, *.vasp, *.xsd, *.xyz, *.lammps-data, ...
+"""
 
 import argparse
 import os
@@ -15,8 +21,8 @@ def posconv(
 ):
     """构型文件格式转换"""
 
-    input_fn_base = os.path.basename(input_fn)
-    input_format = input_fn_base.split(".")[-1]
+    input_fn_basename = os.path.basename(input_fn)
+    input_format = input_fn_basename.split(".")[-1]
 
     # 解析 OUTCAR 有时会报错
     if input_format in ["XDATCAR", "xml", "OUTCAR"]:
@@ -25,8 +31,8 @@ def posconv(
     else:
         atoms: Atoms = read(input_fn)
 
-    output_fn_base = os.path.basename(output_fn)
-    output_format = output_fn_base.split(".")[-1]
+    output_fn_basename = os.path.basename(output_fn)
+    output_format = output_fn_basename.split(".")[-1]
     if output_format in ["vasp", "POSCAR"]:
         write_param_dict = {
             "format": "vasp",
