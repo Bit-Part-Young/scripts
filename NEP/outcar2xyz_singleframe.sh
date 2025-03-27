@@ -1,11 +1,10 @@
 #!/bin/bash
 
+: '
+将静态计算单帧 OUTCAR 转换为 xyz 文件，作为 NEP 的训练集构型
 
-# 将 OUTCAR 转换为 xyz 文件（静态计算，单帧），作为 NEP 的训练集构型
-
-# reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/vasp2xyz/outcar2xyz/singleFrame-outcars2nep-exyz.sh
-
-# [ ] 考虑如何添加 config_type 标签
+reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/vasp2xyz/outcar2xyz/singleFrame-outcars2nep-exyz.sh
+'
 
 
 #-------------------------------- 将 OUTCAR 转换为 xyz 文件 --------------------------------
@@ -33,13 +32,24 @@ outcar2xyz_singleframe(){
   lattice=$(grep -A 7 "VOLUME and BASIS-vectors are now" ${outcar_fn} | tail -3 |sed 's/-/ -/g' | awk '{print $1,$2,$3}' |xargs)
 
   # 能量
-  # energy=$(grep "free  energy   TOTEN" ${outcar_fn} | tail -1 | awk '{printf "%.6f\n", $5}')
-  energy=$(grep "energy  without entropy" ${outcar_fn} | tail -1 | awk '{printf "%.6f\n", $7}')
+  # energy=$(grep "free  energy   TOTEN" ${outcar_fn} | tail -1 | awk '{printf "%.7f\n", $5}')
+  energy=$(grep "energy  without entropy" ${outcar_fn} | tail -1 | awk '{printf "%.7f\n", $7}')
 
   # virial 数据
   virial=$(grep -A 20 "FORCE on cell =-STRESS" ${outcar_fn} | grep "Total " | tail -1 | awk '{print $2,$5,$7,$5,$3,$6,$7,$6,$4}')
 
-  echo "config_type=\"${config_type}\" pbc=\"T T T\" energy=${energy} Lattice=\"${lattice}\" virial=\"${virial}\" Properties=species:S:1:pos:R:3:forces:R:3" >> $xyz_fn
+  # 添加多个标签实现
+  label_array=("element" "natoms" "group" "tag")
+  if [[ $# -eq 0 || $# -eq 3 ]]; then
+    echo "config_type=\"${config_type}\" pbc=\"T T T\" energy=${energy} Lattice=\"${lattice}\" virial=\"${virial}\" Properties=species:S:1:pos:R:3:forces:R:3" >> $xyz_fn
+  elif [[ $# -gt 3 ]]; then
+    echo -n "config_type=\"${config_type}\"" >> $xyz_fn
+    for(( i=4; i<=$#;i++ )); do
+      index=$((i-4))
+      echo -n " ${label_array[${index}]}=\"${!i}\"" >> $xyz_fn
+    done
+    echo " pbc=\"T T T\" energy=${energy} Lattice=\"${lattice}\" virial=\"${virial}\" Properties=species:S:1:pos:R:3:forces:R:3" >> $xyz_fn
+  fi
 
   # 元素对应数目
   ion_number_array=($(grep "ions per type"  ${outcar_fn} | tail -1 | awk -F"=" '{print $2}'))
@@ -68,19 +78,22 @@ outcar2xyz_singleframe(){
 get_help(){
   script_name=$(basename $0)
 
-  echo -e "\nUsage: $script_name [outcar_fn] [xyz_fn] [config_type]"
+  echo -e "\nUsage: $script_name [outcar_fn] [xyz_fn] [config_type] [addtional_labels]"
 
-  echo -e "\nConvert OUTCAR to xyz file for NEP training."
+  echo -e "\nConvert scf OUTCAR to xyz file for NEP training."
 
   echo -e "\nOptions:"
-  echo "    -h, --help    show this help message and exit"
-  echo "    outcar_fn     OUTCAR filename, default OUTCAR"
-  echo "    xyz_fn        xyz filename, default NEP-dataset.xyz"
-  echo "    config_type   config type tag, default 'outcar2xyz'"
+  echo "    -h, --help          show this help message and exit"
+  echo "    outcar_fn           OUTCAR filename, default OUTCAR"
+  echo "    xyz_fn              xyz filename, default NEP-dataset.xyz"
+  echo "    config_type         config type tag, default 'outcar2xyz'"
+  echo "    addtional_labels    additional labels, default element natoms group tag"
 
   echo -e "\nExamples:"
   echo "    $script_name"
   echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz'"
+  echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb'"
+  echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb' '16' 'perturbation' 'train'"
   exit 0
 }
 
@@ -94,5 +107,8 @@ elif [[ $# -eq 3 ]]; then
 
 elif [[ $# -eq 0 ]]; then
   outcar2xyz_singleframe
+
+elif [[ $# -gt 3 ]]; then
+  outcar2xyz_singleframe "$1" "$2" "$3" "${@:4}"
 
 fi
