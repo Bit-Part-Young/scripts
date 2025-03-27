@@ -3,7 +3,7 @@
 
 Author: SLY
 Date: 2024-12-08
-Updated: 2025-02-15
+Updated: 2025-03-27
 """
 
 from collections import deque
@@ -22,7 +22,7 @@ def get_max_index(index):
         return index.stop if (index.stop is not None) else float("inf")
 
 
-def cfg_to_atoms(
+def cfg2Atoms(
     symbols,
     cell,
     positions,
@@ -42,7 +42,20 @@ def cfg_to_atoms(
     )
 
     volume = atoms.get_volume()
-    stress = -np.array(info["virial"]) / volume
+    # -1 是为了与 ASE 做法一致
+    virial = np.array(info["virial"])
+    # 需是 6 个分量且为 voigt order
+    stress = -1 * virial / volume
+
+    # 写成 9 个分量
+    virial = np.array(
+        [
+            [virial[0], virial[5], virial[4]],
+            [virial[5], virial[1], virial[3]],
+            [virial[4], virial[3], virial[2]],
+        ]
+    )
+    atoms.info["virial"] = virial
 
     if forces is not None:
         calculator = SinglePointCalculator(
@@ -113,22 +126,13 @@ def read_mtp_cfg(
 
         if "PlusStress" in line:
             line = lines.popleft()
+            # MTP 用 VASP OUTCAR 中的 Total 作为其 cfg 构型文件中的 PlusStress 数据
+            # 6 个分量时，MTP 和 ASE 采用的都是 voigt order
             plusstress = [float(x) for x in line.split()]
-            virial = [
-                plusstress[0],
-                plusstress[5],
-                plusstress[4],
-                plusstress[5],
-                plusstress[1],
-                plusstress[3],
-                plusstress[4],
-                plusstress[3],
-                plusstress[2],
-            ]
-            virial_dict = {"virial": " ".join(map(str, virial))}
+            virial_dict = {"virial": plusstress}
 
             symbols = [symbols_map[x] for x in atoms_type]
-            out_atoms = cfg_to_atoms(
+            atoms = cfg2Atoms(
                 symbols=symbols,
                 cell=cell,
                 positions=positions,
@@ -136,18 +140,16 @@ def read_mtp_cfg(
                 forces=forces,
                 info=virial_dict,
             )
-            images.append(out_atoms)
+            images.append(atoms)
 
         if "Feature   EFS_by" in line:
             dft_code = line.split()[2]
-
-            out_atoms.info["dft_code"] = dft_code
+            atoms.info["dft_code"] = dft_code
 
         # 该 Feature 不一定有
         if "Feature   mindist" in line:
             mindist = float(line.split()[2])
-
-            out_atoms.info["mindist"] = mindist
+            atoms.info["mindist"] = mindist
 
         if len(images) > index_end >= 0:
             break
@@ -169,6 +171,6 @@ if __name__ == "__main__":
     print(f"No. 1 configuration:\n {atoms}")
     print(f"Info: {atoms.info}")
     print(f"Energy: {atoms.get_potential_energy()}")
-    print(f"Forces:\n{atoms.get_forces()}")
-    print(f"Stress:\n{atoms.get_stress()}")
+    print(f"Forces:\n{atoms.get_forces()[:3]}")
+    print(f"Stress:\n{atoms.get_stress(voigt=False)}")
     print(f"Virial:\n{atoms.info['virial']}")
