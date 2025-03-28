@@ -12,6 +12,7 @@ import numpy as np
 from ase.atoms import Atoms
 from ase.calculators.singlepoint import SinglePointCalculator
 from ase.parallel import paropen
+from ase.units import GPa
 from ase.utils import string2index
 
 
@@ -26,10 +27,10 @@ def cfg2Atoms(
     symbols,
     cell,
     positions,
-    info=None,
     pbc=True,
-    forces=None,
-    energy=None,
+    info=None | dict,
+    forces=None | np.ndarray,
+    energy=None | float,
 ):
     """将 cfg 文件转换为 ase.Atoms 对象"""
 
@@ -41,13 +42,15 @@ def cfg2Atoms(
         info=info,
     )
 
+    atoms.arrays["forces"] = forces
+
     volume = atoms.get_volume()
     # -1 是为了与 ASE 做法一致
     virial = np.array(info["virial"])
-    # 需是 6 个分量且为 voigt order
+    # stress 需是 6 个分量且为 voigt order
     stress = -1 * virial / volume
 
-    # 写成 9 个分量
+    # 将 virial 重写成 9 个分量
     virial = np.array(
         [
             [virial[0], virial[5], virial[4]],
@@ -89,13 +92,6 @@ def read_mtp_cfg(
 
     images = []
 
-    natoms = None
-    cell = None
-    array_total = None
-    energy = None
-    plusstress = None
-    dft_code = None
-    mindist = None
     while len(lines) > 0:
         line = lines.popleft()
 
@@ -111,14 +107,18 @@ def read_mtp_cfg(
             cell = np.array(cell)
 
         if "AtomData" in line:
-            array_total = []
+            atomdata_list = []
             for _ in range(natoms):
                 line = lines.popleft()
-                array_total.append([float(x) for x in line.split()])
-            array_total = np.array(array_total)
-            atoms_type = array_total[:, 1]
-            positions = array_total[:, 2:5]
-            forces = array_total[:, 5:8]
+                atomdata_list.append([float(x) for x in line.split()])
+
+            atomdata_array = np.array(atomdata_list)
+
+            symbols_int = atomdata_array[:, 1].tolist()
+            symbols = [symbols_map[symbol_int] for symbol_int in symbols_int]
+
+            positions = atomdata_array[:, 2:5]
+            forces = atomdata_array[:, 5:8]
 
         if "Energy" in line:
             line = lines.popleft()
@@ -128,10 +128,9 @@ def read_mtp_cfg(
             line = lines.popleft()
             # MTP 用 VASP OUTCAR 中的 Total 作为其 cfg 构型文件中的 PlusStress 数据
             # 6 个分量时，MTP 和 ASE 采用的都是 voigt order
-            plusstress = [float(x) for x in line.split()]
+            plusstress = list(map(float, line.split()))
             virial_dict = {"virial": plusstress}
 
-            symbols = [symbols_map[x] for x in atoms_type]
             atoms = cfg2Atoms(
                 symbols=symbols,
                 cell=cell,
@@ -168,9 +167,11 @@ if __name__ == "__main__":
 
     atoms: Atoms = atoms_list[0]
 
+    np.set_printoptions(precision=5, suppress=True)
     print(f"No. 1 configuration:\n {atoms}")
-    print(f"Info: {atoms.info}")
-    print(f"Energy: {atoms.get_potential_energy()}")
-    print(f"Forces:\n{atoms.get_forces()[:3]}")
-    print(f"Stress:\n{atoms.get_stress(voigt=False)}")
-    print(f"Virial:\n{atoms.info['virial']}")
+    print(f"Info:\n{atoms.info}")
+    print(f"Energy (eV): {atoms.get_potential_energy()}")
+    print(f"Forces (eV/Å):\n{atoms.get_forces()[:3]}")
+    print(f"Stress (eV/Å^3):\n{atoms.get_stress(voigt=False)}")
+    print(f"Stress (GPa):\n{atoms.get_stress(voigt=False) / GPa}")
+    print(f"Virial (eV):\n{atoms.info['virial']}")

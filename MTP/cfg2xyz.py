@@ -1,73 +1,59 @@
-"""
-Purpose:
-    Convert mtp input file format to xyz.
-Ref:
-    dpdata: https://github.com/deepmodeling/dpdata
-Run:
-    python mtp2xyz.py train.cfg Symbol1 Symbol2 Symbol3 ...
-"""
+#!/usr/bin/env python3
 
+"""将 MTP cfg 文件转换成 NEP xyz"""
+
+import argparse
 import os
-import sys
-from collections import defaultdict
-from typing import Dict
 
 import numpy as np
 from ase.atoms import Atoms
 
 
-def load_cfg(cfg_fn: str, type_to_symbol: dict[int, str]) -> list[Atoms]:
-    frames = []
+def load_cfg(cfg_fn: str, symbols_map: dict[int, str]) -> list[Atoms]:
+    """导入 cfg 文件，返回 list[Atoms]"""
+
+    atoms_list = []
     with open(cfg_fn) as f:
         line = "chongchongchong!"
         while line:
             line = f.readline()
-            if "BEGIN_CFG" in line:
-                cell = np.zeros((3, 3))
             if "Size" in line:
                 line = f.readline()
                 natoms = int(line.split()[0])
-                positions = np.zeros((natoms, 3))
-                forces = np.zeros((natoms, 3))
-                energies = np.zeros(natoms)
-                symbols = ["X"] * natoms
-            if "Supercell" in line:
-                for fields_key in range(3):
-                    line = f.readline()
-                    for j in range(3):
-                        cell[fields_key, j] = float(line.split()[j])
-            if "AtomData" in line:
-                fields_kv_dict = defaultdict(int)
-                for fields_key, fields_value in enumerate(line.split()[1:]):
-                    fields_kv_dict[fields_value] = fields_key
 
+            if "Supercell" in line:
+                cell = []
+                for _ in range(3):
+                    line = f.readline()
+                    cell.append([float(x) for x in line.split()])
+                cell = np.array(cell)
+
+            if "AtomData" in line:
+                atomdata_list = []
                 for _ in range(natoms):
                     line = f.readline()
-                    fields_content = line.split()
-                    atom_index = int(fields_content[fields_kv_dict["id"]]) - 1
-                    symbols[atom_index] = type_to_symbol[
-                        int(fields_content[fields_kv_dict["type"]])
-                    ]
-                    positions[atom_index] = [
-                        float(fields_content[fields_kv_dict[key]])
-                        for key in ["cartes_x", "cartes_y", "cartes_z"]
-                    ]
-                    forces[atom_index] = [
-                        float(fields_content[fields_kv_dict[key]])
-                        for key in ["fx", "fy", "fz"]
-                    ]
+                    atomdata_list.append([float(x) for x in line.split()])
+
+                atomdata_array = np.array(atomdata_list)
+
+                symbols_int = atomdata_array[:, 1].tolist()
+                symbols = [symbols_map[symbol_int] for symbol_int in symbols_int]
+
+                positions = atomdata_array[:, 2:5]
+                forces = atomdata_array[:, 5:8]
 
                 atoms = Atoms(symbols=symbols, cell=cell, positions=positions, pbc=True)
-                if fields_kv_dict["fx"] != 0:
-                    atoms.info["forces"] = forces
+                atoms.arrays["forces"] = forces
 
             if "Energy" in line and "Weight" not in line:
                 line = f.readline()
                 atoms.info["energy"] = float(line.split()[0])
+
             if "PlusStress" in line:
                 line = f.readline()
                 # MTP cfg stress 分量顺序 xx yy zz yz xz xy
-                plusstress = np.array(list(map(float, line.split())))
+                plusstress = list(map(float, line.split()))
+                # MTP cfg 中的 virial 对应与 NEP xyz 中的 varial
                 virial = [
                     plusstress[0],
                     plusstress[5],
@@ -80,17 +66,18 @@ def load_cfg(cfg_fn: str, type_to_symbol: dict[int, str]) -> list[Atoms]:
                     plusstress[2],
                 ]
                 atoms.info["virial"] = virial
+
             if "END_CFG" in line:
-                frames.append(atoms)
+                atoms_list.append(atoms)
 
-    return frames
+    return atoms_list
 
 
-def dump_xyz(frames: list[Atoms]):
+def dump_xyz(atoms_list: list[Atoms], xyz_fn: str = "mtp2xyz.xyz"):
+    """将 list[Atoms] 转换为 xyz 文件"""
 
     xyz_string = ""
-    nframes = len(frames)
-    for atoms in frames:
+    for atoms in atoms_list:
         xyz_string += str(len(atoms)) + "\n"
         xyz_string += "config_type=cfg2xyz "
         xyz_string += "energy=" + str(atoms.info["energy"]) + " "
@@ -103,18 +90,48 @@ def dump_xyz(frames: list[Atoms]):
 
         symbols = atoms.get_chemical_symbols()
         positions = atoms.get_positions()
-        forces = atoms.info["forces"]
+        forces = atoms.arrays["forces"]
         for i in range(len(atoms)):
             xyz_string += "{:2} {:>15.8f} {:>15.8f} {:>15.8f} {:>15.8f} {:>15.8f} {:>15.8f}\n".format(
                 symbols[i], *positions[i], *forces[i]
             )
 
-    os.makedirs("XYZ", exist_ok=True)
-    with open(os.path.join("XYZ", "mtp2xyz.xyz"), "w") as f:
+    with open(xyz_fn, "w") as f:
         f.write(xyz_string)
 
 
 if __name__ == "__main__":
-    type_to_symbol = {i: s for i, s in enumerate(sys.argv[2:])}
-    frames = load_cfg(sys.argv[1], type_to_symbol)
-    dump_xyz(frames)
+    parser = argparse.ArgumentParser(description="Convert MTP cfg to NEP xyz.")
+
+    parser.add_argument(
+        "cfg_fn",
+        type=str,
+        default="train.cfg",
+        help="MTP cfg filename",
+    )
+
+    parser.add_argument(
+        "xyz_fn",
+        type=str,
+        default="mtp2xyz.xyz",
+        help="NEP xyz filename",
+    )
+
+    parser.add_argument(
+        "-ess",
+        type=str,
+        nargs="+",
+        required=True,
+        help="element symbol sequences, e.g. Ti Al Nb",
+    )
+
+    args = parser.parse_args()
+    cfg_fn = args.cfg_fn
+    xyz_fn = args.xyz_fn
+    ess = args.ess
+
+    symbols_map = {i: s for i, s in enumerate(ess)}
+    atoms_list = load_cfg(cfg_fn, symbols_map)
+    dump_xyz(atoms_list, xyz_fn)
+
+    print(f"Convert {cfg_fn} to {xyz_fn}.")

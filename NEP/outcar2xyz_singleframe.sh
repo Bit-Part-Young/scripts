@@ -39,7 +39,7 @@ outcar2xyz_singleframe(){
   virial=$(grep -A 20 "FORCE on cell =-STRESS" ${outcar_fn} | grep "Total " | tail -1 | awk '{print $2,$5,$7,$5,$3,$6,$7,$6,$4}')
 
   # 添加多个标签实现
-  label_array=("element" "natoms" "group" "tag")
+  label_array=("element" "group" "tag")
   if [[ $# -eq 0 || $# -eq 3 ]]; then
     echo "config_type=\"${config_type}\" pbc=\"T T T\" energy=${energy} Lattice=\"${lattice}\" virial=\"${virial}\" Properties=species:S:1:pos:R:3:forces:R:3" >> $xyz_fn
   elif [[ $# -gt 3 ]]; then
@@ -87,13 +87,13 @@ get_help(){
   echo "    outcar_fn           OUTCAR filename, default OUTCAR"
   echo "    xyz_fn              xyz filename, default NEP-dataset.xyz"
   echo "    config_type         config type tag, default 'outcar2xyz'"
-  echo "    addtional_labels    additional labels, default element natoms group tag"
+  echo "    addtional_labels    additional labels, default element group tag"
 
   echo -e "\nExamples:"
   echo "    $script_name"
   echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz'"
   echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb'"
-  echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb' '16' 'perturbation' 'train'"
+  echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb' 'perturbation' 'train'"
   exit 0
 }
 
@@ -102,11 +102,11 @@ get_help(){
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
   get_help
 
-elif [[ $# -eq 3 ]]; then
-  outcar2xyz_singleframe "$1" "$2" "$3"
-
 elif [[ $# -eq 0 ]]; then
   outcar2xyz_singleframe
+
+elif [[ $# -eq 3 ]]; then
+  outcar2xyz_singleframe "$1" "$2" "$3"
 
 elif [[ $# -gt 3 ]]; then
   outcar2xyz_singleframe "$1" "$2" "$3" "${@:4}"
