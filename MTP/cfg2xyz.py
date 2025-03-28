@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 
-"""将 MTP cfg 文件转换成 NEP xyz"""
+"""
+将 MTP cfg 文件转换成 NEP xyz
+
+reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/mtp2xyz/mtp2xyz.py
+"""
 
 import argparse
-import os
 
 import numpy as np
 from ase.atoms import Atoms
@@ -104,17 +107,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert MTP cfg to NEP xyz.")
 
     parser.add_argument(
-        "cfg_fn",
-        type=str,
-        default="train.cfg",
-        help="MTP cfg filename",
+        "cfg_fn", type=str, default="train.cfg", help="MTP cfg filename"
     )
 
     parser.add_argument(
-        "xyz_fn",
-        type=str,
-        default="mtp2xyz.xyz",
-        help="NEP xyz filename",
+        "xyz_fn", type=str, default="output.xyz", help="NEP xyz filename"
     )
 
     parser.add_argument(

@@ -16,7 +16,7 @@ def xyz2cfg(
     symbols_map: dict[str, int],
     cfg_fn: str = "output.cfg",
 ):
-    """将 NEP xyz 文件转换为 MTP cfg"""
+    """将 NEP xyz 文件转换成 MTP cfg"""
 
     atoms_list = read(xyz_fn, index=":", format="extxyz")
 
@@ -87,13 +87,14 @@ def xyz2cfg(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Convert NEP xyz to cfg.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
+    parser = argparse.ArgumentParser(description="Convert NEP xyz to MTP cfg.")
 
-    parser.add_argument("xyz_fn", type=str, default="train.xyz", help="xyz filename")
-    parser.add_argument("cfg_fn", type=str, default="output.cfg", help="cfg filename")
+    parser.add_argument(
+        "xyz_fn", type=str, default="train.xyz", help="NEP xyz filename"
+    )
+    parser.add_argument(
+        "cfg_fn", type=str, default="output.cfg", help="MTP cfg filename"
+    )
     parser.add_argument(
         "-ess",
         type=str,
