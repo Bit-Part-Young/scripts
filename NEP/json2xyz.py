@@ -23,39 +23,39 @@ def json2xyz(json_data: dict):
 
     atoms.arrays["forces"] = np.array(json_data["outputs"]["forces"])
     atoms.info["energy"] = json_data["outputs"]["energy"]
+
     # 将 virial_stress 转换为 virial；需确定分量顺序
-    plusstress = json_data["outputs"]["virial_stress"]
-    # 若 viral_stress 是 MTP cfg 提取的
-    # virial = [
-    #     plusstress[0],
-    #     plusstress[5],
-    #     plusstress[4],
-    #     plusstress[5],
-    #     plusstress[1],
-    #     plusstress[3],
-    #     plusstress[4],
-    #     plusstress[3],
-    #     plusstress[2],
-    # ]
-    # 若 viral_stress 是 VASP OUTCAR 提取的
+    virial_stress = json_data["outputs"]["virial_stress"]
+    # Voigt order
     virial = [
-        plusstress[0],
-        plusstress[3],
-        plusstress[5],
-        plusstress[3],
-        plusstress[1],
-        plusstress[4],
-        plusstress[5],
-        plusstress[4],
-        plusstress[2],
+        virial_stress[0],
+        virial_stress[5],
+        virial_stress[4],
+        virial_stress[5],
+        virial_stress[1],
+        virial_stress[3],
+        virial_stress[4],
+        virial_stress[3],
+        virial_stress[2],
+    ]
+    # 非 Voigt order
+    virial = [
+        virial_stress[0],
+        virial_stress[3],
+        virial_stress[5],
+        virial_stress[3],
+        virial_stress[1],
+        virial_stress[4],
+        virial_stress[5],
+        virial_stress[4],
+        virial_stress[2],
     ]
     atoms.info["virial"] = " ".join(map(str, virial))
+
     # 可能没有部分 key
-    atoms.info["element"] = json_data.get("element", "False")
-    atoms.info["num_atoms"] = json_data.get("num_atoms", "False")
-    atoms.info["group"] = json_data.get("group", "False")
-    atoms.info["description"] = json_data.get("description", "False")
-    atoms.info["tag"] = json_data.get("tag", "False")
+    keys = ["element", "num_atoms", "group", "description", "tag"]
+    for key in keys:
+        atoms.info[key] = json_data.get(key, "False")
 
     return atoms
 

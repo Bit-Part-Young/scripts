@@ -18,6 +18,8 @@
 
 ## 脚本内容
 
+### ASE 程序使用
+
 - `ase-usage/`: ASE 程序使用
 
 ```bash
@@ -37,6 +39,8 @@ surface_bcc.sh                       # BCC (100), (110), (111) 表面模型构�
 ```
 
 ---
+
+### pymatgen 程序使用
 
 - `pymatgen-usage/`: pymatgen 程序使用
 
@@ -72,6 +76,8 @@ pymatgen_old_api.ipynb               # 旧 api 模块使用
 ```
 
 ---
+
+### VASP 相关脚本
 
 - `VASP-scripts/`: VASP 相关脚本
 
@@ -117,6 +123,8 @@ plot_dos_element_spd.py              # 使用 pymatgen 模块绘制元素分态�
 
 ---
 
+### 结构相关脚本
+
 - `structure-scripts/`: 结构相关脚本
 
 ```bash
@@ -155,6 +163,8 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 
 ---
 
+### NEP 相关脚本
+
 - `NEP`: NEP 相关脚本
 
 ```bash
@@ -183,6 +193,8 @@ json2df.py                           # 将 json 构型及其数据文件转换�
 
 ---
 
+### MTP 相关脚本
+
 - `MTP`: MTP 相关脚本
 
 ```bash
@@ -197,6 +209,8 @@ extract_cfg.py                       # 提取 MTP cfg 文件 中的能量、力�
 ```
 
 ---
+
+### MISC 其他
 
 - `ovito-usage/`: ovito Python 使用
 
