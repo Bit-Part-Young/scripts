@@ -18,7 +18,6 @@ import argparse
 
 import pandas as pd
 
-# [ ] 添加 晶格常数数据
 data = {
     "Ti": (22, 47.867, 1.4, 1941.0, 4.51, -7.8, 2.93, 4.65, "mp-72"),
     "Al": (13, 26.982, 1.25, 933.47, 2.70, -3.7, 4.04, 4.04, "mp-134"),
@@ -64,15 +63,19 @@ def note():
     print(
         "1. atomic_radius: atomic radius (no unified value, not necessarily accurate)"
     )
-    print("2. energy_pa: average atomic energy of the element's ground state structure")
     print(
-        "3. calculation details: VASP.5.4.4 PBE, ENCUT=400, KSPACING=0.15, EDIFF=1E-6"
+        "2. energy_pa: average atomic energy of the element's ground state structure after relaxation"
+    )
+    print(
+        "3. a, c: lattice constants a and c of the element's ground state structure after relaxation"
+    )
+    print(
+        "4. calculation details: psp=VASP.5.4.4 PBE recommended, ENCUT=400, KSPACING=0.15, EDIFF=1E-6, EDIFFG=-1E-2"
     )
 
 
 parser = argparse.ArgumentParser(
     description="Common elements data.",
-    # formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     epilog="Author: SLY.",
 )
 

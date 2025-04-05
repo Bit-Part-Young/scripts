@@ -1,105 +1,115 @@
-"""
-reference: https://github.com/zhyan0603/GPUMDkit/blob/main/Scripts/analyzer/energy_force_virial_analyzer.py
-"""
+#!/usr/bin/env python3
+
+"""绘制 energy, forces, virial/stress, natoms 直方图"""
 
 import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
-from ase.atoms import Atoms
-from ase.io import read
+import pandas as pd
+from matplotlib.axes import Axes
 
 
-def calculate_range(xyz_fn: str, property_name: str):
-    """计算 energy, force, virial 的范围"""
+def forces_histogram(data_fn: str, property_name: str, bins: int = 30):
+    """绘制 forces 直方图"""
 
-    property_name = property_name.lower()
-    # [ ] 待改进
-    values = []
+    array = np.loadtxt(data_fn)
+    label_list = ["fx", "fy", "fz"]
 
-    atoms_list = read(xyz_fn, index=":", format="extxyz")
+    df = pd.DataFrame(array, columns=label_list)
+    pd.set_option("display.float_format", "{:.2f}".format)
+    print(df.describe())
 
-    for atoms in atoms_list:
-        atoms: Atoms
-        info_lower = {k.lower(): v for k, v in atoms.info.items()}
+    fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(10, 4), dpi=500)
 
-        if property_name == "energy":
-            natoms = len(atoms)
-            energy = atoms.get_potential_energy()
-            energy_pa = energy / natoms
-            values.append(energy_pa)
-        elif property_name in ["force", "forces"]:
-            forces = atoms.arrays["force"]
-            values.extend(np.linalg.norm(forces, axis=1))
-        elif property_name == "virial":
-            if "virial" in info_lower:
-                virial = info_lower["virial"]
-                values.extend(virial)
-            else:
-                raise ValueError("Virial information not found in frame info.")
-        else:
-            raise ValueError("Invalid property. Choose from 'energy', 'force', or 'virial'.")
+    for i, ax in enumerate(axs.flat):
+        ax: Axes
+        ax.hist(array[:, i], bins=bins, edgecolor="black", label=label_list[i])
+        ax.set_xlabel(f"{label_list[i]}")
+        ax.set_ylabel("Frequency")
 
-    return np.min(values), np.max(values), values
+        ax.legend()
+
+    plt.tight_layout()
+
+    fig_fn = f"range_{property_name}.png"
+    fig.savefig(fig_fn)
+
+    print(f"\nFigure {fig_fn} generated!")
 
 
-def plot_histogram(values, property_name: str):
-    """绘制 force, energy, virial 的直方图"""
+def virial_histogram(data_fn: str, property_name: str, bins: int = 30):
+    """绘制 virial/stress 直方图"""
 
-    property_name = property_name.capitalize()
+    array = np.loadtxt(data_fn)
+    label_list = ["xx", "yy", "zz", "xy", "xz", "yz"]
+
+    df = pd.DataFrame(array, columns=label_list)
+    pd.set_option("display.float_format", "{:.2f}".format)
+    print(df.describe())
+    fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(15, 12), dpi=500)
+
+    for i, ax in enumerate(axs.flat):
+        ax: Axes
+        ax.hist(array[:, i], bins=bins, edgecolor="black", label=label_list[i])
+        ax.set_xlabel(f"{label_list[i]}")
+        ax.set_ylabel("Frequency")
+
+        ax.legend()
+
+    plt.tight_layout()
+
+    fig_fn = f"range_{property_name}.png"
+    fig.savefig(fig_fn)
+
+    print(f"\nFigure {fig_fn} generated!")
+
+
+def energy_histogram(data_fn: str, property_name: str, bins: int = 30):
+    """绘制 energy, natoms 直方图"""
+
+    array = np.loadtxt(data_fn)
+
+    df = pd.DataFrame(array, columns=[property_name])
+    pd.set_option("display.float_format", "{:.2f}".format)
+    print(df.describe())
+
     fig, ax = plt.subplots(figsize=(6, 4), dpi=300)
 
-    ax.hist(values, bins=30, edgecolor="black")
+    ax.hist(array, bins=bins, edgecolor="black", label=property_name)
 
     ax.set_title(f"{property_name} Histogram")
     ax.set_xlabel(f"{property_name}")
     ax.set_ylabel("Frequency")
 
+    ax.legend()
+
     plt.tight_layout()
 
-    fig.savefig(f"range_{property_name}.png")
+    fig_fn = f"range_{property_name}.png"
+    fig.savefig(fig_fn)
+
+    print(f"\nFigure {fig_fn} generated!")
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
-        description="Calculate & plot the range of energy/forces/virials in an xyz file.",
+        description="Histogram plot of energy, forces, virial/stress, natoms.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "xyz_fn",
-        type=str,
-        nargs="?",
-        default="train.xyz",
-        const="train.xyz",
-        help="xyz filename",
+        epilog="Author: SLY.",
     )
 
-    parser.add_argument(
-        "-pn",
-        "--property_name",
-        type=str,
-        choices=["energy", "forces", "virial"],
-        help="Property name: energy, forces, or virial",
-    )
+    parser.add_argument("data_fn", type=str, help="data filename")
 
-    parser.add_argument(
-        "--hist",
-        action="store_true",
-        help="Plot histogram of the property",
-    )
-
+    parser.add_argument("--bins", type=int, default=30, help="bins number")
     args = parser.parse_args()
-    xyz_fn = args.xyz_fn
-    property_name = args.property_name
-    plot_hist = args.hist
 
-    min_val, max_val, values = calculate_range(
-        xyz_fn=xyz_fn,
-        property_name=property_name,
-    )
-
-    print(f"{property_name.capitalize()} range: {min_val:.3f} to {max_val:.3f}")
-
-    if plot_hist:
-        plot_histogram(values, property_name)
+    property_name = args.data_fn.split("_")[0]
+    if property_name in ["energy", "natoms"]:
+        energy_histogram(args.data_fn, property_name, args.bins)
+    elif property_name in ["virial", "stress"]:
+        virial_histogram(args.data_fn, property_name, args.bins)
+    elif property_name == "forces":
+        forces_histogram(args.data_fn, property_name, args.bins)
+    else:
+        raise ValueError(f"Invalid property name: {property_name}")
