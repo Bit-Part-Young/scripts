@@ -4,6 +4,7 @@
 
 import argparse
 
+import pandas as pd
 from ase.io import write
 from monty.serialization import loadfn
 from pymatgen.core.structure import Structure
@@ -12,6 +13,7 @@ from pymatgen.core.structure import Structure
 def json2surfaces(json_fn: str, max_index: int = None):
     data = loadfn(json_fn)
 
+    surface_info_list = []
     num_surface = 0
     for surface in data[0]["surfaces"]:
         miller_index = surface["miller_index"]
@@ -20,8 +22,20 @@ def json2surfaces(json_fn: str, max_index: int = None):
             structure = Structure.from_str(surface["structure"], fmt="cif")
             atoms = structure.to_ase_atoms()
 
-            atoms_info = {"mirror_index": " ".join(map(str, miller_index))}
-            atoms.info.update(atoms_info)
+            keys_list = [
+                "miller_index",
+                "surface_energy",
+                "surface_energy_EV_PER_ANG2",
+                "is_reconstructed",
+                "work_function",
+                # "efermi",
+                "area_fraction",
+                # "has_wulff",
+            ]
+            surface_info = {key: surface[key] for key in keys_list}
+            surface_info_list.append(surface_info)
+
+            atoms.info.update(surface_info)
 
             output_fn = json_fn.replace(".json", ".xyz")
             write(
@@ -32,6 +46,12 @@ def json2surfaces(json_fn: str, max_index: int = None):
             )
 
             num_surface += 1
+
+    surface_info_df = pd.DataFrame(surface_info_list)
+
+    pd.set_option("display.max_columns", None)
+    pd.set_option("display.max_rows", None)
+    print(surface_info_df)
 
     print(f"Total {num_surface} surface configurations saved to {output_fn}.")
 
