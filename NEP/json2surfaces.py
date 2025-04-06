@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+"""从 json 文件中提取 MP 表面构型并保存为 extxyz 格式"""
+
+import argparse
+
+from ase.io import write
+from monty.serialization import loadfn
+from pymatgen.core.structure import Structure
+
+
+def json2surfaces(json_fn: str, max_index: int = None):
+    data = loadfn(json_fn)
+
+    num_surface = 0
+    for surface in data[0]["surfaces"]:
+        miller_index = surface["miller_index"]
+
+        if max_index is None or abs(max(miller_index)) <= max_index:
+            structure = Structure.from_str(surface["structure"], fmt="cif")
+            atoms = structure.to_ase_atoms()
+
+            atoms_info = {"mirror_index": " ".join(map(str, miller_index))}
+            atoms.info.update(atoms_info)
+
+            output_fn = json_fn.replace(".json", ".xyz")
+            write(
+                output_fn,
+                atoms,
+                format="extxyz",
+                append=True,
+            )
+
+            num_surface += 1
+
+    print(f"Total {num_surface} surface configurations saved to {output_fn}.")
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(
+        description="Extract MP surface configurations from json file to extxyz format.",
+        epilog="Author: SLY.",
+    )
+
+    parser.add_argument("json_fn", type=str, help="json filename")
+    parser.add_argument("-mi", "--max_index", type=int, help="max miller index")
+    args = parser.parse_args()
+
+    json2surfaces(args.json_fn, args.max_index)
