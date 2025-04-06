@@ -30,8 +30,8 @@ def json2gb(json_fn: str):
         ]
         gb_info = {key: gb_data[key] for key in keys_list}
 
-        gb_type = {"gb_type": str(gb_data["type"])}
-        gb_info.update(gb_type)
+        gb_info.update({"gb_type": str(gb_data["type"])})
+        gb_info.update({"natoms": len(structure_cif)})
 
         gb_info_list.append(gb_info)
 
@@ -50,6 +50,9 @@ def json2gb(json_fn: str):
     pd.set_option("display.max_columns", None)
     pd.set_option("display.max_rows", None)
     print(gb_info_df)
+
+    csv_fn = json_fn.replace(".json", "_gb_info.csv")
+    gb_info_df.to_csv(csv_fn, index=False)
 
     print(
         f"Total {num_gb} surface configurations saved to {initial_output_fn} {final_output_fn} {cif_output_fn}."

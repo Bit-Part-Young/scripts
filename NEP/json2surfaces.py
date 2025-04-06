@@ -33,6 +33,7 @@ def json2surfaces(json_fn: str, max_index: int = None):
                 # "has_wulff",
             ]
             surface_info = {key: surface[key] for key in keys_list}
+            surface_info.update({"natoms": len(atoms)})
             surface_info_list.append(surface_info)
 
             atoms.info.update(surface_info)
@@ -52,6 +53,9 @@ def json2surfaces(json_fn: str, max_index: int = None):
     pd.set_option("display.max_columns", None)
     pd.set_option("display.max_rows", None)
     print(surface_info_df)
+
+    csv_fn = json_fn.replace(".json", "_surface_info.csv")
+    surface_info_df.to_csv(csv_fn, index=False)
 
     print(f"Total {num_surface} surface configurations saved to {output_fn}.")
 
