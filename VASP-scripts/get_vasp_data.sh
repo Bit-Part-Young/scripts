@@ -26,7 +26,7 @@ get_vasp_data() {
 
           time=$(grep 'Total CPU time used' "$outcar_fn" | awk '{print $6}')
 
-          printf "| %-21s | %-8s | %-18s | %-11s | %-10s |\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
+          printf "| %-21s | %-8s | %-18.6f | %-11s | %-10s |\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
           echo "|-----------------------------------------------------------------------------------"
         else
           unfinished_dirs+=("${dir}")
