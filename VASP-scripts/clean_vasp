@@ -1,0 +1,17 @@
+#!/bin/bash
+
+rm  REPORT \
+    PCDAT \
+    vasp.log \
+    WAVECAR \
+    CHG* \
+    IBZKPT \
+    DOS* \
+    EIGENVAL \
+    PROCAR \
+    XDATCAR \
+    CONTCAR \
+    OSZICAR \
+    OUTCAR \
+    vasprun.xml \
+    2>/dev/null
