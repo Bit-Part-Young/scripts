@@ -11,7 +11,7 @@ get_vasp_data() {
 
   unfinished_dirs=()
 
-  for dir in "$@"; do
+  for dir in $(echo "$@" | tr ' ' '\n' | sort -n); do
     if [ -d "$dir" ]; then
       oszicar_fn="${dir}/OSZICAR"
       outcar_fn="${dir}/OUTCAR"
