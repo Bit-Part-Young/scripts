@@ -5,9 +5,9 @@
 get_vasp_data() {
 
   # 输出表头
-  echo "|-----------------------------------------------------------------------------------"
-  echo "|        Folder         |   Step   |       Energy       |  Energy_pa  |  TimeCost  |"
-  echo "|-----------------------------------------------------------------------------------"
+  echo "|------------------------------------------------------------------------------------"
+  echo "|        Folder         |   Step   |       Energy       |  Energy_pa  |  TimeCost    |"
+  echo "|------------------------------------------------------------------------------------"
 
   unfinished_dirs=()
 
@@ -25,9 +25,16 @@ get_vasp_data() {
           ionstep=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{print $1}')
 
           time=$(grep 'Total CPU time used' "$outcar_fn" | awk '{print $6}')
+          time=${time%.*}
+          if [[ ${time} -gt 0 ]]; then
+            hours=$((time / 3600))
+            minutes=$(((time % 3600) / 60))
+            seconds=$((time % 60))
+            time=$(printf "%02dh %02dm %02ds" "$hours" "$minutes" "$seconds")
+          fi
 
-          printf "| %-21s | %-8s | %-18.6f | %-11s | %-10s |\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
-          echo "|-----------------------------------------------------------------------------------"
+          printf "| %-21s | %-8s | %-18.6f | %-11s | %-12s |\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
+          echo "|-------------------------------------------------------------------------------------"
         else
           unfinished_dirs+=("${dir}")
         fi
