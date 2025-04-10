@@ -3,7 +3,7 @@
 
 BCC 找到了 四面体间隙
 FCC 找到了 四、八面体间隙
-HCP 找到了 四、八面体间隙（四面体间隙 y 轴分数坐标不太一致）
+HCP 找到了 四、八面体间隙（四面体间隙 z 轴分数坐标不太一致，应为 3/4、1/4，对于原胞而言）
 
 reference: https://github.com/bracerino/Automatically-find-interstitial-sites/blob/main/calc_int_sites.py
 """
@@ -18,7 +18,7 @@ np.set_printoptions(precision=5, suppress=True)
 
 
 interstitial_element = "N"
-number_interstitials_insert = 5
+number_interstitials_insert = 1
 # 0 表示考虑所有类型的间隙原子，1 表示只考虑第一种间隙原子，2 表示只考虑第二种间隙原子
 interstitial_type_selected = 0
 
@@ -46,9 +46,7 @@ for interstitial in generator.generate(structure, "H"):
 
     interstitial_site = interstitial.site.frac_coords
     multiplicity = interstitial.multiplicity
-    print(
-        f"Unique interstitial site: {interstitial_site}, multiplicity: {multiplicity}"
-    )
+    print(f"Unique interstitial site: {interstitial_site}, multiplicity: {multiplicity}")
     print(f"\nThe equivalent positions:")
 
     for index, equivalent_site in enumerate(interstitial.equivalent_sites, start=1):
@@ -64,9 +62,7 @@ for interstitial in generator.generate(structure, "H"):
     interstitial_type = interstitial_type + 1
 
 print(f"There are total of {len(unique_interstitial_list)} unique interstitial sites:")
-for equivalent_site, multiplicity in zip(
-    unique_interstitial_list, unique_multiplicity_list
-):
+for equivalent_site, multiplicity in zip(unique_interstitial_list, unique_multiplicity_list):
     print(f"site: {equivalent_site}, multiplicity: {multiplicity}")
 
 
@@ -110,9 +106,7 @@ def select_spaced_points(
 
     selected_indices = [0]
     for _ in range(1, n_points):
-        remaining_indices = [
-            i for i in range(len(frac_coords)) if i not in selected_indices
-        ]
+        remaining_indices = [i for i in range(len(frac_coords)) if i not in selected_indices]
 
         if mode == "farthest":
             next_index = max(
@@ -128,15 +122,12 @@ def select_spaced_points(
             next_index = min(
                 remaining_indices,
                 key=lambda i: abs(
-                    sum(dist_matrix[i, j] for j in selected_indices)
-                    / len(selected_indices)
+                    sum(dist_matrix[i, j] for j in selected_indices) / len(selected_indices)
                     - target_value
                 ),
             )
         else:
-            raise ValueError(
-                "Invalid mode. Choose from 'nearest', 'farthest', or 'moderate'."
-            )
+            raise ValueError("Invalid mode. Choose from 'nearest', 'farthest', or 'moderate'.")
 
         selected_indices.append(next_index)
 
