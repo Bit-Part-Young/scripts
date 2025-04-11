@@ -32,7 +32,7 @@ get_vasp_data() {
             minutes=$(((time % 3600) / 60))
             seconds=$((time % 60))
             time=$(printf "%02dh %02dm %02ds" "$hours" "$minutes" "$seconds")
-          elif [[ ${time} == 0 ]]; then
+          elif [[ ${time} -eq 0 ]]; then
             time="Still Running"
           fi
 
