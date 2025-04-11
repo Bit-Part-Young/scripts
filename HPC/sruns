@@ -9,7 +9,7 @@ get_help() {
 
   echo -e "\nUsage: ${script_name} num_cpu"
 
-  echo -e "Apply cal node in Pi / SiYuan HPC."
+  echo -e "\nApply cal node in Pi / SiYuan HPC."
 
   echo -e "\nOptions:"
   echo "    -h, --help       show this help message and exit"

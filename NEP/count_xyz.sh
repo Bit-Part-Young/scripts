@@ -9,7 +9,7 @@ set -u
 for fxyz in $(ls *xyz); do
 
   nlines=$(wc -l ${fxyz} | cut -d ' ' -f1)
-  natoms=$(grep -i energy ${fxyz} | wc -l)
+  natoms=$(grep -i pbc ${fxyz} | wc -l)
 
   echo -e "${fxyz}: \c"
   echo ${nlines} ${natoms} | awk '{print $2 " frames, " $1-$2*2 " atoms."}'

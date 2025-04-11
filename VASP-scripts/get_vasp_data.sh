@@ -59,7 +59,7 @@ get_vasp_data() {
 get_help() {
   script_name=$(basename "$0")
 
-  echo -e "\nUsage: $script_name [options] [dirs...]"
+  echo -e "\nUsage: $script_name [dirs...]"
 
   echo -e "\nGet ion steps, energy and time cost data in VASP calculation dirs with table format."
 
