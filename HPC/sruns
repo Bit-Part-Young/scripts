@@ -2,33 +2,38 @@
 
 # 根据超算类型申请计算节点
 
-# 检查 echo 是否有 -e 选项
-if test "$(echo -e)" = "-e"; then ECHO=echo; else ECHO="echo -e"; fi
 
-#------------------------------ 定义 help 函数 -----------------------------------
-help() {
-  script_name=$(basename $0)
-  $ECHO "Apply cal node in Pi / SiYuan HPC."
-  $ECHO "\nUsage:"
-  $ECHO "    ${script_name} [CPUs]"
-  $ECHO "\nOptions:"
-  $ECHO "    -h, --help            show this help message and exit"
-  $ECHO "    CPUs                  number of CPU"
-  $ECHO "\nAuthor: YSL."
+#-------------------------------- 获取帮助 --------------------------------
+get_help() {
+  script_name=$(basename "${0}")
+
+  echo -e "\nUsage: ${script_name} num_cpu"
+
+  echo -e "Apply cal node in Pi / SiYuan HPC."
+
+  echo -e "\nOptions:"
+  echo "    -h, --help       show this help message and exit"
+  echo "    num_cpu          number of CPU"
+
+  echo -e "\nAuthor: YSL."
 }
-#-------------------------------------------------------------------------------
 
-#--------------------------- Main program --------------------------------------
+
+#-------------------------------- 主函数 --------------------------------
 if [[ $# -gt 1 ]]; then
   $ECHO "Error: Too many arguments.\n"
-  help
+  get_help
+
 elif [[ $1 == "-h" || $1 == "--help" || $# -eq 0 ]]; then
-  help
+  get_help
+
 elif [[ $HOSTNAME =~ "sylogin" ]]; then
-  srun -p 64c512g -n $1 --pty /bin/bash
+  srun -p 64c512g -n "$1" --pty /bin/bash
+
 elif [[ $HOSTNAME =~ "pilogin" ]]; then
-  srun -p cpu -n $1 --pty /bin/bash
+  srun -p cpu -n "$1" --pty /bin/bash
+
 else
-  $ECHO "Error: Unsupported hostname: $HOSTNAME. Only pi / siyuan supported!\n"
-  help
+  echo -e "Error: Unsupported hostname: $HOSTNAME. Only pi / siyuan supported!\n"
+  get_help
 fi
