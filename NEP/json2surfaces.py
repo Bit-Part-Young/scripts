@@ -17,6 +17,7 @@ def json2surfaces(json_fn: str, max_index: int = None):
     num_surface = 0
     for surface in data[0]["surfaces"]:
         miller_index = surface["miller_index"]
+        miller_index_str = "".join(map(str, miller_index))
 
         if max_index is None or abs(max(miller_index)) <= max_index:
             structure = Structure.from_str(surface["structure"], fmt="cif")
@@ -33,7 +34,8 @@ def json2surfaces(json_fn: str, max_index: int = None):
                 # "has_wulff",
             ]
             surface_info = {key: surface[key] for key in keys_list}
-            surface_info.update({"natoms": len(atoms)})
+            surface_info.update({"num_atoms": len(atoms)})
+            surface_info.update({"miller_index": miller_index_str})
             surface_info_list.append(surface_info)
 
             atoms.info.update(surface_info)
@@ -57,7 +59,7 @@ def json2surfaces(json_fn: str, max_index: int = None):
     csv_fn = json_fn.replace(".json", "_surface_info.csv")
     surface_info_df.to_csv(csv_fn, index=False)
 
-    print(f"Total {num_surface} surface configurations saved to {output_fn}.")
+    print(f"\nTotal {num_surface} surface configurations saved to {output_fn}.")
 
 
 if __name__ == "__main__":
