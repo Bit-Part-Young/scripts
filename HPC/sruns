@@ -15,7 +15,7 @@ get_help() {
   echo "    -h, --help       show this help message and exit"
   echo "    num_cpu          number of CPU"
 
-  echo -e "\nAuthor: YSL."
+  echo -e "\nAuthor: SLY."
 }
 
 

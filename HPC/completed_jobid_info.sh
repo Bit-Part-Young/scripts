@@ -36,7 +36,7 @@ get_help() {
   echo "    -h, --help       show this help message and exit"
   echo "    days_forward     days forward"
 
-  echo -e "\nAuthor: YSL."
+  echo -e "\nAuthor: SLY."
 }
 
 

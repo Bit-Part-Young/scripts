@@ -32,7 +32,7 @@ get_help() {
   echo -e "\nOptions:"
   echo "    -h, --help       show this help message and exit"
 
-  echo -e "\nAuthor: YSL."
+  echo -e "\nAuthor: SLY."
 }
 
 

@@ -2,17 +2,16 @@
 
 # 针对 sacct 无法使用的情况，使用 squeue
 
-
 #-------------------------------- 获取正在运行的任务 JobId 信息 --------------------------------
 running_jobid_info2() {
 
   # 输出表头
   printf "%10s %10s %10s %21s %11s  %-50s\n" "JobId" "JobName" "State" "StartTime" "Elapsed" "WorkDir"
 
-  job_array=($(squeue | awk 'NR>1 {print $1}'))
+  job_array=($(squeue -u yangsl | awk 'NR>1 {print $1}'))
   for jobid in "${job_array[@]}"; do
     tmp_fn="running_jobid_info2.txt"
-    scontrol show job "${jobid}" > "${tmp_fn}"
+    scontrol show job "${jobid}" >"${tmp_fn}"
 
     workdir=$(grep 'WorkDir' "${tmp_fn}" | awk -F'=' '{print $2}' | awk '{print $1}')
     # 将 workdir 中的 $HOME 全路径替换为 ~
@@ -31,7 +30,6 @@ running_jobid_info2() {
   done
 }
 
-
 #-------------------------------- 获取帮助 --------------------------------
 get_help() {
   script_name=$(basename "${0}")
@@ -43,9 +41,8 @@ get_help() {
   echo -e "\nOptions:"
   echo "    -h, --help       show this help message and exit"
 
-  echo -e "\nAuthor: YSL."
+  echo -e "\nAuthor: SLY."
 }
-
 
 #-------------------------------- 主函数 --------------------------------
 if [[ $1 = "-h" || $1 = "--help" ]]; then
