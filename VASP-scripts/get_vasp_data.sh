@@ -7,7 +7,7 @@ get_vasp_data() {
 
   # 输出表头
   echo "|-------------------------------------------------------------------------------------"
-  printf "%21s %6s %13s %11s %-13s\n" "Folder" "Step" "Energy" "Energy_pa" "TimeCost"
+  printf "%21s %10s %13s %11s   %-13s\n" "Folder" "Ion_Step" "Energy" "Energy_pa" "TimeCost"
   echo "|-------------------------------------------------------------------------------------"
 
   unfinished_dirs=()
@@ -36,7 +36,7 @@ get_vasp_data() {
             time="Still Running"
           fi
 
-          printf "%21s %6s %13s %11s %-13s\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
+          printf "%21s %10s %13s %11s   %-13s\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
         else
           unfinished_dirs+=("${dir}")
         fi
