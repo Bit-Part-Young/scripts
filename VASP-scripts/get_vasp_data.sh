@@ -7,7 +7,7 @@ get_vasp_data() {
 
   # 输出表头
   echo "|-------------------------------------------------------------------------------------"
-  echo "|        Folder         |   Step   |       Energy       |  Energy_pa  |   TimeCost    |"
+  printf "%21s %6s %13s %11s %-13s\n" "Folder" "Step" "Energy" "Energy_pa" "TimeCost"
   echo "|-------------------------------------------------------------------------------------"
 
   unfinished_dirs=()
@@ -19,7 +19,7 @@ get_vasp_data() {
       if [ -f "$oszicar_fn" ]; then
         dir=$(basename "${dir}")
         if grep -q 'F=' "$oszicar_fn"; then
-          energy=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{print $5}')
+          energy=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $5}')
           natoms=$(grep 'NIONS' "$outcar_fn" | tail -1 | awk '{print $12}')
           energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
 
@@ -36,14 +36,15 @@ get_vasp_data() {
             time="Still Running"
           fi
 
-          printf "| %-21s | %-8s | %-18.6f | %-11s | %-13s |\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
-          echo "|-------------------------------------------------------------------------------------"
+          printf "%21s %6s %13s %11s %-13s\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
         else
           unfinished_dirs+=("${dir}")
         fi
       fi
     fi
   done
+
+  echo "|-------------------------------------------------------------------------------------"
 
   # 统一输出未完成第一个离子步的 VASP 计算目录
   if [[ ${#unfinished_dirs[@]} -gt 0 ]]; then

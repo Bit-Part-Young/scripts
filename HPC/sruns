@@ -28,10 +28,10 @@ elif [[ $1 == "-h" || $1 == "--help" || $# -eq 0 ]]; then
   get_help
 
 elif [[ $HOSTNAME =~ "sylogin" ]]; then
-  srun -p 64c512g -n "$1" --pty /bin/bash
+  srun -p 64c512g --job-name="CalNode"  -n "$1" --pty /bin/bash
 
 elif [[ $HOSTNAME =~ "pilogin" ]]; then
-  srun -p cpu -n "$1" --pty /bin/bash
+  srun -p cpu  --job-name="CalNode" -n "$1" --pty /bin/bash
 
 else
   echo -e "Error: Unsupported hostname: $HOSTNAME. Only pi / siyuan supported!\n"
