@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # 获取 MTP cfg 文件中的能量、力、应力数据
 

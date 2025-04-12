@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # 获取 NEP xyz 文件中的能量、力、位力数据
 

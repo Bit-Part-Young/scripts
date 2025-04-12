@@ -15,9 +15,7 @@ def identify_layer(
     layer_index: int | list[int] | None = None,
     precision: float = 0.001,
 ):
-    """
-    识别原子层及其对应的原子
-    """
+    """识别原子层及其对应的原子"""
 
     structure = Structure.from_file(structure_fn)
 
@@ -25,7 +23,7 @@ def identify_layer(
     element_list = [Element(element).symbol for element in element_list]
 
     positions = structure.cart_coords
-    direct_positions = structure.frac_coords
+    positions_frac = structure.frac_coords
 
     z_coords = positions[:, 2]
     z_coords_rounded = precision * np.round(z_coords / precision)
@@ -47,9 +45,9 @@ def identify_layer(
         "z": positions[:, 2],
         "layer_index": layer_index_list,
         "element": element_list,
-        "xs": direct_positions[:, 0],
-        "ys": direct_positions[:, 1],
-        "zs": direct_positions[:, 2],
+        "xs": positions_frac[:, 0],
+        "ys": positions_frac[:, 1],
+        "zs": positions_frac[:, 2],
     }
     df = pd.DataFrame(data).round(5)
 

@@ -68,9 +68,15 @@ def pos_diff(
     df = pd.DataFrame(data).round(5)
 
     if atom_index is None:
-        print(df)
+        df_new = df.copy()
     elif isinstance(atom_index, int) or isinstance(atom_index, list):
-        print(df.iloc[atom_index])
+        df_new = df.iloc[atom_index]
+
+    print(df_new)
+
+    # 输出每列的绝对值最大值，转置
+    print("\nMax absolute change value:")
+    print(df_new.abs().max().to_frame().T)
 
 
 if __name__ == "__main__":
