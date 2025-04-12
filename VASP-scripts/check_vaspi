@@ -1,0 +1,117 @@
+#!/usr/bin/bash
+
+# 检查 VASP 输入文件是否 OK
+
+
+# 检查 INCAR 文件中的 KSPACING 参数和 KPOINTS 文件
+incar_kpoints_check(){
+  if [[ ! -f KPOINTS ]] && ! grep -q -E '^KSPACING' INCAR; then
+    echo "KPOINTS and INCAR KSPACING param are not found!"
+    echo
+
+    return 1
+  elif [[ -f KPOINTS ]] && grep -q -E '^KSPACING' INCAR; then
+    echo "KPOINTS and INCAR KSPACING param are found! Just keep one of both!"
+    echo
+
+    return 1
+  fi
+
+  return 0
+}
+
+
+# 检查 POSCAR 文件中第 7 行的原子数和实际原子数是否一致
+poscar_check(){
+  natoms1=$(sed -n '7p' POSCAR | awk '{ for(i=1; i<=NF; i++) a+=$i; print a} ')
+  natoms2=$(awk 'NR>=9 {if(NF>=3) count++} END {print count}' POSCAR)
+
+  if [[ $natoms1 -ne $natoms2 ]]; then
+    echo "natoms of 7th line($natoms1) and number of atoms coordinates in POSCAR($natoms2) are not consistent!"
+    echo
+
+      return 1
+  fi
+
+  return 0
+}
+
+
+# 检查 POSCAR 中的元素和 POTCAR 中的赝势是否一致
+psp_check(){
+  element_array=($(awk 'NR==6 {for(i=1; i<=NF; i++) printf "%s ", $i}' POSCAR))
+  psp_array=($(grep 'TIT' POTCAR | awk '{print $4}'))
+
+  for(( i=0; i<${#element_array[@]}; i++ )); do
+      element=${element_array[${i}]}
+      psp=${psp_array[${i}]%_*}
+
+      if [[ $element != $psp ]]; then
+        echo "Element in POSCAR($element) and psp in POTCAR($psp) do not match!"
+        echo
+
+        return 1
+      fi
+  done
+  return 0
+}
+
+# 检查 job.slurm 中队列对应的平台是否正确
+slurm_check(){
+  if [[ -f job.slurm ]]; then
+    platform=$(hostname)
+
+    partition=$(grep ' -p ' job.slurm | awk '{print $3}')
+    additional_info=$(grep '^module load ' job.slurm)
+
+    if [[ $platform =~ "sylogin" && $partition == "64c512g" ]]; then
+      return 0
+    elif [[ $platform =~ "pilogin" && $partition == "cpu" && $additional_info != "" ]]; then
+      return 0
+    elif [[ $platform =~ "master" && $partition == "cpu" && $additional_info == "" ]]; then
+      return 0
+    else
+      echo "Platform($platform), partition($partition) and additional info of job.slurm do not match!"
+      echo
+
+      return 1
+    fi
+  else
+    echo "job.slurm is not found! Please make sure whether you need it!"
+    echo
+
+    return 1
+  fi
+}
+
+
+#-------------------------------- 获取帮助 --------------------------------
+get_help() {
+  script_name=$(basename "${0}")
+
+  echo -e "\nUsage: ${script_name}"
+
+  echo -e "\nCheck VASP input files whether OK."
+
+  echo -e "\nOptions:"
+  echo "    -h, --help       show this help message and exit"
+
+  echo -e "\nAuthor: SLY."
+}
+
+
+#-------------------------------- 主函数 --------------------------------
+if [[ $1 = "-h" || $1 = "--help" ]]; then
+  get_help
+else
+  incar_kpoints_check; value1=$?
+  poscar_check; value2=$?
+  psp_check; value3=$?
+  slurm_check; value4=$?
+
+  if [[ $value1 -eq 0 && $value2 -eq 0 && $value3 -eq 0 && $value4 -eq 0 ]]; then
+    echo "VASP input files are OK. Happy to run!"
+  else
+    echo "VASP input files are not OK. Please check carefully!"
+  fi
+fi
