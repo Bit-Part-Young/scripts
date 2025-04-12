@@ -55,7 +55,6 @@ def main():
 
     parser = argparse.ArgumentParser(
         description="Check the force convergence of every atom in every ion step in VASP OUTCAR.",
-        epilog="Author: SLY.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         allow_abbrev=True,
     )
@@ -65,7 +64,7 @@ def main():
         nargs="?",
         default=".",
         type=str,
-        help="VASP OUTCAR path",
+        help="OUTCAR path",
     )
 
     parser.add_argument(
@@ -79,14 +78,16 @@ def main():
 
     args = parser.parse_args()
 
-    ediffg = args.ediffg
     outcar_path = args.outcar_path
+    ediffg = args.ediffg
 
     natoms, forces_array = grab_outcar_info(outcar_path=outcar_path)
 
     ion_steps = forces_array.shape[0]
 
-    print(f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n")
+    print(
+        f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n"
+    )
 
     boolen_array = calcuate_force(
         force_array=forces_array,
@@ -94,6 +95,7 @@ def main():
     )
 
     # 只输出最后 5 个离子步的受力收敛信息
+    print(f"The last 5 ion steps:")
     if ion_steps < 5:
         start = 1
     else:
@@ -104,7 +106,9 @@ def main():
         # 原子索引从 1 开始
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
-        print(f"Step {step}: Total {len(atom_index)} atoms force did NOT converge. Index:")
+        print(
+            f"Step {step}: Total {len(atom_index)} atoms force did NOT converge. Index:"
+        )
         print(atom_index)
 
 

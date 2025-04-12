@@ -3,8 +3,6 @@
 """
 检查 VASP OUTCAR 文件中的每个离子步原子受力收敛情况（使用 re 正则内置模块）
 
-#TODO: 不知道为什么是力的任一分量模的值大于 EDIFFG 值就判断为 False
-
 reference: http://bbs.keinsci.com/thread-19985-1-1.html
 """
 
@@ -45,7 +43,7 @@ def grab_info(outcar_path: str) -> tuple[
                 force_list += line_list[-natoms - 2 : index - 1]
 
     # 原子位置分量是前 3 列，原子受力分量是后 3 列
-    position_array = np.array(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, :3]
+    # position_array = np.array(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, :3]
     force_array = np.array(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, 3:]
 
     return (natoms, ediffg, force_array)
@@ -53,7 +51,7 @@ def grab_info(outcar_path: str) -> tuple[
 
 def calcuate_force(
     force_array: np.ndarray,
-    force_criteria: float,
+    force_criteria: float = 0.01,
 ) -> np.ndarray:
     """计算每个离子步中每个原子的受力（数值），并判断是否达到 EDIFFG 收敛判据"""
 
@@ -76,13 +74,15 @@ def main():
     parser.add_argument(
         "outcar_path",
         nargs="?",
-        default=".",
         type=str,
-        help="VASP OUTCAR path",
+        const=".",
+        default=".",
+        help="OUTCAR path",
     )
 
     parser.add_argument(
         "--ediffg",
+        nargs="?",
         type=float,
         help="force convergence criteria",
     )
@@ -97,10 +97,10 @@ def main():
     else:
         natoms, _, force_array = grab_info(outcar_path=outcar_path)
 
-    print(force_array[-2])
-
     ion_steps = force_array.shape[0]
-    print(f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n")
+    print(
+        f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n"
+    )
 
     boolen_array = calcuate_force(
         force_array=force_array,
@@ -108,6 +108,7 @@ def main():
     )
 
     # 只输出最后 5 个离子步的受力收敛信息
+    print(f"The last 5 ion steps:")
     if ion_steps < 5:
         start = 1
     else:
@@ -118,7 +119,9 @@ def main():
         # 原子索引从 1 开始
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
-        print(f"Step {step}: total {len(atom_index)} atoms force did NOT converge. Index:")
+        print(
+            f"Step {step}: total {len(atom_index)} atoms force did NOT converge. Index:"
+        )
 
         print(atom_index)
 

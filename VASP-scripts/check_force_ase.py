@@ -17,7 +17,7 @@ def grab_outcar_info(outcar_path: str) -> tuple[int, np.ndarray]:
     """获取原子数、每个离子步中每个原子的受力（向量）"""
 
     outcar = os.path.join(outcar_path, "OUTCAR")
-    atoms_list = read(outcar, index=":")
+    atoms_list = read(outcar, index=":", format="vasp-out")
     natoms = len(atoms_list[0])
 
     # 3D np.ndarray
@@ -28,7 +28,7 @@ def grab_outcar_info(outcar_path: str) -> tuple[int, np.ndarray]:
 
 def calcuate_force(
     force_array: np.ndarray,
-    force_criteria: float,
+    force_criteria: float = 0.01,
 ) -> np.ndarray:
     """计算每个离子步中每个原子的受力（数值），并判断是否达到 EDIFFG 收敛判据"""
 
@@ -44,7 +44,6 @@ def main():
 
     parser = argparse.ArgumentParser(
         description="Check the force convergence of every atom in every ion step in VASP OUTCAR.",
-        epilog="Author: SLY.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         allow_abbrev=True,
     )
@@ -52,30 +51,33 @@ def main():
     parser.add_argument(
         "outcar_path",
         nargs="?",
-        default=".",
         type=str,
-        help="VASP OUTCAR path",
+        const=".",
+        default=".",
+        help="OUTCAR path",
     )
 
     parser.add_argument(
         "--ediffg",
         nargs="?",
+        type=float,
         const=0.01,
         default=0.01,
-        type=float,
         help="force convergence criteria",
     )
 
     args = parser.parse_args()
 
-    ediffg = args.ediffg
     outcar_path = args.outcar_path
+    ediffg = args.ediffg
 
     natoms, forces_array = grab_outcar_info(outcar_path=outcar_path)
 
     ion_steps = forces_array.shape[0]
 
-    print(f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n")
+    print(
+        f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n"
+    )
 
     boolen_array = calcuate_force(
         force_array=forces_array,
@@ -83,6 +85,7 @@ def main():
     )
 
     # 只输出最后 5 个离子步的受力收敛信息
+    print(f"The last 5 ion steps:")
     if ion_steps < 5:
         start = 1
     else:
@@ -93,7 +96,9 @@ def main():
         # 原子索引从 1 开始
         atom_index = (np.where(column == True)[0] + 1).tolist()
 
-        print(f"Step {step}: Total {len(atom_index)} atoms force did NOT converge. Index:")
+        print(
+            f"Step {step}: Total {len(atom_index)} atoms force did NOT converge. Index:"
+        )
         print(atom_index)
 
 

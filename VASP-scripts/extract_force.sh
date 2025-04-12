@@ -17,18 +17,27 @@ reference: https://github.com/K4ys4r/VASP_Scripts/tree/master/Extract_Forces
 
 
 #------------------     帮助信息     ------------------
-Usage() {
-  printf "\nExtract forces and atoms positions from VASP OUTCAR File.\n\n"
-  printf "Usage:\n"
-  printf "    -outcar : Sets the outcar file name.\n"
-  printf "    -atom   : Sets the Atom number default value : all atoms.\n"
-  printf "    -iter   : Sets the Iterations number default value : all iterations.\n"
-  printf "    -out    : Sets the output file.\n"
-  printf "    -h      : Print this message. \n"
-  printf "    -infos  : Prints infos\n\n"
-  printf "Example:\n    Extract_force.sh -atom=4 -iter=all -outcar=OUTCAR\n"
-  printf "\nAuthor: Hilal Balout\n"
-  printf "E-mail: hilal_balout@hotmail.com\n"
+get_help() {
+  script_name=$(basename "$0")
+
+  echo -e "\nUsage: $script_name [-outcar=OUTCAR] [-atom=ATOM] [-iter=ITER] [-out=OUTPUT]"
+
+  echo -e "\nExtract forces and atoms positions from VASP OUTCAR File."
+
+  echo -e "\nOptions:"
+  echo "  -h, --help      Show this help message and exit"
+  echo "  -outcar OUTCAR  Sets the outcar file name"
+  echo "  -atom=ATOM      Sets the Atom number default value : all atoms"
+  echo "  -iter=ITER      Sets the Iterations number default value : all iterations"
+  echo "  -out=OUTPUT     Sets the output file"
+  echo "  -infos          Prints infos"
+
+  echo -e "\nExamples:"
+  echo "    ${script_name} -atom=4 -iter=all -outcar=OUTCAR"
+  echo "    ${script_name} -atom=4 -iter=1 -outcar=OUTCAR -out=output.log"
+
+  echo -e "\nAuthor: Hilal Balout"
+  echo "E-mail: hilal_balout@hotmail.com"
 }
 
 
@@ -52,7 +61,7 @@ for i in "$@"; do
     shift
     ;;
   -h)
-    Usage
+    get_help
     exit 0
     ;;
   esac
@@ -67,8 +76,8 @@ if [[ -z "${Iter}" ]]; then
 fi
 
 if [[ -z "${Inp}" ]] || [[ ! -f "${Inp}" ]]; then
-  printf "\n\t!!!..Error in OUTCAR File Name!\n\n"
-  Usage
+  echo -e "\n\t!!!..Error in OUTCAR File Name!\n\n"
+  get_help
   exit 0
 else
   N_ions=$(grep NIONS "${Inp}" | awk '{printf"%d",$NF}')
