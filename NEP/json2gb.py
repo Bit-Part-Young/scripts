@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""从 json 文件中提取 MP 晶界构型并保存为 extxyz 格式"""
+"""从 json 文件中提取 MP 晶界构型并保存为 xyz 文件"""
 
 import argparse
 
@@ -72,7 +72,6 @@ def write_atoms(structure: Structure, gb_info: dict, output_fn: str):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
         description="Extract MP surface configurations from json file to extxyz format.",
         epilog="Author: SLY.",

@@ -25,9 +25,15 @@ def main(
     mic: bool = False,
 ):
 
+    format_dict = {
+        "xyz": "extxyz",
+        "XDATCAR": "vasp-xdatcar",
+        "OUTCAR": "vasp-out",
+    }
+
     fn_suffix = structure_fn.split(".")[-1]
-    if fn_suffix == "xyz":
-        atoms_list = read(structure_fn, index=":", format="extxyz")
+    if fn_suffix in format_dict.keys():
+        atoms_list = read(structure_fn, index=":", format=format_dict[fn_suffix])
 
         min_dist_list, max_dist_list = [], []
         for atoms in atoms_list:

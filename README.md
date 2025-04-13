@@ -10,9 +10,9 @@
 
 - 部分脚本可解析命令行参数，使用 `python xxx.py -h` 或 `./xxx.py -h` 查看帮助信息
 
-- 对于 ipynb 格式脚本文件，可使用 [nbviewer](https://nbviewer.org/) 在线查看
+- 对于 ipynb 格式脚本文件，可将其链接复制至 [nbviewer](https://nbviewer.org/) 在线查看
 
-- 默认 xyz 文件为 extxyz 格式
+- 默认 xyz 文件格式为 extxyz
 
 ---
 
@@ -168,9 +168,15 @@ build_structure.ipynb                # 构建晶体结构（练习用）
 - `NEP`: NEP 相关脚本
 
 ```bash
-count_xyz.sh                         # 统计 xyz 构型文件帧数及总原子数
+count_xyz.sh                         # 统计 xyz 文件构型帧数及总原子数
 get_xyz_efs.sh                       # 获取 NEP xyz 文件中的能量、力、位力数据
+thermo_info_gpumd.sh                 # 从 GPUMD 输出的 thermo.out 文件中格式化输出热力学信息
 
+get_mp_surface_gb.py                 # 从 MP 获取 表面性质 和 晶界 数据并保存为 json 文件
+json2surfaces.py                     # 从 json 文件中提取 MP 表面构型并保存为 xyz 文件
+json2gb.py                           # 从 json 文件中提取 MP 晶界构型并保存为 xyz 文件
+
+xdatcar2xyz.py                       # 将 VASP XDATCAR 文件转换为 NEP xyz 文件，并指定间隔抽样
 vaspout2xyz.py                       # 将 VASP 输出文件 OUTCAR/vasprun.xml 转换为 xyz 文件
 xyz2cfg.py                           # 将 NEP xyz 文件转换成 MTP cfg
 outcar2xyz_singleframe.sh            # 将 OUTCAR 转换为 xyz 文件（静态计算，单帧），作为 NEP 的训练集构型
@@ -198,7 +204,7 @@ json2df.py                           # 将 json 构型及其数据文件转换�
 - `MTP`: MTP 相关脚本
 
 ```bash
-count_cfg.sh                         # 统计 cfg 构型文件帧数及总原子数
+count_cfg.sh                         # 统计 cfg 文件构型帧数及总原子数
 get_cfg_efs.sh                       # 获取 MTP cfg 文件中的能量、力、应力数据
 cfg2xyz.py                           # 将 MTP cfg 文件转换成 NEP xyz
 get_virial.sh                        # 获取 OUTCAR、train.cfg 文件中的 Stress/Virial 信息

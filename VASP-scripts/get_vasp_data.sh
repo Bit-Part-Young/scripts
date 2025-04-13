@@ -2,6 +2,7 @@
 
 # 获取当前 目录/子目录 下的 VASP 计算数据
 
+
 #-------------------------------- 获取 VASP 数据 --------------------------------
 get_vasp_data() {
 
@@ -16,15 +17,27 @@ get_vasp_data() {
     if [ -d "$dir" ]; then
       oszicar_fn="${dir}/OSZICAR"
       outcar_fn="${dir}/OUTCAR"
+      incar_fn="${dir}/INCAR"
       if [ -f "$oszicar_fn" ]; then
+
         dir=$(basename "${dir}")
+
         if grep -q 'F=' "$oszicar_fn"; then
-          energy=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $5}')
+
+          # 能量、温度数据获取获取
+          if grep -q -E '^TEBEG' "$incar_fn"; then
+            energy=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $9}')
+            # temperature=$(grep 'TEBEG' "$outcar_fn" | awk -F';' '{print $1}' | awk '{print $3}')
+          else
+            energy=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $5}')
+          fi
+
           natoms=$(grep 'NIONS' "$outcar_fn" | tail -1 | awk '{print $12}')
           energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
 
           ionstep=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{print $1}')
 
+          # 获取耗时数据
           time=$(grep 'Total CPU time used' "$outcar_fn" | awk '{print $6}')
           time=${time%.*}
           if [[ ${time} -gt 0 ]]; then
@@ -37,6 +50,7 @@ get_vasp_data() {
           fi
 
           printf "%21s %10s %13s %11s   %-13s\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
+
         else
           unfinished_dirs+=("${dir}")
         fi

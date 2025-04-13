@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# 统计 extxyz 构型文件帧数及总原子数
+# 统计 xyz 文件构型帧数及总原子数
 # reference: https://github.com/Kick-H/For_gpumd/blob/master/NEP_related/Count/count_xyz.sh
 
 set -e

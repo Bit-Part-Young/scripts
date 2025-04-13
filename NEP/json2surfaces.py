@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""从 json 文件中提取 MP 表面构型并保存为 extxyz 格式"""
+"""从 json 文件中提取 MP 表面构型并保存为 xyz 文件"""
 
 import argparse
 
@@ -17,7 +17,10 @@ def json2surfaces(json_fn: str, max_index: int = None):
     num_surface = 0
     for surface in data[0]["surfaces"]:
         miller_index = surface["miller_index"]
-        miller_index_str = "".join(map(str, miller_index))
+        # 将负指数中的负号替换成 m 字符
+        miller_index_str = "".join(
+            map(lambda x: f"m{abs(x)}" if x < 0 else str(x), miller_index)
+        )
 
         if max_index is None or abs(max(miller_index)) <= max_index:
             structure = Structure.from_str(surface["structure"], fmt="cif")
@@ -63,7 +66,6 @@ def json2surfaces(json_fn: str, max_index: int = None):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
         description="Extract MP surface configurations from json file to extxyz format.",
         epilog="Author: SLY.",
