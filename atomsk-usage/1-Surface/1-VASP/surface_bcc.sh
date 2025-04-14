@@ -116,7 +116,9 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     -d)
-      IFS=' ' read -r dup_x dup_y num_layer <<< "$2"
+      dup_x="$2"
+      dup_y="$3"
+      num_layer="$4"
       shift 4
       ;;
     -vac)
