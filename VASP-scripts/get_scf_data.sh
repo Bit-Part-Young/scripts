@@ -21,9 +21,10 @@ get_scf_data() {
         dir=$(basename "${dir}")
 
         if grep -q 'DAV' "$oszicar_fn"; then
-          electronic_step=$(grep 'DAV' "$oszicar_fn" | tail -n 1 | awk '{print $2}')
-          energy=$(grep 'DAV' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $3}')
           natoms=$(grep 'NIONS' "$outcar_fn" | tail -1 | awk '{print $12}')
+          electronic_step=$(grep 'DAV' "$oszicar_fn" | tail -n 1 | awk '{print $2}')
+
+          energy=$(grep 'DAV' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $3}')
           energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
 
           time=$(grep 'Total CPU time used' "$outcar_fn" | awk '{print $6}')
@@ -35,6 +36,11 @@ get_scf_data() {
             time=$(printf "%02dh %02dm %02ds" "$hours" "$minutes" "$seconds")
 
             dE=""
+
+            # 运行结束时需使用 F= 行所对应的 E0 数据
+            energy=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $5}')
+            energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
+
           elif [[ ${time} -eq 0 ]]; then
             time="Still Running"
 
