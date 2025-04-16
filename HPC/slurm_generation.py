@@ -9,12 +9,13 @@ platform_partition = {
     "sy": "64c512g",
     "pi": "cpu",
     "master": "cpu",
+    "node2": "g4",
 }
 
 
 def slurm_generation(
-    platform: Literal["sy", "pi", "master"] = "sy",
-    calculation_type: Literal["VASP", "LAMMPS", "Python", "Bash"] = "VASP",
+    platform: Literal["sy", "pi", "master", "node2"] = "sy",
+    calculation_type: Literal["vasp", "lammps", "Python", "Bash", "gpu"] = "vasp",
     slurm_fn: str = "job.slurm",
     num_cpus: int = 1,
     time: str = "72:00:00",
@@ -26,8 +27,11 @@ def slurm_generation(
         f.write("#!/bin/bash\n\n")
 
         partition = platform_partition[platform]
+        if calculation_type in ["gpu", "vasp", "lammps"]:
+            f.write(f"#SBATCH -J {calculation_type.upper()}\n")
+        elif calculation_type in ["python", "bash"]:
+            f.write(f"#SBATCH -J {calculation_type.capitalize()}\n")
 
-        f.write(f"#SBATCH -J {calculation_type}\n")
         f.write(f"#SBATCH -p {partition}\n")
         f.write("#SBATCH -N 1\n")
         f.write(f"#SBATCH --ntasks-per-node={num_cpus}\n")
@@ -41,7 +45,11 @@ def slurm_generation(
             f.write("#SBATCH -x node1\n\n")
             f.write("#SBATCH --no-requeue\n\n")
 
-        if calculation_type == "VASP":
+        elif platform == "node2":
+            f.write("#SBATCH --gres=gpu:1\n\n")
+            f.write("#SBATCH --no-requeue\n\n")
+
+        if calculation_type == "vasp":
             if platform == "master":
                 vasp_cmd = "vasp.5.std"
             else:
@@ -57,7 +65,7 @@ def slurm_generation(
 
             f.write(f"mpirun {vasp_cmd}\n")
 
-        elif calculation_type == "LAMMPS":
+        elif calculation_type == "lammps":
             if platform == "sy":
                 lammps_cmd = "${HOME}/yangsl/bin/lmp_all"
             elif platform == "master":
@@ -70,12 +78,15 @@ def slurm_generation(
 
             f.write(f"mpirun {lammps_cmd} -i {input_fn}\n")
 
-        elif calculation_type == "Python":
+        elif calculation_type == "gpu":
+            f.write("nep_node2\n")
+
+        elif calculation_type == "python":
             f.write(f"conda activate base_ysl\n\n")
 
             f.write(f"python {input_fn}\n")
 
-        elif calculation_type == "Bash":
+        elif calculation_type == "bash":
             f.write(f"bash {input_fn}\n")
 
     print(f"\n{platform} platform {calculation_type} submission file generated.")
@@ -94,7 +105,7 @@ if __name__ == "__main__":
         const="sy",
         default="sy",
         type=str,
-        choices=["sy", "pi", "master"],
+        choices=["sy", "pi", "master", "node2"],
         help="Platform",
     )
 
@@ -102,10 +113,10 @@ if __name__ == "__main__":
         "-ct",
         "--calculation_type",
         nargs="?",
-        const="VASP",
-        default="VASP",
+        const="vasp",
+        default="vasp",
         type=str,
-        choices=["VASP", "LAMMPS", "Python", "Bash"],
+        choices=["vasp", "lammps", "python", "bash", "gpu"],
         help="Calculation type",
     )
 
@@ -132,7 +143,7 @@ if __name__ == "__main__":
 
     slurm_generation(
         platform=args.platform,
-        calculation_type=args.calculation_type,
+        calculation_type=args.calculation_type.lower(),
         num_cpus=args.num_cpus,
         input_fn=args.input_fn,
     )
