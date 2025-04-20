@@ -33,17 +33,23 @@ def load_data(test: bool = False):
     return loss_data, energy_data, force_data, virial_data, stress_data
 
 
-def calculate_rmse(pred, actual):
+def calculate_rmse(
+    predicted_values: np.ndarray,
+    dft_values: np.ndarray,
+):
     """计算 RMSE"""
 
-    return np.sqrt(np.mean((pred - actual) ** 2))
+    return np.sqrt(np.mean((predicted_values - dft_values) ** 2))
 
 
-def calculate_limits(train_data, padding=0.08):
+def calculate_limits(
+    data: np.ndarray,
+    padding: float = 0.08,
+):
     """计算轴动态范围"""
 
-    data_min = np.min(train_data)
-    data_max = np.max(train_data)
+    data_min = np.min(data)
+    data_max = np.max(data)
     data_range = data_max - data_min
 
     return data_min - padding * data_range, data_max + padding * data_range
@@ -51,10 +57,10 @@ def calculate_limits(train_data, padding=0.08):
 
 def parity_plot(
     ax: Axes,
-    dft_values,
-    predicted_values,
-    xmin,
-    xmax,
+    dft_values: np.ndarray,
+    predicted_values: np.ndarray,
+    xmin: float,
+    xmax: float,
 ):
     """绘制 DFT 计算值与 NEP 预测值对比图"""
 
@@ -71,13 +77,14 @@ def plot_nep_train(
     test: bool = False,
     stress: bool = False,
 ):
+    """绘制 NEP 训练结果"""
 
     loss, energy_data, force_data, virial_data, stress_data = load_data(test)
 
     set_plot_params(
         legend_fontsize=20,
         legend_handletextpad=0.2,
-        savefig_dpi=300,
+        savefig_dpi=500,
         axes_grid=True,
     )
 
@@ -87,11 +94,15 @@ def plot_nep_train(
     ax: Axes = axs[0, 0]
     ax.grid(False)
 
-    ax.loglog(loss[:, 1:7], "-")
+    loss[:, 0] = np.arange(1, len(loss) + 1) * 100
+    ax.loglog(loss[:, 0], loss[:, 1:7], "-")
+
     ax.set(
-        xlabel="Generation/100",
-        ylabel="Loss functions",
+        xlim=(1e2, loss[:, 0].max()),
+        xlabel="Generation",
+        ylabel="Loss",
     )
+
     ax.legend(
         labels=["Total", "L1", "L2", "E-train", "F-train", "V-train"],
         ncols=3,
@@ -162,8 +173,10 @@ def plot_nep_train(
     if stress:
         virial_data = stress_data
         axes_label = "stress (GPa)"
+        rmse_unit = "GPa"
     else:
         axes_label = "virial (eV/atom)"
+        rmse_unit = "eV/atom"
 
     virial_min, virial_max = calculate_limits(virial_data[:, 6:12].reshape(-1))
     ax: Axes = axs[1, 1]
@@ -192,7 +205,7 @@ def plot_nep_train(
     ax.text(
         0.5,
         0.08,
-        f"RMSE: {virial_rmse:.4f} GPa",
+        f"RMSE: {virial_rmse:.4f} {rmse_unit}",
         transform=ax.transAxes,
         fontsize=20,
     )
@@ -201,8 +214,12 @@ def plot_nep_train(
 
     if test:
         fig.savefig("nep_test.png")
+
+        print("\nnep_test.png generated!")
     else:
         fig.savefig("nep_train.png")
+
+        print("\nnep_train.png generated!")
 
 
 if __name__ == "__main__":

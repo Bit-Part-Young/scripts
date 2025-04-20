@@ -22,6 +22,7 @@ from spt.plot_params import set_plot_params
 set_plot_params(
     legend_fontsize=20,
     legend_labelspacing=0.2,
+    savefig_dpi=500,
     axes_grid=True,
 )
 
@@ -52,7 +53,7 @@ def load_data(
         if os.path.exists(file_path):
             return np.loadtxt(file_path)
         else:
-            print(f"\nWarning: {file_path} not found.")
+            print(f"Warning: {file_path} not found.")
             return None
 
     energy_train = np.loadtxt(energy_train_file)
@@ -179,14 +180,14 @@ def plot_training_results(
 
     ax.set(
         xlim=(1e2, loss[:, 0].max()),
-        ylim=(5e-4, 2e0),
+        # ylim=(5e-4, 2e0),
         xlabel="Generation",
         ylabel="Loss",
         title="(a) Loss Curve",
     )
 
     ax.legend(
-        loc="upper right",
+        loc="lower left",
         ncol=3,
         labelspacing=0,
         columnspacing=0.5,
