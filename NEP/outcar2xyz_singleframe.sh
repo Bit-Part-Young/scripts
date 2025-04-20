@@ -29,14 +29,14 @@ outcar2xyz_singleframe(){
   echo $natoms > $xyz_fn
 
   # 点阵
-  lattice=$(grep -A 7 "VOLUME and BASIS-vectors are now" ${outcar_fn} | tail -3 |sed 's/-/ -/g' | awk '{print $1,$2,$3}' |xargs)
+  lattice=$(grep -A 7 "VOLUME and BASIS-vectors are now" ${outcar_fn} | tail -n 3 |sed 's/-/ -/g' | awk '{print $1,$2,$3}' | xargs)
 
   # 能量
-  # energy=$(grep "free  energy   TOTEN" ${outcar_fn} | tail -1 | awk '{printf "%.7f\n", $5}')
-  energy=$(grep "energy  without entropy" ${outcar_fn} | tail -1 | awk '{print $7}')
+  # energy=$(grep "free  energy   TOTEN" ${outcar_fn} | tail -n 1 | awk '{printf "%.7f\n", $5}')
+  energy=$(grep "energy  without entropy" ${outcar_fn} | tail -n 1 | awk '{print $7}')
 
   # virial 数据
-  virial=$(grep -A 20 "FORCE on cell =-STRESS" ${outcar_fn} | grep "Total " | tail -1 | awk '{print $2,$5,$7,$5,$3,$6,$7,$6,$4}')
+  virial=$(grep -A 20 "FORCE on cell =-STRESS" ${outcar_fn} | grep "Total " | tail -n 1 | awk '{print $2,$5,$7,$5,$3,$6,$7,$6,$4}')
 
   # 添加多个标签实现
   label_array=("element" "group" "description" "tag")
@@ -58,14 +58,14 @@ outcar2xyz_singleframe(){
 
   # 输出对应个数的元素符号
   for((j=0;j<${#ion_number_array[*]};j++)); do
-    printf ''${ion_symbol_array[j]}'%.0s\n' `seq 1 1 ${ion_number_array[j]}` >> symbol.temporary
+    printf ''${ion_symbol_array[j]}'%.0s\n' $(seq 1 1 ${ion_number_array[j]}) >> "symbol.temporary"
   done
 
   # 原子位置、力
-  grep -A $(($natoms + 1)) "TOTAL-FORCE (eV/Angst)" ${outcar_fn} | tail -n $natoms > positions_forces.temporary
+  grep -A $(($natoms + 1)) "TOTAL-FORCE (eV/Angst)" ${outcar_fn} | tail -n $natoms > "positions_forces.temporary"
 
   # 将元素符号和原子位置、力合并
-  paste symbol.temporary positions_forces.temporary >> $xyz_fn
+  paste "symbol.temporary" "positions_forces.temporary" >> "${xyz_fn}"
 
   # 删除临时文件
   rm -f *.temporary
