@@ -20,10 +20,10 @@ def get_nn(crystalstructure: str) -> np.ndarray:
 
     distances = atoms_supercell.get_all_distances(mic=True).round(5)
     nn_distances = np.unique(distances)
-    nn_distances = nn_distances[distances > 0.0]
+    nn_distances = nn_distances[nn_distances > 0.0]
 
     print("  No.     R/a0        (R/a0)^2")
-    for index, distance in enumerate(distances[:15], start=1):
+    for index, distance in enumerate(nn_distances[:15], start=1):
         print(f"{index:>5}     {distance:<7}     {round(distance**2, 4):<7}")
 
 
