@@ -24,7 +24,9 @@ running_jobid_info2() {
     starttime=$(grep 'StartTime' "${tmp_fn}" | awk -F' ' '{print $1}' | awk -F'=' '{print $2}')
     runtime=$(grep 'RunTime' "${tmp_fn}" | awk -F' ' '{print $1}' | awk -F'=' '{print $2}')
 
-    printf "%10s %10s %10s %21s %11s  %-50s\n" "${jobid}" "${jobname}" "${state}" "${starttime}" "${runtime}" "${workdir}"
+    if [[ ${state} = "RUNNING" ]]; then
+      printf "%10s %10s %10s %21s %11s  %-50s\n" "${jobid}" "${jobname}" "${state}" "${starttime}" "${runtime}" "${workdir}"
+    fi
 
     rm "${tmp_fn}"
   done
