@@ -1,9 +1,12 @@
+#!/usr/bin/env python3
+
 """
 NEP 势函数声子谱计算
 
 Original Author: Ke Xu
 """
 
+import argparse
 import os
 
 import numpy as np
@@ -16,12 +19,13 @@ from ase.optimize import BFGS, FIRE, GPMin
 from ase.units import GPa
 from calorine.tools import get_force_constants, relax_structure
 from matplotlib import pyplot as plt
-from phonopy.units import THzToCm
 from seekpath import get_explicit_k_path
+
+from phonopy.units import THzToCm
 
 
 def Get_Disp(
-    unitcell: Atoms,
+    primitive_cell: Atoms,
     model_fn,
     potential_type="nep",
     nrep=2,
@@ -47,31 +51,45 @@ def Get_Disp(
         from calorine.calculators import CPUNEP
 
         calculator = CPUNEP(model_fn)
-        unitcell.calc = calculator
+        primitive_cell.calc = calculator
         relax_structure(
-            unitcell, fmax=0.00001, minimizer="bfgs", constant_volume=False, constant_cell=False
+            primitive_cell,
+            fmax=0.00001,
+            minimizer="bfgs",
+            constant_volume=False,
+            constant_cell=False,
         )
     elif potential_type == "eam":
         from ase.calculators.lammpsrun import LAMMPS
 
         met = Met_list.join(" ")
         # print(met)
-        parameters = {"pair_style": "eam/alloy", "pair_coeff": [f"* * {model_fn} {met}"]}
+        parameters = {
+            "pair_style": "eam/alloy",
+            "pair_coeff": [f"* * {model_fn} {met}"],
+        }
         calculator = LAMMPS(parameters=parameters, files=[model_fn])
-        unitcell.set_calculator(calculator)
+        primitive_cell.set_calculator(calculator)
         mask = [True, True, True, True, True, True]
-        ucf = ExpCellFilter(unitcell, scalar_pressure=0 * GPa, mask=mask, constant_volume=True)
+        ucf = ExpCellFilter(
+            primitive_cell, scalar_pressure=0 * GPa, mask=mask, constant_volume=True
+        )
         gopt = BFGS(ucf, maxstep=0.05)
         gopt.run(fmax=0.00001, steps=1000)
     elif potential_type == "tersoff":
         from ase.calculators.lammpsrun import LAMMPS
 
         mets = " ".join(Met_list)
-        parameters = {"pair_style": "tersoff", "pair_coeff": ["* * {} {}".format(model_fn, mets)]}
+        parameters = {
+            "pair_style": "tersoff",
+            "pair_coeff": ["* * {} {}".format(model_fn, mets)],
+        }
         calculator = LAMMPS(files=[model_fn], **parameters)
-        unitcell.set_calculator(calculator)
+        primitive_cell.set_calculator(calculator)
         mask = [True, True, True, True, True, True]
-        ucf = ExpCellFilter(unitcell, scalar_pressure=0 * GPa, mask=mask, constant_volume=True)
+        ucf = ExpCellFilter(
+            primitive_cell, scalar_pressure=0 * GPa, mask=mask, constant_volume=True
+        )
         gopt = BFGS(ucf, maxstep=0.05)
         gopt.run(fmax=0.00001, steps=1000)
     elif potential_type == "vasp":
@@ -117,12 +135,16 @@ def Get_Disp(
             "explicit_kpoints_linearcoord": explicit_kpoints_linearcoord,
         }
     else:
-        structure_tuple = (unitcell.cell, unitcell.get_scaled_positions(), unitcell.numbers)
+        structure_tuple = (
+            primitive_cell.cell,
+            primitive_cell.get_scaled_positions(),
+            primitive_cell.numbers,
+        )
         path = get_explicit_k_path(structure_tuple, reference_distance=0.02)
         point_coords = path["point_coords"]
 
     # 声子计算与结果保存
-    phonon = get_force_constants(unitcell, calculator, [nrep, nrep, nrep])
+    phonon = get_force_constants(primitive_cell, calculator, [nrep, nrep, nrep])
     phonon.run_band_structure([path["explicit_kpoints_rel"]])
     band = phonon.get_band_structure_dict()
 
@@ -134,7 +156,13 @@ def Get_Disp(
     return df, path
 
 
-def Get_Bandconf(path, atom_name="metals", nrep=3, ptype="nep", fout="band.conf"):
+def Get_Bandconf(
+    path,
+    atom_name="metals",
+    nrep=3,
+    ptype="nep",
+    fout="band.conf",
+):
     """
     生成Phonopy配置文件
     参数：
@@ -162,7 +190,7 @@ def Get_Bandconf(path, atom_name="metals", nrep=3, ptype="nep", fout="band.conf"
         fo.write(config)
 
 
-def Plot_Disp(df, path, pout="disp"):
+def phonon_plot(df, path, pout="disp"):
     """
     声子色散曲线绘制函数
     参数：
@@ -195,28 +223,19 @@ def Plot_Disp(df, path, pout="disp"):
     plt.savefig(pout + ".png", dpi=300)
 
 
-# 材料参数配置字典
-Info = {
-    "Cu-nep-1": [
-        "fcc",
-        [3.634],
-        "Pots/Song-2024-UNEP-v1-AgAlAuCrCuMgMoNiPbPdPtTaTiVWZr.txt",
-        ["Cu"],
-    ],
-    # "C-tersoff": ["extxyz", "model.diamond.xyz", "Pots/BNC.tersoff", ["C"]],
-}
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Phonon calculation using NEP potential."
+    )
+    parser.add_argument("structure_fn", type=str, help="structure filename")
 
-nrep = 4  # 超胞扩展倍数
+    args = parser.parse_args()
 
-for strs in Info.keys():  # 遍历材料体系
-    # 参数解析
-    met, cal_type = strs.split("-")[0], strs.split("-")[1]
+    nrep = 4
 
-    # 晶体结构构建
-    if Info[strs][0] == "fcc":
-        unit_cell = bulk(met, crystalstructure="fcc", a=Info[strs][1][0])
-    elif Info[strs][0] == "extxyz":
-        unit_cell = read(Info[strs][1], format="extxyz")
+    unit_cell = read(args.structure_fn)
+    cal_type = "nep"
+    met = "".join(list(set(unit_cell.get_chemical_symbols())))
 
     # 计算目录管理
     folder = f"{met}-{cal_type}"
@@ -224,7 +243,11 @@ for strs in Info.keys():  # 遍历材料体系
 
     # 执行计算流程
     df, path = Get_Disp(
-        unit_cell, Info[strs][2], potential_type=cal_type, nrep=nrep, fout=f"{folder}/disp.dat"
+        unit_cell,
+        model_fn="nep.txt",
+        potential_type=cal_type,
+        nrep=nrep,
+        fout=f"{folder}/disp.dat",
     )
     Get_Bandconf(path, atom_name=met, nrep=nrep, fout=f"{folder}/band.conf")
-    Plot_Disp(df, path, pout=f"{folder}/disp_plot")
+    phonon_plot(df, path, pout=f"{folder}/disp_plot")
