@@ -26,8 +26,9 @@ def perturb_dpdata(
     )
 
     atoms_list = perturbed_system.to("ase/structure")
-    print(len(atoms_list))
     write(output_fn, atoms_list, format="extxyz", append=True)
+
+    print(f"Total {pert_num} perturbed structures written to {output_fn}.")
 
 
 if __name__ == "__main__":
@@ -41,35 +42,34 @@ if __name__ == "__main__":
         "input_fn",
         type=str,
         default="POSCAR",
-        help="Input structure filename",
+        help="input structure filename (default: POSCAR)",
     )
     parser.add_argument(
         "output_fn",
         type=str,
         default="perturbed.xyz",
-        help="Output filename",
+        help="output filename (default: perturbed.xyz)",
     )
-
     parser.add_argument(
         "-pn",
         "--pert_num",
         type=int,
         default=50,
-        help="Number of perturbed structures",
+        help="number of perturbed structures",
     )
     parser.add_argument(
         "-cp",
         "--cell_perturb",
         type=float,
         default=0.10,
-        help="Cell perturbation fraction",
+        help="cell perturbation fraction",
     )
     parser.add_argument(
         "-ap",
         "--atom_perturb",
         type=float,
         default=0.1,
-        help="Atom perturbation distance magnitude",
+        help="atom perturbation distance magnitude",
     )
 
     args = parser.parse_args()

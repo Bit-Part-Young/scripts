@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 通过最远点采样选择结构
 
@@ -26,6 +28,7 @@ def fps_select(
     atoms_list = read(input_xyz_fn, index=":", format="extxyz")
 
     calculator = NEP(model_fn)
+    print("\n")
     print(calculator)
 
     descriptors = np.array(
@@ -35,11 +38,15 @@ def fps_select(
     sampler = FarthestPointSample(min_distance=min_distance)
 
     selected_indices = sampler.select(descriptors, [])
+    selected_indices.sort()
+    selected_indices = [int(i) for i in selected_indices]
+
     selected_atoms = [atoms_list[i] for i in selected_indices]
 
     write(output_xyz_fn, selected_atoms, format="extxyz", append=True)
 
     print(f"Number of selected structures: {len(selected_indices)}.")
+    print(f"\nIndex of selected structures: {selected_indices}.")
 
     return descriptors, selected_indices
 
