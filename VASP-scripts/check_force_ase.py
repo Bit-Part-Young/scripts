@@ -22,13 +22,14 @@ def grab_outcar_info(outcar_path: str) -> tuple[int, np.ndarray]:
     atoms_list = read(outcar, index=":", format="vasp-out")
     natoms = len(atoms_list[0])
 
+    # ASE 会将原子固定轴对应的受力直接设置为 0
     # 3D np.ndarray
     forces_array = np.array([atoms.get_forces() for atoms in atoms_list])
 
     return (natoms, forces_array)
 
 
-def calcuate_force(
+def calculate_force(
     force_array: np.ndarray,
     force_criteria: float = 0.01,
 ) -> np.ndarray:
@@ -48,6 +49,7 @@ def main():
         description="Check the force convergence of every atom in every ion step in VASP OUTCAR.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         allow_abbrev=True,
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(
@@ -81,7 +83,7 @@ def main():
         f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n"
     )
 
-    boolen_array = calcuate_force(
+    boolen_array = calculate_force(
         force_array=forces_array,
         force_criteria=ediffg,
     )

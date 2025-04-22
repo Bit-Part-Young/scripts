@@ -37,7 +37,8 @@ def grab_outcar_info(outcar_path: str) -> tuple[int, np.ndarray]:
     return (natoms, forces_array)
 
 
-def calcuate_force(
+# [ ] 需忽略原子固定轴对应的受力，直接设置为 0
+def calculate_force(
     force_array: np.ndarray,
     force_criteria: float,
 ) -> np.ndarray:
@@ -89,7 +90,7 @@ def main():
         f"OUTCAR info: {natoms} atoms, {ion_steps} ion steps, EDIFFG {abs(ediffg)} eV/Å.\n"
     )
 
-    boolen_array = calcuate_force(
+    boolen_array = calculate_force(
         force_array=forces_array,
         force_criteria=ediffg,
     )
