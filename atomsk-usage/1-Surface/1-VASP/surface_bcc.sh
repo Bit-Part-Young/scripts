@@ -2,7 +2,8 @@
 
 # BCC 结构 (100), (110), (111) 表面模型构建
 
-# [ ] 是否要固定中间原子层？
+# [ ] 是否要固定中间原子层（无必要）
+# [ ] 是否要固定 x、y 轴（无必要）
 
 
 surface_bcc() {
@@ -95,7 +96,7 @@ get_help() {
   echo "    -h, --help                 show this help message and exit"
   echo "    -e element                 element symbol (default: Nb)"
   echo "    -lc lattice_constant       lattice constant (default: 3.307)"
-  echo "    -d dup_x dup_y num_layer     x y dimension, layers of z direction (default: 1 1 12)"
+  echo "    -d dup_x dup_y num_layer   x y dimension, layers of z direction (default: 1 1 12)"
   echo "    -vac vacuum                vacuum thickness (default: 15)"
 
   echo -e "\nExamples:"
