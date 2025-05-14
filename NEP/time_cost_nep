@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# 计算 NEP 训练耗时
+
+nep_train_fn="nep.in"
+nep_potential_fn="nep.txt"
+
+start_time=$(stat -c %Y "$nep_train_fn")
+end_time=$(stat -c %Y "$nep_potential_fn")
+
+time_diff=$((end_time - start_time))
+hours=$((time_diff / 3600))
+minutes=$(((time_diff % 3600) / 60))
+
+echo "NEP training time cost: ${hours}h ${minutes}min"
