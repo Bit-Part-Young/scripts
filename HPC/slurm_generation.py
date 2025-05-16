@@ -41,8 +41,9 @@ def slurm_generation(
         f.write("#SBATCH -e %j.err\n\n")
 
         if platform == "master":
-            f.write("#SBATCH -w node2\n")
-            f.write("#SBATCH -x node1\n\n")
+            f.write("#SBATCH -x master\n\n")
+            # f.write("#SBATCH -w node2\n")
+            # f.write("#SBATCH -x node1\n\n")
             f.write("#SBATCH --no-requeue\n\n")
 
         elif platform == "node2":

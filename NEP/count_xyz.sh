@@ -6,7 +6,7 @@
 set -e
 set -u
 
-for fxyz in $(ls *xyz); do
+for fxyz in $(ls *.xyz); do
 
   nlines=$(wc -l ${fxyz} | cut -d ' ' -f1)
   natoms=$(grep -i pbc ${fxyz} | wc -l)

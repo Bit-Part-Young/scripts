@@ -5,7 +5,7 @@
 set -e
 set -u
 
-for fcfg in $(ls *cfg); do
+for fcfg in $(ls *.cfg); do
 
   nframes=$(grep 'BEGIN' ${fcfg} | wc -l)
   natoms=$(sed -n '/Size/{n;p}' ${fcfg} | awk '{sum += $1} END {print sum}')
