@@ -31,6 +31,7 @@ data = {
     "Sn": (50, 118.71, 1.45, 505.08, 7.31, -3.8, 6.65, 6.65, "mp-117"),
     "Mg": (12, 24.305, 1.5, 923.0, 1.74, -1.5, 3.20, 5.16, "mp-153"),
     "Cu": (29, 63.546, 1.35, 1357.77, 8.92, -3.7, 3.63, 3.63, "mp-30"),
+    "Si": (14, 28.0855, 1.1, 1687.0, 2.33, -5.4, 5.47, 5.47, "mp-149"),
     "Ni": (28, 58.693, 1.35, 1728.0, 8.91, -5.5, 3.52, 3.52, "mp-23"),
     "Cr": (24, 51.996, 1.4, 2180.0, 7.14, -9.5, 2.84, 2.84, "mp-90"),
     "Ag": (47, 107.868, 1.6, 1234.93, 10.49, -2.7, 4.14, 4.14, "mp-124"),
@@ -61,7 +62,7 @@ df = pd.DataFrame.from_dict(
 def note():
     print("\nNote:")
     print(
-        "1. atomic_radius: atomic radius (no unified value, not necessarily accurate)"
+        "1. atomic_radius: atomic radius (no unified value, not necessarily accurate), got from pymatgen"
     )
     print(
         "2. energy_pa: average atomic energy of the element's ground state structure after relaxation"
