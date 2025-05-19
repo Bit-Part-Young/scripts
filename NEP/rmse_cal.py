@@ -32,12 +32,14 @@ def main():
 
     data_fn_list_list = [train_data_fn_list, test_data_fn_list]
 
+    print("")
     for data_fn_list in data_fn_list_list:
-        for data_fn, label, unit in zip(data_fn_list, label_list, unit_list):
-            if os.path.exists(data_fn):
-                rmse = calculate_rmse(data_fn)
-                print(f"{label} train RMSE: {rmse:.6f} {unit}.")
-        print("")
+        if os.path.exists(data_fn_list[0]):
+            for data_fn, label, unit in zip(data_fn_list, label_list, unit_list):
+                if os.path.exists(data_fn):
+                    rmse = calculate_rmse(data_fn)
+                    print(f"{label} train RMSE: {rmse:.6f} {unit}.")
+            print("")
 
 
 if __name__ == "__main__":
