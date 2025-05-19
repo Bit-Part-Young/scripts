@@ -24,13 +24,12 @@ def load_data(test: bool = False):
     else:
         label = "train"
 
-    loss_data = np.loadtxt(f"loss.out")
     energy_data = np.loadtxt(f"energy_{label}.out")
     force_data = np.loadtxt(f"force_{label}.out")
     virial_data = np.loadtxt(f"virial_{label}.out")
     stress_data = np.loadtxt(f"stress_{label}.out")
 
-    return loss_data, energy_data, force_data, virial_data, stress_data
+    return energy_data, force_data, virial_data, stress_data
 
 
 def calculate_rmse(
@@ -79,7 +78,7 @@ def plot_nep_train(
 ):
     """绘制 NEP 训练结果"""
 
-    loss, energy_data, force_data, virial_data, stress_data = load_data(test)
+    energy_data, force_data, virial_data, stress_data = load_data(test)
 
     set_plot_params(
         legend_fontsize=20,
@@ -88,30 +87,11 @@ def plot_nep_train(
         axes_grid=True,
     )
 
-    fig, axs = plt.subplots(2, 2, figsize=(18, 15))
-
-    # ------------------  损失演化曲线  ------------------
-    ax: Axes = axs[0, 0]
-    ax.grid(False)
-
-    loss[:, 0] = np.arange(1, len(loss) + 1) * 100
-    ax.loglog(loss[:, 0], loss[:, 1:7], "-")
-
-    ax.set(
-        xlim=(1e2, loss[:, 0].max()),
-        xlabel="Generation",
-        ylabel="Loss",
-    )
-
-    ax.legend(
-        labels=["Total", "L1", "L2", "E-train", "F-train", "V-train"],
-        ncols=3,
-        loc="lower left",
-    )
+    fig, axs = plt.subplots(1, 3, figsize=(20, 10))
 
     # ------------------  能量对比图 + 误差直方图  ------------------
     energy_min, energy_max = calculate_limits(energy_data[:, 1])
-    ax: Axes = axs[0, 1]
+    ax: Axes = axs[0]
 
     parity_plot(
         ax,
@@ -132,16 +112,19 @@ def plot_nep_train(
 
     energy_rmse = calculate_rmse(energy_data[:, 0], energy_data[:, 1]) * 1000
     ax.text(
-        0.5,
+        0.3,
         0.08,
         f"RMSE: {energy_rmse:.2f} meV/atom",
         transform=ax.transAxes,
         fontsize=20,
     )
 
+    # 子图呈方形
+    ax.set_aspect("equal", "box")
+
     # ------------------  力对比图 + 误差直方图  ------------------
     force_min, force_max = calculate_limits(force_data[:, 3:6].reshape(-1))
-    ax: Axes = axs[1, 0]
+    ax: Axes = axs[1]
 
     parity_plot(
         ax,
@@ -154,20 +137,22 @@ def plot_nep_train(
     ax.set(
         xlim=[force_min, force_max],
         ylim=[force_min, force_max],
-        xlabel=r"DFT force (eV/$\AA$)",
-        ylabel=r"NEP force (eV/$\AA$)",
+        xlabel="DFT force (eV/$\mathrm{\AA}$)",
+        ylabel="NEP force (eV/$\mathrm{\AA}$)",
     )
 
     ax.legend(labels=["fx", "fy", "fz"], ncols=3)
 
     force_rmse = calculate_rmse(force_data[:, 0:3], force_data[:, 3:6]) * 1000
     ax.text(
-        0.5,
+        0.3,
         0.08,
-        rf"RMSE: {force_rmse:.2f} meV/$\AA$",
+        f"RMSE: {force_rmse:.2f} meV/$\mathrm{{\AA}}$",
         transform=ax.transAxes,
         fontsize=20,
     )
+
+    ax.set_aspect("equal", "box")
 
     # ------------------  位力/应力对比图 + 误差直方图  ------------------
     if stress:
@@ -179,7 +164,7 @@ def plot_nep_train(
         rmse_unit = "eV/atom"
 
     virial_min, virial_max = calculate_limits(virial_data[:, 6:12].reshape(-1))
-    ax: Axes = axs[1, 1]
+    ax: Axes = axs[2]
 
     parity_plot(
         ax,
@@ -203,12 +188,14 @@ def plot_nep_train(
 
     virial_rmse = calculate_rmse(virial_data[:, 0:6], virial_data[:, 6:12])
     ax.text(
-        0.5,
+        0.3,
         0.08,
         f"RMSE: {virial_rmse:.4f} {rmse_unit}",
         transform=ax.transAxes,
         fontsize=20,
     )
+
+    ax.set_aspect("equal", "box")
 
     plt.tight_layout()
 
@@ -224,7 +211,7 @@ def plot_nep_train(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Plot NEP training results.",
+        description="Plot NEP train / test results (parity plot of energy, force, virial, stress).",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 

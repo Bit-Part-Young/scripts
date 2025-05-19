@@ -330,7 +330,7 @@ def plot_training_results(
 
     # ------------------  保存图片  ------------------
     plt.subplots_adjust(wspace=0.3, hspace=0.3)
-    plt.savefig("nep_loss_and_rmse.png", bbox_inches="tight")
+    plt.savefig("nep_loss.png", bbox_inches="tight")
 
     print("\nNEP train results figure is generated!")
 
@@ -338,7 +338,7 @@ def plot_training_results(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Plot NEP training results(loss evolution; parity plot of energy, force, virial, stress).",
+        description="Plot NEP training results (loss evolution; parity plot of energy, force, virial, stress).",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
