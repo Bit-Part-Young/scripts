@@ -19,17 +19,17 @@ get_xyz_efs() {
     awk '{print $1, $5, $9, $2, $6, $3}' virial_${suffix}_tmp.dat >virial_${suffix}.dat
   fi
 
-  awk 'NF != 1' ${xyz_fn} >forces_${suffix}_tmp.dat
-  grep -v "pbc" forces_${suffix}_tmp.dat >forces_${suffix}_tmp2.dat
-  awk '{for(i=NF-2; i<=NF; i++) printf "%.10f ", $i; print ""}' forces_${suffix}_tmp2.dat >forces_${suffix}.dat
+  awk 'NF != 1' ${xyz_fn} >force_${suffix}_tmp.dat
+  grep -v "pbc" force_${suffix}_tmp.dat >force_${suffix}_tmp2.dat
+  awk '{for(i=NF-2; i<=NF; i++) printf "%.10f ", $i; print ""}' force_${suffix}_tmp2.dat >force_${suffix}.dat
 
-  rm -f energy_${suffix}_tmp.dat forces_${suffix}_tmp*.dat virial_${suffix}_tmp.dat
+  rm -f energy_${suffix}_tmp.dat force_${suffix}_tmp*.dat virial_${suffix}_tmp.dat
 
-  echo -e "Energy, Forces, Virial, Natoms data saved to *_${suffix}.dat.\n"
+  echo -e "Energy, Force, Virial, Natoms data saved to *_${suffix}.dat.\n"
 
   echo -e "Energy count: $(wc -l energy_${suffix}.dat | awk '{print $1}')"
-  echo -e "Forces count: $(wc -l forces_${suffix}.dat | awk '{print $1}')"
-  echo -e "Virials count: $(wc -l virial_${suffix}.dat | awk '{print $1}')"
+  echo -e "Force count: $(wc -l force_${suffix}.dat | awk '{print $1}')"
+  echo -e "Virial count: $(wc -l virial_${suffix}.dat | awk '{print $1}')"
   echo -e "Natoms count: $(wc -l natoms_${suffix}.dat | awk '{print $1}')"
 }
 
@@ -40,7 +40,7 @@ get_help() {
 
   echo -e "\nUsage: ${script_name} [xyz_fn] [suffix]"
 
-  echo -e "\nGet the energy, forces and virial data from NEP xyz format file."
+  echo -e "\nGet the energy, force, virial and natoms data from NEP xyz configuration file."
 
   echo -e "\nOptions:"
   echo "    -h, --help                 show this help message and exit"

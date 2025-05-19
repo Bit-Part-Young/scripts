@@ -1,7 +1,7 @@
 #!/bin/bash
 
 : '
-将静态计算单帧 OUTCAR 转换为 xyz 文件，作为 NEP 的训练集构型
+将静态计算单帧/弛豫最后一帧 OUTCAR 转换为 xyz 文件，作为 NEP 的训练集构型
 
 reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/vasp2xyz/outcar2xyz/singleFrame-outcars2nep-exyz.sh
 '
