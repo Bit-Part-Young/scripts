@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""绘制 energy, forces, virial/stress, natoms 直方图"""
+"""绘制 energy, force, virial/stress, natoms 直方图"""
 
 import argparse
 
@@ -11,7 +11,7 @@ from matplotlib.axes import Axes
 
 
 def forces_histogram(data_fn: str, property_name: str, bins: int = 30):
-    """绘制 forces 直方图"""
+    """绘制 force 直方图"""
 
     array = np.loadtxt(data_fn)
     label_list = ["fx", "fy", "fz"]
@@ -109,7 +109,7 @@ if __name__ == "__main__":
         energy_histogram(args.data_fn, property_name, args.bins)
     elif property_name in ["virial", "stress"]:
         virial_histogram(args.data_fn, property_name, args.bins)
-    elif property_name == "forces":
+    elif property_name == "force":
         forces_histogram(args.data_fn, property_name, args.bins)
     else:
         raise ValueError(f"Invalid property name: {property_name}")
