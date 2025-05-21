@@ -31,7 +31,7 @@ get_help() {
 
   echo -e "\nUsage: $script_name [xyz_fn...]"
 
-  echo -e "\nCount element types in xyz files."
+  echo -e "\nCount element type in xyz file."
 
   echo -e "\nOptions:"
   echo "  -h, --help      Show this help message and exit"
