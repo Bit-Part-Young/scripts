@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 import seekpath
 from ase.atoms import Atoms
+from ase.io import read
+from matplotlib.axes import Axes
 from phonopy import load
 from phonopy.api_phonopy import Phonopy
 from phonopy.units import VaspToTHz
@@ -17,7 +19,7 @@ from spt.plot_params import set_plot_params
 
 
 def get_kpoints(atoms: Atoms):
-    """生成k点路径"""
+    """生成 K 点路径"""
 
     structure_tuple = (
         atoms.cell,
@@ -41,7 +43,7 @@ def get_kpoints(atoms: Atoms):
 
 def get_manual_kpoints(high_symmetry_points, num=30):
     """
-    基于手动定义的高对称点生成 k 点路径
+    基于手动定义的高对称点生成 K 点路径
     high_symmetry_points: 包含点坐标和标签的列表
     示例: BCC K-path
     high_symmetry_points = [
@@ -81,7 +83,7 @@ def create_phonon_dataframe(phonon: Phonopy, kpoints_rel, kpoints_lincoord):
     """生成声子数据的DataFrame"""
 
     phonon.run_band_structure(
-        path=[kpoints_rel],
+        paths=[kpoints_rel],
         with_eigenvectors=True,
         with_group_velocities=True,
     )
@@ -93,12 +95,17 @@ def create_phonon_dataframe(phonon: Phonopy, kpoints_rel, kpoints_lincoord):
     return df
 
 
-def _plot_a_band(ax, df, color, label, **kwargs):
+def _plot_a_band(ax: Axes, df: pd.DataFrame, color: str, label: str, **kwargs):
     """绘制一组声子色散曲线"""
 
     for i, col in enumerate(df.columns):
         ax.plot(
-            df.index, df[col], color=color, label=label if i == 0 else None, **kwargs
+            df.index,
+            df[col],
+            lw=3.0,
+            color=color,
+            label=label if i == 0 else None,
+            **kwargs,
         )
 
 
@@ -114,7 +121,16 @@ def plot_phonon_dispersion(
 
     set_plot_params()
 
-    colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    # colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
+    colors = [
+        "#bebebe",  # 灰色（用于不是很重要的数据）
+        "#2b72bc",  # 蓝色（对比数据）
+        "#fc0001",  # 红色（突出数据）
+        # "#1f77b4",  # 蓝色 matplotlib
+        # "#ff7f0e",  # 橙色 matplotlib
+        # "#d62728",  # 红色 matplotlib
+        # "#2ca02c",  # 绿色 matplotlib
+    ]
 
     fig, ax = plt.subplots(figsize=(10, 8))
 
