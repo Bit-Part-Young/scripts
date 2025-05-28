@@ -8,12 +8,15 @@ Original Author: Ke Xu
 
 import argparse
 import os
+import shutil
+import subprocess
 
 import numpy as np
 from ase.atoms import Atoms
 from ase.io import read
 from calorine.calculators import CPUNEP
 from calorine.tools import get_force_constants, relax_structure
+from phonopy.file_IO import write_FORCE_SETS
 from pymatgen.core.structure import Structure
 from seekpath import get_explicit_k_path
 
@@ -23,13 +26,12 @@ def get_primitive(atoms: Atoms):
 
     structures = Structure.from_ase_atoms(atoms)
 
-    primitive = structures.get_primitive_structure()
+    primitive = structures.to_primitive()
 
     return primitive.to_ase_atoms()
 
 
 def get_kpath(atoms: Atoms, custom_path=None):
-
     if custom_path is not None:
         # 自定义 k 点路径插值计算
         explicit_kpoints_rel = []
@@ -71,11 +73,7 @@ def get_kpath(atoms: Atoms, custom_path=None):
 
 
 def get_phonon_dispersion(
-    atoms: Atoms,
-    model_fn,
-    cellsize=4,
-    custom_path=None,
-    phonopy_yaml_fn="phonopy_params.yaml",
+    atoms: Atoms, model_fn, cellsize=4, custom_path=None, folder_name="."
 ):
     """计算声子色散"""
 
@@ -104,7 +102,24 @@ def get_phonon_dispersion(
     phonon.run_band_structure([path["explicit_kpoints_rel"]])
 
     # 将 phonopy 的相关参数写入文件
-    phonon.save(filename=phonopy_yaml_fn)
+    phonon.save(filename=f"{folder_name}/phonopy_params.yaml")
+
+    # 生成 FORCE_SETS 数据文件
+    dataset = phonon.dataset
+
+    write_FORCE_SETS(
+        dataset=dataset,
+        filename=f"{folder_name}/FORCE_SETS",
+    )
+
+    # 生成 phonopy_disp.yaml 数据文件
+    phonon.save(
+        filename=f"{folder_name}/phonopy_disp.yaml",
+        settings={
+            "displacements": True,
+            "force_sets": False,
+        },
+    )
 
 
 if __name__ == "__main__":
@@ -127,5 +142,22 @@ if __name__ == "__main__":
         atoms,
         model_fn="nep.txt",
         cellsize=4,
-        phonopy_yaml_fn=f"{folder}/phonopy_params.yaml",
+        folder_name=folder,
     )
+
+    print(f"\nPhonon dispersion calculation finished!\n")
+
+    # 检查是否有 plot_phonon_bs.py 命令
+    if not shutil.which("plot_phonon_bs.py"):
+        raise FileNotFoundError(
+            "\nplot_phonon_bs.py executable command cannot be found!"
+        )
+
+    subprocess.run(
+        f"plot_phonon_bs.py -i phonopy_disp.yaml FORCE_SETS",
+        shell=True,
+        cwd=folder,
+        check=True,
+    )
+
+    print(f"\nPhonon dispersion plot generated in {folder}/phonon_bands.png!")
