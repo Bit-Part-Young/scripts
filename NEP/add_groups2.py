@@ -19,7 +19,7 @@ def add_groups(
     else:
         atoms = read(structure_fn)
 
-    group: list[int] = []
+    group_list: list[int] = []
     for element in atoms.get_chemical_symbols():
         if element in elements:
             group = elements.index(element)
@@ -27,9 +27,9 @@ def add_groups(
             raise ValueError(
                 f"Element {element} not found in the provided elements list"
             )
-        group.append(group)
+        group_list.append(group)
 
-    group_array = np.array(group)
+    group_array = np.array(group_list)
     atoms.new_array("group", group_array)
 
     write(output_fn, atoms, format="extxyz")
@@ -49,12 +49,12 @@ if __name__ == "__main__":
         help="structure filename",
     )
     parser.add_argument(
-        "elements",
+        "-ess",
         type=str,
         nargs="+",
-        help="elements sequence list",
+        required=True,
+        help="element symbol sequence, e.g. Ti Al Nb",
     )
-
     parser.add_argument(
         "-o",
         "--output_fn",
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     structure_fn = args.structure_fn
-    elements = args.elements
+    elements = args.ess
     output_fn = args.output_fn
 
     add_groups(structure_fn, elements, output_fn)

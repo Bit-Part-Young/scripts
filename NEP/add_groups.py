@@ -18,14 +18,14 @@ def add_groups(
     else:
         atoms = read(structure_fn)
 
-    group: list[int] = []
+    group_list: list[int] = []
     for atom in atoms:
         if atom.position[2] < atoms.cell[2, 2] / 2:
-            group.append(0)
+            group_list.append(0)
         else:
-            group.append(1)
+            group_list.append(1)
 
-    group_array = np.array(group)
+    group_array = np.array(group_list)
     atoms.new_array("group", group_array)
 
     write(output_fn, atoms, format="extxyz")

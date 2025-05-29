@@ -100,7 +100,7 @@ if __name__ == "__main__":
         type=str,
         nargs="+",
         required=True,
-        help="element symbol sequences, e.g. Ti Al Nb",
+        help="element symbol sequence, e.g. Ti Al Nb",
     )
 
     args = parser.parse_args()
