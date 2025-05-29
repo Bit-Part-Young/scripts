@@ -15,24 +15,20 @@ platform_partition = {
 
 def slurm_generation(
     platform: Literal["sy", "pi", "master", "node2"] = "sy",
-    calculation_type: Literal["vasp", "lammps", "Python", "Bash", "gpu"] = "vasp",
-    slurm_fn: str = "job.slurm",
+    calculation_type: Literal["vasp", "lammps", "misc"] = "vasp",
     num_cpus: int = 1,
     time: str = "72:00:00",
-    input_fn: str = "in.lmp",
 ):
     """生成不同平台的 VASP/LAMMPS/Python/Bash 任务 Slurm 提交脚本"""
 
-    with open(slurm_fn, "w") as f:
+    with open("job.slurm", "w") as f:
         f.write("#!/bin/bash\n\n")
 
-        partition = platform_partition[platform]
-        if calculation_type in ["gpu", "vasp", "lammps"]:
-            f.write(f"#SBATCH -J {calculation_type.upper()}\n")
-        elif calculation_type in ["python", "bash"]:
-            f.write(f"#SBATCH -J {calculation_type.capitalize()}\n")
+        f.write(f"#SBATCH -J {calculation_type.upper()}\n")
 
+        partition = platform_partition[platform]
         f.write(f"#SBATCH -p {partition}\n")
+
         f.write("#SBATCH -N 1\n")
         f.write(f"#SBATCH --ntasks-per-node={num_cpus}\n")
         f.write(f"#SBATCH -t {time}\n")
@@ -44,10 +40,6 @@ def slurm_generation(
             f.write("#SBATCH -x master\n\n")
             # f.write("#SBATCH -w node2\n")
             # f.write("#SBATCH -x node1\n\n")
-            f.write("#SBATCH --no-requeue\n\n")
-
-        elif platform == "node2":
-            f.write("#SBATCH --gres=gpu:1\n\n")
             f.write("#SBATCH --no-requeue\n\n")
 
         if calculation_type == "vasp":
@@ -67,37 +59,29 @@ def slurm_generation(
             f.write(f"mpirun {vasp_cmd}\n")
 
         elif calculation_type == "lammps":
-            if platform == "sy":
-                lammps_cmd = "${HOME}/yangsl/bin/lmp_all"
-            elif platform == "master":
+            if platform == "master":
                 lammps_cmd = "lmp_all"
+            else:
+                lammps_cmd = "${HOME}/yangsl/bin/lmp_all"
 
                 f.write("module load intel-oneapi-compilers/2021.4.0\n")
                 f.write("module load intel-oneapi-mpi/2021.12.1\n")
                 f.write("module load intel-oneapi-mkl/2021.4.0\n")
                 f.write("module load intel-oneapi-tbb/2021.4.0\n\n")
 
-            f.write(f"mpirun {lammps_cmd} -i {input_fn}\n")
+            f.write(f"mpirun {lammps_cmd} -i in.lmp\n")
 
-        elif calculation_type == "gpu":
-            f.write("nep_node2\n")
-
-        elif calculation_type == "python":
-            f.write(f"conda activate base_ysl\n\n")
-
-            f.write(f"python {input_fn}\n")
-
-        elif calculation_type == "bash":
-            f.write(f"bash {input_fn}\n")
+        elif calculation_type == "misc":
+            f.write(f"# Please add your command here.\n\n")
 
     print(f"\n{platform} platform {calculation_type} submission file generated.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Generate submission file for VASP/LAMMPS/Python/Bash calculation in HPC.",
-        epilog="Author: SLY.",
+        description="Generate slurm submission file for CPU jobs in group server and HPC platforms (VASP/LAMMPS/Misc).",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(
@@ -106,7 +90,7 @@ if __name__ == "__main__":
         const="sy",
         default="sy",
         type=str,
-        choices=["sy", "pi", "master", "node2"],
+        choices=["sy", "pi", "master"],
         help="Platform",
     )
 
@@ -117,8 +101,8 @@ if __name__ == "__main__":
         const="vasp",
         default="vasp",
         type=str,
-        choices=["vasp", "lammps", "python", "bash", "gpu"],
-        help="Calculation type",
+        choices=["vasp", "lammps", "misc"],
+        help="calculation type",
     )
 
     parser.add_argument(
@@ -128,23 +112,17 @@ if __name__ == "__main__":
         const=1,
         default=1,
         type=int,
-        help="Number of CPUs",
-    )
-
-    parser.add_argument(
-        "--input_fn",
-        nargs="?",
-        const="in.lmp",
-        default="in.lmp",
-        type=str,
-        help="LAMMPS/Python/Bash input filename",
+        help="number of cpus",
     )
 
     args = parser.parse_args()
 
+    platform = args.platform
+    calculation_type: str = args.calculation_type
+    num_cpus = args.num_cpus
+
     slurm_generation(
-        platform=args.platform,
-        calculation_type=args.calculation_type.lower(),
-        num_cpus=args.num_cpus,
-        input_fn=args.input_fn,
+        platform=platform,
+        calculation_type=calculation_type.lower(),
+        num_cpus=num_cpus,
     )
