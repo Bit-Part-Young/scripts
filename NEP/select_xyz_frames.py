@@ -63,6 +63,7 @@ def filter_frames(frames: list, force_threshold: float) -> tuple[list, list]:
     """筛选构型"""
 
     filtered_frames = []
+    removed_frames = []
     removed_frames_indices = []
 
     for i in range(len(frames)):
@@ -75,11 +76,12 @@ def filter_frames(frames: list, force_threshold: float) -> tuple[list, list]:
         ):
             # 记录被删除的构型索引，从 1 开始
             removed_frames_indices.append(i + 1)
+            removed_frames.append(current_frame)
             continue
 
         filtered_frames.append(current_frame)
 
-    return filtered_frames, removed_frames_indices
+    return filtered_frames, removed_frames, removed_frames_indices
 
 
 if __name__ == "__main__":
@@ -115,7 +117,14 @@ if __name__ == "__main__":
     force_threshold = args.force_threshold
 
     frames = parse_xyz_file(input_filename)
-    filtered_frames, removed_frames_indices = filter_frames(frames, force_threshold)
+    filtered_frames, removed_frames, removed_frames_indices = filter_frames(
+        frames, force_threshold
+    )
     write_xyz_file(filtered_frames, output_filename)
+    write_xyz_file(removed_frames, "removed.xyz")
 
     print(f"\nRemoved frame indices (starting from 1): {removed_frames_indices}")
+
+    print(
+        f"\nFiltered structures saved to {output_filename}, removed structures saved to removed.xyz"
+    )

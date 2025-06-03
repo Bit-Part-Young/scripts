@@ -11,7 +11,7 @@ import numpy as np
 def calculate_rmse(data_fn):
     """计算 RMSE"""
 
-    data = np.loadtxt(data_fn)
+    data = np.loadtxt(data_fn, ndmin=2)
     if "energy" in data_fn:
         pred, dft = data[:, 0], data[:, 1]
     elif "force" in data_fn:

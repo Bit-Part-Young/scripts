@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""使用 NEP 势函数 EOS 计算"""
+"""使用 NEP 势函数进行 EOS 计算（晶格常数范围 ± 0.2 Å）"""
 
 import argparse
 
@@ -19,8 +19,12 @@ crystalstructure_dict = {
 }
 
 
-# [ ]  添加 HCP 结构 EOS
-def eos_nep(symbol: str, lc_round: float, potential_fn: str = "nep.txt"):
+def eos_nep(
+    symbol: str,
+    a: float,
+    covera: float = 1.633,
+    potential_fn: str = "nep.txt",
+):
     """使用 NEP 势函数 EOS 计算"""
 
     calc = CPUNEP(model_filename=potential_fn)
@@ -28,12 +32,15 @@ def eos_nep(symbol: str, lc_round: float, potential_fn: str = "nep.txt"):
     scale = 0.2
     data = []
     for lc in np.arange(
-        round(lc_round - scale, 2),
-        round(lc_round + scale, 2),
+        round(a - scale, 2),
+        round(a + scale + 0.01, 2),
         0.01,
     ):
         lc = round(lc, 4)
-        atoms = bulk(symbol, crystalstructure_dict[symbol], a=lc, cubic=True)
+        if symbol in ["Ti", "Zr"]:
+            atoms = bulk(symbol, "hcp", a=lc, covera=covera)
+        else:
+            atoms = bulk(symbol, crystalstructure_dict[symbol], a=lc, cubic=True)
 
         atoms.calc = calc
 
@@ -49,20 +56,38 @@ def eos_nep(symbol: str, lc_round: float, potential_fn: str = "nep.txt"):
         data.append(data_dict)
 
     df = pd.DataFrame(data)
-    df.to_csv(f"ev_{symbol}_nep.dat", index=False, sep=" ")
+    csv_fn = f"eos_nep_{symbol}.dat"
+    df.to_csv(csv_fn, index=False, sep=" ")
 
-    print(f"EOS data saved to ev_{symbol}.dat.")
+    print(f"\nEOS data saved to {csv_fn}.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="EOS calculation using NEP potential.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""Author: SLY.
+
+Note: The lattice constant range ± 0.2 Å, interval 0.01 Å, total 41 data points.
+
+Example:
+    python eos_nep.py Ti 2.9 1.582
+    python eos_nep.py Nb 3.3
+        """,
     )
 
     parser.add_argument("symbol", type=str, help="element symbol")
-    parser.add_argument("lc_round", type=float, help="rough lattice constant")
+    parser.add_argument("a", type=float, help="a (rough value)")
+
+    parser.add_argument(
+        "covera",
+        type=float,
+        default=1.633,
+        const=1.633,
+        nargs="?",
+        help="c/a (default: 1.633)",
+    )
 
     args = parser.parse_args()
 
-    eos_nep(args.symbol, args.lc_round)
+    eos_nep(args.symbol, args.a, args.covera)
