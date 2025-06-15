@@ -1,6 +1,5 @@
 # config.gnu gnuplot 绘图配置文件
 
-
 set terminal pngcairo size 1000,800 enhanced font "Times New Roman,25"
 
 # 设置调色板
@@ -28,5 +27,5 @@ set style increment user
 
 # set output "test.png"
 
-set xr [0:5]
-plot for [i=1:7] sin(x)+i*0.1 w l
+# set xr [0:5]
+# plot for [i=1:7] sin(x)+i*0.1 w l
