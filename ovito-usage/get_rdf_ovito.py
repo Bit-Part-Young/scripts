@@ -6,10 +6,13 @@ reference: https://gitee.com/mayuan_JLUPHY/my_script/blob/master/lammps-toolkit/
 """
 
 import argparse
+import warnings
 
 from ovito.io import export_file, import_file
 from ovito.modifiers import CoordinationAnalysisModifier, TimeAveragingModifier
 from ovito.pipeline import Pipeline
+
+warnings.filterwarnings("ignore", message=".*OVITO.*PyPI")
 
 
 def rdf_cal(
@@ -38,7 +41,9 @@ def rdf_cal(
     )
 
     # 对所有帧的 RDF 数据进行时间平均
-    pipeline.modifiers.append(TimeAveragingModifier(operate_on="table:coordination-rdf"))
+    pipeline.modifiers.append(
+        TimeAveragingModifier(operate_on="table:coordination-rdf")
+    )
 
     # 导出
     export_file(

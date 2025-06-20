@@ -22,10 +22,9 @@ set style increment user
 
 
 # 使用示例
-# set loadpath "/home/yangsl/scripts/cms-scripts/plots"
+# set loadpath "~/scripts/plots"
 # load "config.gnu"
 
 # set output "test.png"
 
-# set xr [0:5]
 # plot for [i=1:7] sin(x)+i*0.1 w l

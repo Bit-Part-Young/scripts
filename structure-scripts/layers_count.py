@@ -15,7 +15,10 @@ def layers_count(
 ):
     """统计原子层数目及每层原子数"""
 
-    atoms = read(structure_fn)
+    if structure_fn.split(".")[-1] in ["lmp", "lammps-data"]:
+        atoms = read(structure_fn, format="lammps-data")
+    else:
+        atoms = read(structure_fn)
 
     positions = atoms.positions
 
@@ -43,8 +46,8 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Count atomic layers and the number of atoms in each layer.",
-        epilog="Author: SLY.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(
@@ -52,7 +55,7 @@ if __name__ == "__main__":
         nargs="?",
         type=str,
         default="POSCAR",
-        help="Structure filename",
+        help="structure filename",
     )
 
     args = parser.parse_args()
