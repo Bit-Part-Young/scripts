@@ -23,6 +23,7 @@ def unit2primitive(
     structure_fn: str = "POSCAR", interface_mode: str = "vasp"
 ) -> PhonopyAtoms:
     structure = Structure.from_file(structure_fn)
+
     primitive_structure = structure.to_primitive()
 
     write_crystal_structure(
