@@ -7,7 +7,7 @@ awk '{if($4=="F"||$4=="T") print $4,$5,$6}' POSCAR > temp.fixed
 # 离子步数
 ion_steps=$(grep 'free  ene' OUTCAR | wc -l)
 
-echo "max_x min_x avg_x max_y min_y avg_y max_z min_z avg_z" > force_info.dat
+echo "force_max" > force_info.dat
 echo "energy_pa" > energy_info.dat
 
 for i in $(seq 1 ${ion_steps}); do

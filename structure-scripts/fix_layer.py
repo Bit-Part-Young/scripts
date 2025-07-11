@@ -11,9 +11,7 @@ def fix_layer(
     fixed_axes: list[str] = ["T", "T", "T"],
     precision: float = 0.001,
 ) -> Structure:
-    """
-    固定（特定）原子层 x/y/z 轴
-    """
+    """固定（特定）原子层 x/y/z 轴"""
 
     natoms = structure.num_sites
     positions = structure.cart_coords
@@ -50,7 +48,9 @@ def fix_layer(
     elif isinstance(layer_index, list):
         fixed_layer_index = df[df["layer_index"].isin(layer_index)].index
 
-        print(f"No. {layer_index} layer(s), total {len(fixed_layer_index)} atoms are fixed.")
+        print(
+            f"No. {layer_index} layer(s), total {len(fixed_layer_index)} atoms are fixed."
+        )
 
     selective_dynamics = np.ones((natoms, 3))
 
