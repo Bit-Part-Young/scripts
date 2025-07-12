@@ -72,6 +72,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Select/Filter frames from exyz configuration file according to the force threshold.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(

@@ -23,7 +23,6 @@ def calculate_rmse(data_fn):
 
 
 def main():
-
     label_list = ["Energy", "Force", "Virial", "Stress"]
     unit_list = ["eV/atom", "eV/Å", "eV/atom", "GPa"]
 
@@ -38,7 +37,11 @@ def main():
             for data_fn, label, unit in zip(data_fn_list, label_list, unit_list):
                 if os.path.exists(data_fn):
                     rmse = calculate_rmse(data_fn)
-                    print(f"{label} train RMSE: {rmse:.6f} {unit}.")
+
+                    tag = "train"
+                    if "test" in data_fn:
+                        tag = "test"
+                    print(f"{label} {tag} RMSE: {rmse:.6f} {unit}.")
             print("")
 
 

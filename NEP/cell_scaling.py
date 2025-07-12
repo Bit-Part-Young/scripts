@@ -21,7 +21,6 @@ def cell_scaling(
     scaled_positions = atoms.get_scaled_positions()
 
     atoms.cell *= scaling
-    print(scaling, atoms.cell[0, 0])
 
     atoms.set_scaled_positions(scaled_positions)
 
