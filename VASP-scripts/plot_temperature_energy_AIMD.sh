@@ -21,7 +21,7 @@ fi
 
 # 绘制演化图
 cat >> .plot.gnu << EOF
-set loadpath "~/scripts/cms-scripts/plots"
+set loadpath "${config_path}"
 load "config.gnu"
 
 set output "temperature_energy_evolution.png"

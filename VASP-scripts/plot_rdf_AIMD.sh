@@ -20,7 +20,7 @@ fi
 
 # 绘制 RDF
 cat >> .plot.gnu << EOF
-set loadpath "~/scripts/cms-scripts/plots"
+set loadpath "${config_path}"
 load "config.gnu"
 
 set output "rdf_AIMD.png"
