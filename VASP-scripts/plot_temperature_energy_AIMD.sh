@@ -2,6 +2,8 @@
 
 # 获取 AIMD 过程中温度和能量数据并绘制演化图
 
+set -e
+
 natoms=$(sed -n '7p' POSCAR | awk '{ for(i=1; i<=NF; i++) a+=$i; print a}')
 # 获取平均原子能量
 grep 'free  energy' OUTCAR | awk -v n=${natoms} '{print $5/n}' > energy.dat
@@ -11,8 +13,14 @@ grep 'T=' OSZICAR | awk '{print $3}' > temperature.dat
 nsteps=$(grep 'T=' OSZICAR | wc -l)
 
 
+if [[ $(hostname) == *"sjtu"* ]]; then
+  config_path="~/yangsl/scripts/cms-scripts/plots"
+else
+  config_path="~/scripts/cms-scripts/plots"
+fi
+
 # 绘制演化图
-cat >> plot_tmp.gnu << EOF
+cat >> .plot.gnu << EOF
 set loadpath "~/scripts/cms-scripts/plots"
 load "config.gnu"
 
@@ -44,8 +52,8 @@ unset multiplot
 unset output
 EOF
 
-gnuplot plot_tmp.gnu
+gnuplot .plot.gnu
 
-rm plot_tmp.gnu
+rm .plot.gnu
 
 echo -e "\nTemperature and energy evolution plot of AIMD saved to temperature_energy_evolution.png."

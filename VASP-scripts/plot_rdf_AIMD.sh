@@ -2,12 +2,24 @@
 
 # 获取 AIMD 的 RDF 数据并绘制
 
-# 获取 RDF.dat
-echo -e "72\n725\n" | vaspkit > /dev/null
+set -e
 
+# 使用 vaspkit获取 RDF.dat
+if [[ -x $(command -v vaspkit) ]]; then
+  echo -e "72\n725\n" | vaspkit > /dev/null
+else
+  echo -e "vaspkit is not installed, please install it first."
+fi
+
+
+if [[ $(hostname) == *"sjtu"* ]]; then
+  config_path="~/yangsl/scripts/cms-scripts/plots"
+else
+  config_path="~/scripts/cms-scripts/plots"
+fi
 
 # 绘制 RDF
-cat >> plot_tmp.gnu << EOF
+cat >> .plot.gnu << EOF
 set loadpath "~/scripts/cms-scripts/plots"
 load "config.gnu"
 
@@ -23,8 +35,8 @@ unset multiplot
 unset output
 EOF
 
-gnuplot plot_tmp.gnu
+gnuplot .plot.gnu
 
-rm plot_tmp.gnu
+rm .plot.gnu
 
 echo -e "\nRDF plot saved to rdf_AIMD.png."

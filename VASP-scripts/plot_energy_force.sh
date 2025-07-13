@@ -2,6 +2,8 @@
 
 # 获取 VASP 弛豫过程中的能量、原子受力（考虑原子位置方向固定情况，计算受力的模长）信息并绘制演化图
 
+set -e
+
 awk '{if($4=="F"||$4=="T") print $4,$5,$6}' POSCAR > temp.fixed
 
 # 离子步数
@@ -49,9 +51,16 @@ done
 
 rm temp.fixed temp.force
 
+
+if [[ $(hostname) == *"sjtu"* ]]; then
+  config_path="~/yangsl/scripts/cms-scripts/plots"
+else
+  config_path="~/scripts/cms-scripts/plots"
+fi
+
 # 绘制演化图
-cat >> plot_tmp.gnu << EOF
-set loadpath "~/scripts/cms-scripts/plots"
+cat >> .plot.gnu << EOF
+set loadpath "${config_path}"
 load "config.gnu"
 
 set output "energy_force_evolution.png"
@@ -82,8 +91,8 @@ unset multiplot
 unset output
 EOF
 
-gnuplot plot_tmp.gnu
+gnuplot .plot.gnu
 
-rm plot_tmp.gnu
+rm .plot.gnu
 
 echo -e "\nEnergy and force evolution plot saved to energy_force_evolution.png."

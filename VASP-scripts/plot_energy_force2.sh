@@ -2,6 +2,8 @@
 
 # 获取 VASP 弛豫过程中的能量、原子受力信息（不考虑原子位置方向固定情况，不计算受力的模长）并绘制演化图
 
+set -e
+
 # 离子步数
 ion_steps=$(grep 'free  ene' OUTCAR | wc -l)
 
@@ -45,8 +47,14 @@ for i in $(seq 1 ${ion_steps}); do
 done
 
 
+if [[ $(hostname) == *"sjtu"* ]]; then
+  config_path="~/yangsl/scripts/cms-scripts/plots"
+else
+  config_path="~/scripts/cms-scripts/plots"
+fi
+
 # 绘制演化图
-cat >> plot_tmp.gnu << EOF
+cat >> .plot.gnu << EOF
 set loadpath "~/scripts/cms-scripts/plots"
 load "config.gnu"
 
@@ -80,8 +88,8 @@ unset multiplot
 unset output
 EOF
 
-gnuplot plot_tmp.gnu
+gnuplot .plot.gnu
 
-rm plot_tmp.gnu
+rm .plot.gnu
 
 echo -e "\nEnergy and force evolution plot saved to energy_force_evolution.png."
