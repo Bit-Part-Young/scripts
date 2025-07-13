@@ -6,24 +6,26 @@ check_completed() {
   completed_dirs=()
   uncompleted_dirs=()
   for dir in "$@"; do
-    outcar_fn="$dir/OUTCAR"
+    [[ -d "${dir}" ]] || continue
+
+    outcar_fn="${dir}/OUTCAR"
 
     dir=$(basename "${dir}")
 
-    if [ ! -f "$outcar_fn" ]; then
-      echo "Folder $dir OUTCAR doesn't exist!"
+    if [ ! -f "${outcar_fn}" ]; then
+      echo "Folder ${dir} OUTCAR doesn't exist!"
     else
-      if grep -q "Total CPU time used" "$outcar_fn"; then
-        completed_dirs+=("$dir")
+      if grep -q "Total CPU time used" "${outcar_fn}"; then
+        completed_dirs+=("${dir}")
       else
-        uncompleted_dirs+=("$dir")
+        uncompleted_dirs+=("${dir}")
       fi
     fi
   done
 
   echo "Completed dirs (${#completed_dirs[@]}):"
   for dir in "${completed_dirs[@]}"; do
-    echo "  $dir"
+    echo "  ${dir}"
   done
 
   if [[ ${#uncompleted_dirs[@]} -eq 0 ]]; then
@@ -31,7 +33,7 @@ check_completed() {
   else
     echo -e "\nUncompleted dirs (${#uncompleted_dirs[@]}):"
     for dir in "${uncompleted_dirs[@]}"; do
-      echo "  $dir"
+      echo "  ${dir}"
     done
   fi
 }

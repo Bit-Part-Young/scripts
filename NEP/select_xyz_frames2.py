@@ -19,15 +19,10 @@ def parse_xyz_file(filename: str) -> list:
         num_atoms = int(lines[i].strip())
         frame_info = lines[i + 1].strip()
 
-        energy_str = frame_info.split("energy=")[1].split()[0]
-        energy = float(energy_str)
-
-        lattice_str = frame_info.split('Lattice="')[1].split('"')[0]
-        lattice = np.array(list(map(float, lattice_str.split()))).reshape(3, 3)
-
         atoms = lines[i + 2 : i + 2 + num_atoms]
-        frames.append((num_atoms, frame_info, energy, lattice, atoms))
+        frames.append((num_atoms, frame_info, atoms))
         i += 2 + num_atoms
+
     return frames
 
 
@@ -35,7 +30,7 @@ def write_xyz_file(frames: list, output_filename: str):
     """写入 extxyz 文件"""
 
     with open(output_filename, "w") as file:
-        for num_atoms, frame_info, energy, lattice, atoms in frames:
+        for num_atoms, frame_info, atoms in frames:
             file.write(f"{num_atoms}\n")
             file.write(f"{frame_info}\n")
             for atom in atoms:

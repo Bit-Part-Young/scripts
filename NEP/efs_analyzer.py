@@ -18,6 +18,7 @@ def forces_histogram(data_fn: str, property_name: str, bins: int = 30):
 
     df = pd.DataFrame(array, columns=label_list)
     pd.set_option("display.float_format", "{:.2f}".format)
+    print()
     print(df.describe())
 
     fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(10, 4), dpi=500)
@@ -46,6 +47,7 @@ def virial_histogram(data_fn: str, property_name: str, bins: int = 30):
 
     df = pd.DataFrame(array, columns=label_list)
     pd.set_option("display.float_format", "{:.2f}".format)
+    print()
     print(df.describe())
     fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(15, 12), dpi=500)
 
@@ -72,6 +74,7 @@ def energy_histogram(data_fn: str, property_name: str, bins: int = 30):
 
     df = pd.DataFrame(array, columns=[property_name])
     pd.set_option("display.float_format", "{:.2f}".format)
+    print()
     print(df.describe())
 
     fig, ax = plt.subplots(figsize=(6, 4), dpi=300)

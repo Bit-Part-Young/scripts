@@ -7,33 +7,35 @@ check_scf_done() {
   uncompleted_dirs=()
   latest_step_array=()
   for dir in "$@"; do
-    outcar_fn="$dir/OUTCAR"
-    oszicar_fn="$dir/OSZICAR"
+    [[ -d "${dir}" ]] || continue
+
+    outcar_fn="${dir}/OUTCAR"
+    oszicar_fn="${dir}/OSZICAR"
 
     dir=$(basename "${dir}")
 
-    if [ ! -f "$outcar_fn" ]; then
-      echo "Folder $dir OUTCAR doesn't exist!"
+    if [ ! -f "${outcar_fn}" ]; then
+      echo "Folder ${dir} OUTCAR doesn't exist!"
     else
-      nsw=$(grep 'NSW' "$outcar_fn" | awk '{print $3}')
+      nsw=$(grep 'NSW' "${outcar_fn}" | awk '{print $3}')
       if [[ $nsw -eq 0 ]]; then
-        if grep -q 'F=' "$oszicar_fn"; then
-          completed_dirs+=("$dir")
+        if grep -q 'F=' "${oszicar_fn}"; then
+          completed_dirs+=("${dir}")
         else
-          latest_step=$(tail -n 1 "$oszicar_fn" | awk '{print $0}')
+          latest_step=$(tail -n 1 "${oszicar_fn}" | awk '{print $0}')
           latest_step_array+=("$latest_step")
 
-          uncompleted_dirs+=("$dir")
+          uncompleted_dirs+=("${dir}")
         fi
       else
-        uncompleted_dirs+=("$dir")
+        echo "Folder ${dir} is not static/scf calculation!"
       fi
     fi
   done
 
   echo "Completed dirs (${#completed_dirs[@]}):"
   for dir in "${completed_dirs[@]}"; do
-    echo "  $dir"
+    echo "  ${dir}"
   done
 
   if [[ ${#uncompleted_dirs[@]} -eq 0 ]]; then

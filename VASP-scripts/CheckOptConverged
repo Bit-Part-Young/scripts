@@ -6,24 +6,27 @@ check_converged() {
   converged_dirs=()
   unconverged_dirs=()
   for dir in "$@"; do
-    outcar_fn="$dir/OUTCAR"
+
+    [[ -d "${dir}" ]] || continue
+
+    outcar_fn="${dir}/OUTCAR"
 
     dir=$(basename "${dir}")
 
-    if [ ! -f "$outcar_fn" ]; then
-      echo "Folder $dir OUTCAR doesn't exist!"
+    if [ ! -f "${outcar_fn}" ]; then
+      echo "Folder ${dir} OUTCAR doesn't exist!"
     else
-      if grep -q 'reached required accuracy' "$outcar_fn"; then
-        converged_dirs+=("$dir")
+      if grep -q 'reached required accuracy' "${outcar_fn}"; then
+        converged_dirs+=("${dir}")
       else
-        unconverged_dirs+=("$dir")
+        unconverged_dirs+=("${dir}")
       fi
     fi
   done
 
   echo "Converged dirs (${#converged_dirs[@]}):"
   for dir in "${converged_dirs[@]}"; do
-    echo "  $dir"
+    echo "  ${dir}"
   done
 
   if [[ ${#unconverged_dirs[@]} -eq 0 ]]; then
@@ -31,7 +34,7 @@ check_converged() {
   else
     echo -e "\nUnconverged dirs (${#unconverged_dirs[@]}):"
     for dir in "${unconverged_dirs[@]}"; do
-      echo "  $dir"
+      echo "  ${dir}"
     done
   fi
 
