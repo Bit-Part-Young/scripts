@@ -13,7 +13,7 @@ grep 'T=' OSZICAR | awk '{print $3}' > temperature.dat
 nsteps=$(grep 'T=' OSZICAR | wc -l)
 
 
-if [[ $(hostname) == *"sjtu"* ]]; then
+if hostname | grep -q sjtu; then
   config_path="~/yangsl/scripts/cms-scripts/plots"
 else
   config_path="~/scripts/cms-scripts/plots"

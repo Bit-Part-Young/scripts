@@ -12,7 +12,7 @@ else
 fi
 
 
-if [[ $(hostname) == *"sjtu"* ]]; then
+if hostname | grep -q sjtu; then
   config_path="~/yangsl/scripts/cms-scripts/plots"
 else
   config_path="~/scripts/cms-scripts/plots"
