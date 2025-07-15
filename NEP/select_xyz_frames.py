@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-根据力阈值筛选 extxyz 文件中的构型
+根据原子受力阈值筛选 extxyz 文件中的构型
 
 reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/Analysis_and_Processing/select_xyz_frames/select_xyz_frames.py
 """
@@ -46,7 +46,7 @@ def write_xyz_file(frames: list, output_filename: str):
                 file.write(f"{atom.strip()}\n")
 
 
-def force_exceeds_threshold(atom_line: str, threshold: float) -> bool:
+def force_exceeds_threshold(atom_line: str, threshold: float):
     """判断原子受力是否超过阈值"""
 
     if threshold == "not":
@@ -59,7 +59,7 @@ def force_exceeds_threshold(atom_line: str, threshold: float) -> bool:
     return total_force > threshold
 
 
-def filter_frames(frames: list, force_threshold: float) -> tuple[list, list]:
+def filter_frames(frames: list, force_threshold: float) -> tuple[list, list, list]:
     """筛选构型"""
 
     filtered_frames = []
@@ -123,8 +123,8 @@ if __name__ == "__main__":
     write_xyz_file(filtered_frames, output_filename)
     write_xyz_file(removed_frames, "removed.xyz")
 
-    print(f"\nRemoved frame indices (starting from 1): {removed_frames_indices}")
+    print(f"\nRemoved frame indices (starting from 1): {removed_frames_indices}.")
 
     print(
-        f"\nFiltered structures saved to {output_filename}, removed structures saved to removed.xyz"
+        f"\nFiltered structures saved to {output_filename}, removed structures saved to removed.xyz."
     )

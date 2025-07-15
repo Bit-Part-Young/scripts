@@ -21,6 +21,20 @@ def forces_histogram(data_fn: str, property_name: str, bins: int = 30):
     print()
     print(df.describe())
 
+    force_max_row = df.max(axis=1).abs()
+    count1 = ((force_max_row >= 0.0) & (force_max_row <= 5.0)).sum()
+    count2 = (force_max_row > 5.0).sum()
+    count3 = (force_max_row > 10.0).sum()
+    count4 = (force_max_row > 15.0).sum()
+    count5 = (force_max_row > 20.0).sum()
+
+    print()
+    print(f"force (abs) in 0.0~5.0: {count1}")
+    print(f"force (abs) > 5.0: {count2}")
+    print(f"force (abs) > 10.0: {count3}")
+    print(f"force (abs) > 15.0: {count4}")
+    print(f"force (abs) > 20.0: {count5}")
+
     fig, axs = plt.subplots(nrows=1, ncols=3, figsize=(10, 4), dpi=500)
 
     for i, ax in enumerate(axs.flat):

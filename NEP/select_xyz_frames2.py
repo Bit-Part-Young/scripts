@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""按比例选取 5 个小于受力阈值的构型（用于缺陷、层错构型弛豫轨迹的筛选）"""
+"""按比例选取指定个数的小于受力阈值的构型（用于缺陷、层错构型弛豫轨迹构型的筛选）"""
 
 import argparse
 
@@ -37,23 +37,26 @@ def write_xyz_file(frames: list, output_filename: str):
                 file.write(f"{atom.strip()}\n")
 
 
-def force_exceeds_threshold(threshold: float = 5.0) -> list:
-    """按比例选取 5 个小于受力阈值的构型索引"""
+def force_exceeds_threshold(threshold: float = 5.0, num_selected: int = 5) -> list:
+    """按比例选取指定个数的小于受力阈值的构型索引"""
 
     force = np.loadtxt("force_info.dat", skiprows=1)
 
-    # 按比例选取 5 个小于受力阈值的构型索引
+    # 按比例选取 N 个小于受力阈值的构型索引；若构型索引数小于 N，则返回所有构型索引
     index = np.where(force < threshold)[0]
-    index_selected = np.linspace(0, len(index) - 1, 5, dtype=int)
-    final_index = index[index_selected].tolist()
+    if len(index) < num_selected:
+        final_index = index.tolist()
+    else:
+        index_selected = np.linspace(0, len(index) - 1, num_selected, dtype=int)
+        final_index = index[index_selected].tolist()
 
     return final_index
 
 
-def filter_frames(frames: list, force_threshold: float):
+def filter_frames(frames: list, force_threshold: float, num_selected: int = 5):
     """筛选构型"""
 
-    index = force_exceeds_threshold(force_threshold)
+    index = force_exceeds_threshold(force_threshold, num_selected)
 
     filtered_frames = [frames[i] for i in index]
 
@@ -90,21 +93,30 @@ if __name__ == "__main__":
         required=True,
         help="force threshold",
     )
+    parser.add_argument(
+        "-n",
+        "--num_selected",
+        type=int,
+        default=5,
+        help="number of frames to select",
+    )
+
     args = parser.parse_args()
 
     input_filename = args.input_filename
     output_filename = args.output_filename
     force_threshold = args.force_threshold
+    num_selected = args.num_selected
 
     frames = parse_xyz_file(input_filename)
     filtered_frames, removed_frames, removed_frames_indices = filter_frames(
-        frames, force_threshold
+        frames, force_threshold, num_selected
     )
     write_xyz_file(filtered_frames, output_filename)
     write_xyz_file(removed_frames, "removed.xyz")
 
-    print(f"\nRemoved frame indices (starting from 1): {removed_frames_indices}")
+    print(f"\nRemoved frame indices (starting from 1): {removed_frames_indices}.")
 
     print(
-        f"\nFiltered structures saved to {output_filename}, removed structures saved to removed.xyz"
+        f"\nFiltered structures saved to {output_filename}, removed structures saved to removed.xyz."
     )
