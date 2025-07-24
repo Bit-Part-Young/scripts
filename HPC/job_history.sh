@@ -24,7 +24,7 @@ echo
 flag1=$(cat temp.job_info | awk '$4 ~ /RUNNING/' | wc -l)
 echo -e "\nRUNNING jobs info:\n"
 sed -n 1p temp.job_info
-cat temp.job_info | awk '$4 ~ /RUNNING/'
+cat temp.job_info | awk '$4 ~ /RUNNING/' | sed 's/          Unknown/Unknown/g'
 
 echo
 printf "%`tput cols`s" | tr ' ' '#'

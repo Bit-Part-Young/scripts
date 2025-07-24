@@ -20,9 +20,10 @@ get_vasp_data() {
       incar_fn="${dir}/INCAR"
       if [ -f "$oszicar_fn" ]; then
 
-        # 若目录层级数大于 2，则获取最后 2 层目录
+        # 若目录层级数大于 2，则获取最后 3 层目录
         if [[ $(echo "${dir}" | awk -F'/' '{print NF}') -gt 2 ]]; then
-          dir=$(echo "${dir}" | awk -F'/' '{print $(NF-1)"/"$NF}')
+          # dir=$(echo "${dir}" | awk -F'/' '{print $(NF-1)"/"$NF}')
+          dir=$(echo "${dir}" | awk -F'/' '{print $(NF-2)"/"$(NF-1)"/"$NF}')
         else
           dir=$(basename "${dir}")
         fi

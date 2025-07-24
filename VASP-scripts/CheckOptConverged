@@ -11,7 +11,14 @@ check_converged() {
 
     outcar_fn="${dir}/OUTCAR"
 
-    dir=$(basename "${dir}")
+    # 若目录层级数大于 2，则获取最后 3 层目录
+    if [[ $(echo "${dir}" | awk -F'/' '{print NF}') -gt 2 ]]; then
+      dir=$(echo "${dir}" | awk -F'/' '{print $(NF-2)"/"$(NF-1)"/"$NF}')
+    else
+      dir=$(basename "${dir}")
+    fi
+
+    # dir=$(basename "${dir}")
 
     if [ ! -f "${outcar_fn}" ]; then
       echo "Folder ${dir} OUTCAR doesn't exist!"
