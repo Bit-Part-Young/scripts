@@ -37,15 +37,39 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )
+    parser.add_argument(
+        "structure_fn",
+        nargs="?",
+        default="POSCAR",
+        metavar="structure_fn",
+        help="structure filename",
+    )
+    parser.add_argument(
+        "vacuum",
+        type=float,
+        default=10.0,
+        metavar="vacuum",
+        help="vacuum thickness",
+    )
+    parser.add_argument(
+        "mode",
+        choices=["top", "bottom", "both"],
+        metavar="mode",
+        help="mode to add vacuum",
+    )
 
-    parser.add_argument("mode", choices=["top", "bottom", "both"], help="Mode to add vacuum")
-    parser.add_argument("vacuum", type=float, default=15.0, help="Vacuum size")
-    parser.add_argument("structure_fn", type=str, default="POSCAR", help="Structure filename")
+    parser.add_argument("-o", action="store_true", help="write file")
 
     args = parser.parse_args()
 
     atoms = read(args.structure_fn)
     atoms = add_vacuum(atoms, args.vacuum, args.mode)
 
-    write("add_vacuum.vasp", atoms, format="vasp", vasp5=True, direct=True)
-    print(f"Added {args.vacuum} Å vacuum to the {args.mode} and saved to add_vacuum.vasp.")
+    if args.o:
+        output_fn = "vacuum.vasp"
+        write(output_fn, atoms, format="vasp", vasp5=True, direct=True)
+        print(
+            f"Added {args.vacuum} Å vacuum to {args.mode} side and saved to {output_fn}."
+        )
+    else:
+        print(f"Added {args.vacuum} Å vacuum to {args.mode} side.")

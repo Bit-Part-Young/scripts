@@ -17,27 +17,25 @@ def layers_count(
 
     if structure_fn.split(".")[-1] in ["lmp", "lammps-data"]:
         atoms = read(structure_fn, format="lammps-data")
+    elif structure_fn.split(".")[-1] in ["xyz", "extxyz"]:
+        atoms = read(structure_fn, format="extxyz")
     else:
         atoms = read(structure_fn)
 
     positions = atoms.positions
 
-    z_coords = positions[:, 2]
-    z_coords_rounded = precision * np.round(z_coords / precision)
+    positions_z = positions[:, 2]
+    positions_z_rounded = precision * np.round(positions_z / precision)
 
-    z_unique, layer_natoms_list = np.unique(
-        z_coords_rounded,
-        return_counts=True,
+    positions_z_unique, natoms_layer_list = np.unique(
+        positions_z_rounded, return_counts=True
     )
 
-    count_layer = len(z_unique)
-    print(f"Layers conut: {count_layer}.\n")
+    count_layer = len(positions_z_unique)
+    print(f"Atoms count: {atoms.num_atoms}; Layers count: {count_layer}.\n")
 
-    index = [f"Layer{i}" for i in range(1, count_layer + 1)]
-    df = pd.DataFrame(
-        {"natoms": layer_natoms_list},
-        index=index,
-    )
+    index = [f"layer{i}" for i in range(1, count_layer + 1)]
+    df = pd.DataFrame({"natoms": natoms_layer_list}, index=index)
 
     print(df)
 
@@ -53,8 +51,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "structure_fn",
         nargs="?",
-        type=str,
         default="POSCAR",
+        metavar="structure_fn",
         help="structure filename",
     )
 

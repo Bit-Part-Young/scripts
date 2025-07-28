@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""查看两个构型之间的原子坐标变化/差异（主要为弛豫前后）"""
+"""查看两个构型之间的原子坐标变化/差异（主要为弛豫/变形前后）"""
 
 import argparse
 import pprint
@@ -14,9 +14,9 @@ def pos_diff(
     structure1_fn: str,
     structure2_fn: str,
     wrap: bool = False,
-    atom_index: int | list[int] | None = None,
+    atom_indices: int | list[int] | None = None,
 ) -> np.ndarray:
-    """查看两个构型之间的原子坐标变化/差异（主要为弛豫前后）"""
+    """查看两个构型之间的原子坐标变化/差异（主要为弛豫/变形前后）"""
 
     atoms1 = read(structure1_fn)
     atoms2 = read(structure2_fn)
@@ -67,22 +67,22 @@ def pos_diff(
 
     df = pd.DataFrame(data).round(5)
 
-    if atom_index is None:
-        df_new = df.copy()
-    elif isinstance(atom_index, int) or isinstance(atom_index, list):
-        df_new = df.iloc[atom_index]
+    if atom_indices is None:
+        df_selected = df.copy()
+    elif isinstance(atom_indices, int) or isinstance(atom_indices, list):
+        df_selected = df.iloc[atom_indices]
 
-    print(df_new)
+    print(df_selected)
 
     # 输出每列的绝对值最大值，转置
     print("\nMax absolute change value:")
-    print(df_new.abs().max().to_frame().T)
+    print(df_selected.abs().max().to_frame().T)
 
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Show atomic positions difference between two structures (for relaxation).",
+        description="Compare the cell & positions difference between two structures (mainly for relaxation/deformation).",
         epilog="Author: SLY.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         allow_abbrev=True,
@@ -93,7 +93,8 @@ if __name__ == "__main__":
         nargs="?",
         type=str,
         default="CONTCAR",
-        help="Structure1 filename after relaxation",
+        metavar="structure1_fn",
+        help="structure1 filename after relaxation/deformation",
     )
 
     parser.add_argument(
@@ -101,25 +102,33 @@ if __name__ == "__main__":
         nargs="?",
         type=str,
         default="POSCAR",
-        help="Structure2 filename before relaxation",
+        metavar="structure2_fn",
+        help="structure2 filename before relaxation/deformation",
     )
 
     parser.add_argument(
-        "-w", "--wrap", action="store_true", help="Wrap atoms into cell"
+        "-w", "--wrap", action="store_true", help="wrap atoms into cell"
     )
 
-    parser.add_argument("-ai", "--atom_index", nargs="*", type=int, help="Atom index")
+    parser.add_argument(
+        "-ai",
+        "--atom_indices",
+        nargs="*",
+        type=int,
+        metavar="atom_indices",
+        help="atom indices",
+    )
 
     args = parser.parse_args()
 
     structure1_fn = args.structure1_fn
     structure2_fn = args.structure2_fn
-    atom_index = args.atom_index
+    atom_indices = args.atom_indices
     wrap = args.wrap
 
     pos_diff(
         structure1_fn=structure1_fn,
         structure2_fn=structure2_fn,
-        atom_index=atom_index,
+        atom_indices=atom_indices,
         wrap=wrap,
     )
