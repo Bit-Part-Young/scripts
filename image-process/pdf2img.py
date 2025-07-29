@@ -47,4 +47,4 @@ if __name__ == "__main__":
         output_folder=output_folder,
     )
 
-    print("\npdf to image convertion is done.")
+    print("\npdf to image conversion is done.")

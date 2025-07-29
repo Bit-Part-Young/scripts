@@ -18,7 +18,9 @@ except ImportError:
     import xml.etree.ElementTree as ET
 
 __author__ = "Jin Cao"
-__copyright__ = "Copyright 2017, Quantum Functional Materials Design and Application Laboratory"
+__copyright__ = (
+    "Copyright 2017, Quantum Functional Materials Design and Application Laboratory"
+)
 __version__ = "0.5"
 __maintainer__ = "Jin Cao"
 __email__ = "jincao2013@outlook.com"
@@ -165,7 +167,9 @@ def main():
         time.asctime(time.localtime(time.time())),
     )
     print()
-    output_file_name = "force_" + time.strftime("%Y-%m-%d.%H.%M.%S", time.localtime()) + ".out"
+    output_file_name = (
+        "force_" + time.strftime("%Y-%m-%d.%H.%M.%S", time.localtime()) + ".out"
+    )
     summary = []
     try:
         os.remove(output_file_name)
@@ -189,7 +193,9 @@ def main():
                 force_matrix_full = read_force_matrix("vasprun.xml")
                 os.chdir("..")
                 if len(force_matrix_full) == 0:
-                    print("# vasprun in `{}` may not comprise a ion step".format(dir_name))
+                    print(
+                        "# vasprun in `{}` may not comprise a ion step".format(dir_name)
+                    )
                     continue
 
             force_detail_dict = force_detail(force_matrix_full)
@@ -226,7 +232,9 @@ def main():
                 output.writelines(dir_name)
                 output.writelines("  ************************")
                 output.writelines("\n")
-                output.writelines("---------------------------------------------------------\n")
+                output.writelines(
+                    "---------------------------------------------------------\n"
+                )
                 output.writelines(
                     "{:<12}{:<14}{:<18}{:<18}".format(
                         "iter_num",
@@ -236,18 +244,28 @@ def main():
                     )
                 )
                 output.writelines("\n")
-                output.writelines("---------------------------------------------------------\n")
+                output.writelines(
+                    "---------------------------------------------------------\n"
+                )
                 for i in range(len(force_detail_dict)):
-                    output.writelines("{:<12}".format(str(i + 1)))  # ; output.writelines("\t\t\t")
+                    output.writelines(
+                        "{:<12}".format(str(i + 1))
+                    )  # ; output.writelines("\t\t\t")
                     output.writelines(
                         "{:<14}".format(str(force_detail_dict[str(i + 1)]["max_force"]))
                     )
                     output.writelines(
-                        "{:<18}".format(str(force_detail_dict[str(i + 1)]["free_energy"]))
+                        "{:<18}".format(
+                            str(force_detail_dict[str(i + 1)]["free_energy"])
+                        )
                     )
-                    output.writelines("{:>10.2f}".format(force_detail_dict[str(i + 1)]["d_energy"]))
+                    output.writelines(
+                        "{:>10.2f}".format(force_detail_dict[str(i + 1)]["d_energy"])
+                    )
                     output.writelines("\n")
-                output.writelines("---------------------------------------------------------\n\n")
+                output.writelines(
+                    "---------------------------------------------------------\n\n"
+                )
 
     # write summary
     with open(output_file_name, "a") as output:
@@ -257,7 +275,9 @@ def main():
             "--------------------------------------------------------------------------------------------------\n"
         )
         output.writelines(
-            "{:<30}{:<36}{:<35}".format("Work_dir", "last_max_force", "min_force_of_all")
+            "{:<30}{:<36}{:<35}".format(
+                "Work_dir", "last_max_force", "min_force_of_all"
+            )
         )
         output.writelines("\n")
         output.writelines(
@@ -310,7 +330,7 @@ def main():
         "--------------------------------------------------------------------------------------------"
     )
 
-    print("\ndetail info and Summary have writen in ", output_file_name)
+    print("\ndetail info and Summary have written in ", output_file_name)
 
 
 if __name__ == "__main__":

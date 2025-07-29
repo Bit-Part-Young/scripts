@@ -30,7 +30,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Convert VASP outputs to xyz.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        epilog="Autor: SLY.",
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(

@@ -1,4 +1,4 @@
-"""ase VASP Caculator 计算示例"""
+"""ase VASP Calculator 计算示例"""
 
 from ase.build import molecule, bulk
 from ase.calculators.vasp import Vasp

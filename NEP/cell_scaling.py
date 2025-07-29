@@ -29,7 +29,7 @@ def cell_scaling(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Strcuture generation with cell scaling.",
+        description="Structure generation with cell scaling.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )

@@ -61,7 +61,7 @@ def fps_select(
     write(kept_xyz_fn, kept_atoms, format="extxyz", append=True)
 
     print(f"Number of selected structures: {len(selected_indices)}.")
-    print(f"Slected structures saved to {output_xyz_fn}.")
+    print(f"Selected structures saved to {output_xyz_fn}.")
     print(f"Kept structures saved to {kept_xyz_fn}.")
     print(f"\nIndex of selected structures: {selected_indices}.")
 
