@@ -49,10 +49,10 @@ def get_mp_binary(
 
     data_list = []
     for doc in docs:
-        structure_composition = doc.composition_reduced.as_dict()
+        structure_composition: dict[str, float] = doc.composition_reduced.as_dict()
         # 成分 分数形式
         structure_composition_frac = {
-            element: structure_composition.get(element, 0)
+            element: structure_composition.get(element, 0.0)
             / sum(structure_composition.values())
             for element in element_list
         }
@@ -67,7 +67,6 @@ def get_mp_binary(
         data_dict.update(structure_composition_frac)
         data_dict.update(
             {
-                # "epa": doc.energy_per_atom,  # 非平均原子能量
                 "fepa": doc.formation_energy_per_atom,
                 "e_above_hull": doc.energy_above_hull,
                 "stable": doc.is_stable,

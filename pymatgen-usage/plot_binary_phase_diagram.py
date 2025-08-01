@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""二元 0K 计算相图绘制"""
+"""二元 0K 计算相图绘制，与 get_mp_binary.py 配合使用"""
 
 import argparse
 import re
@@ -28,12 +28,12 @@ def binary_pd_plot(data_fn: str, element_list: list[str]):
 
     matrix, solute = element_list
 
-    # 按照 Ti-X 中的 X 元素含量值进行从小到大排序
+    # 按照溶质元素含量值进行从小到大排序
     df.sort_values(by=[solute], inplace=True)
     # stable_df 用于绘制 Hull
     stable_df = df[df["e_above_hull"] == 0.0]
     # unstable_df 用于绘制散点图
-    unstable_df = df[(df["e_above_hull"] > 0.0) & (df["e_above_hull"] < 0.1)]
+    unstable_df = df[df["e_above_hull"] > 0.0]
 
     set_roman_plot_params()
     fig, ax = plt.subplots(figsize=(6, 6))
@@ -55,18 +55,13 @@ def binary_pd_plot(data_fn: str, element_list: list[str]):
         )
 
     # Hull 绘制
-    ax.plot(
-        stable_df[solute],
-        stable_df["fepa"],
-        "-",
-        color="green",
-        # label="Hull",
-    )
+    ax.plot(stable_df[solute], stable_df["fepa"], "-", color="green")
 
     x = np.arange(0, 1.1, 0.2)
     ax.set_xticks(x, labels=[f"{i:.1f}" for i in x])
     ax.xaxis.set_minor_locator(MultipleLocator(0.1))
 
+    # y 轴最大值可调
     ax.set_ylim(-1.0, 0.2)
     ax.yaxis.set_minor_locator(MultipleLocator(0.1))
     ax.yaxis.set_major_locator(MultipleLocator(0.3))
