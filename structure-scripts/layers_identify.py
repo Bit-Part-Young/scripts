@@ -3,33 +3,45 @@
 """识别原子层及其对应的原子"""
 
 import argparse
+from ase.io import read
 
 import numpy as np
 import pandas as pd
-from pymatgen.core.structure import Structure
 
 
 def layer_identify(
     structure_fn: str,
     layer_indices: int | list[int] | None = None,
     precision: float = 0.001,
+    axis: str = "z",
 ):
     """识别原子层及其对应的原子"""
 
-    structure = Structure.from_file(structure_fn)
+    if structure_fn.split(".")[-1] in ["lmp", "data", "lammps-data"]:
+        atoms = read(structure_fn, format="lammps-data", sort_by_id=False)
+    elif structure_fn.split(".")[-1] in ["xyz", "extxyz"]:
+        atoms = read(structure_fn, format="extxyz")
+    else:
+        atoms = read(structure_fn)
 
-    element_list = [site.species_string for site in structure]
+    element_list = atoms.get_chemical_symbols()
 
-    positions = structure.cart_coords
-    positions_frac = structure.frac_coords
+    positions = atoms.get_positions(wrap=True)
+    positions_frac = atoms.get_scaled_positions(wrap=True)
 
-    positions_z = positions[:, 2]
+    if axis == "z":
+        positions_z = positions[:, 2]
+    elif axis == "y":
+        positions_z = positions[:, 1]
+    elif axis == "x":
+        positions_z = positions[:, 0]
+    else:
+        raise ValueError(f"Invalid axis: {axis}")
+
     positions_z_rounded = precision * np.round(positions_z / precision)
     positions_z_unique = np.unique(positions_z_rounded)
 
-    print(
-        f"Atoms count: {structure.num_sites}; Layers count: {len(positions_z_unique)}.\n"
-    )
+    print(f"Atoms count: {len(atoms)}; Layers count: {len(positions_z_unique)}.\n")
 
     # 获取每个原子所在的原子层
     layer_index_list = []
@@ -84,12 +96,21 @@ if __name__ == "__main__":
         help="atomic layer indices",
     )
 
+    parser.add_argument(
+        "--axis",
+        default="z",
+        metavar="axis",
+        help="axis perpendicular to atomic layers (x, y, z)",
+    )
+
     args = parser.parse_args()
 
     structure_fn = args.structure_fn
     layer_indices = args.layer_indices
+    axis = args.axis
 
     layer_identify(
         structure_fn=structure_fn,
         layer_indices=layer_indices,
+        axis=axis,
     )
