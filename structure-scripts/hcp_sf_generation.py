@@ -214,6 +214,8 @@ def sf_E(
 ) -> Structure:
     """生成 E 型层错构型"""
 
+    # [ ] 是否要和初始超胞的原子数目保持一致？
+
     # 元素、层间距、伯氏矢量
     specie = structure.sites[0].species_string
     layer_distance = structure.lattice.c / 2
@@ -276,6 +278,8 @@ def sf_I1(
     to_poscar: bool = True,
 ) -> Structure:
     """生成 I1 型层错构型"""
+
+    # [ ] 是否要和初始超胞的原子数目保持一致？
 
     # 层间距、伯氏矢量
     layer_distance = structure.lattice.c / 2
