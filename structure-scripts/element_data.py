@@ -32,7 +32,7 @@ data = {
     "Mg": (12, 24.305, 1.5, 923.0, 1.74, -1.5, "hcp", 3.20, 5.16, "mp-153"),
     "Cu": (29, 63.546, 1.35, 1357.77, 8.92, -3.7, "fcc", 3.63, 3.63, "mp-30"),
     "Si": (14, 28.0855, 1.1, 1687.0, 2.33, -5.4, "diamond", 5.47, 5.47, "mp-149"),
-    "Sc": (21, 44.956, 1.6, 1814.0, 2.99, -6.3, "hcp", 3.32, 3.16, "mp-67"),
+    "Sc": (21, 44.956, 1.6, 1814.0, 2.99, -6.3, "hcp", 3.32, 5.16, "mp-67"),
     "Ni": (28, 58.693, 1.35, 1728.0, 8.91, -5.5, "fcc", 3.52, 3.52, "mp-23"),
     "Cr": (24, 51.996, 1.4, 2180.0, 7.14, -9.5, "bcc", 2.84, 2.84, "mp-90"),
     "Ag": (47, 107.868, 1.6, 1234.93, 10.49, -2.7, "fcc", 4.14, 4.14, "mp-124"),
@@ -88,17 +88,28 @@ parser.add_argument(
     type=str,
     nargs="+",
     metavar="element",
-    help="Element symbol, e.g. Ti",
+    help="element symbol, e.g. Ti, Ti Al",
+)
+
+parser.add_argument(
+    "--sort",
+    action="store_true",
+    help="sort by atomic number",
 )
 
 args = parser.parse_args()
 
 if args.element:
     try:
-        print(df.loc[args.element])
+        df = df.loc[args.element]
     except KeyError:
-        print(f"Element {args.element} not found.")
-else:
-    print(df)
+        print(f"\nElement {args.element} not found. Exit.")
+        exit()
+
+if args.sort:
+    df = df.sort_values(by="atomic_number")
+
+print()
+print(df)
 
 note()
