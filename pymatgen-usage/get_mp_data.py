@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""获取 Materials Project 二元数据"""
+"""获取 Materials Project 中的一元、二元数据"""
 
 import argparse
 import os
@@ -24,38 +24,39 @@ fields = [
 API_KEY = os.getenv("PMG_MAPI_KEY")
 
 
-def get_mp_binary(
-    element_list: list[str],
-    stable: bool = False,
+def get_mp_data(
+    elements: str | list[str],
+    stable: bool | None = None,
     energy_above_hull: float | None = None,
 ):
-    """获取 Materials Project 二元数据"""
+    """获取 Materials Project 中的一元、二元数据"""
 
-    if len(element_list) != 2:
-        raise ValueError("element_list must be a list of two elements.")
+    if isinstance(elements, list):
+        # eg. ["Ti", "Al", "Ti-Al"]
+        chemsys_list = elements + ["-".join(elements)]
+    else:
+        chemsys_list = elements
 
-    chemsys_list = element_list + ["-".join(element_list)]
+    if energy_above_hull is not None:
+        energy_above_hull = (0.0, energy_above_hull)
 
     with MPRester(API_KEY) as mpr:
         docs = mpr.materials.summary.search(
-            chemsys=chemsys_list,  # eg. ["Ti", "Al", "Ti-Al"]
+            chemsys=chemsys_list,
             fields=fields,
             is_stable=stable,
-            energy_above_hull=(0.0, energy_above_hull),
+            energy_above_hull=energy_above_hull,
         )
 
     ndocs = len(docs)
-    print(f"\nTotally get {ndocs} {' '.join(element_list)} MP binary data.\n")
+
+    if isinstance(elements, list):
+        print(f"\nTotally get {ndocs} {' '.join(elements)} MP binary data.\n")
+    else:
+        print(f"\nTotally get {ndocs} {elements} MP unary data.\n")
 
     data_list = []
     for doc in docs:
-        structure_composition: dict[str, float] = doc.composition_reduced.as_dict()
-        # 成分 分数形式
-        structure_composition_frac = {
-            element: structure_composition.get(element, 0.0)
-            / sum(structure_composition.values())
-            for element in element_list
-        }
 
         data_dict = {
             "material_id": str(doc.material_id),
@@ -64,7 +65,18 @@ def get_mp_binary(
             "spacegroup": doc.symmetry.symbol,
             "nsites": doc.nsites,
         }
-        data_dict.update(structure_composition_frac)
+
+        if isinstance(elements, list):
+            structure_composition: dict[str, float] = doc.composition_reduced.as_dict()
+            # 成分 分数形式
+            structure_composition_frac = {
+                element: structure_composition.get(element, 0.0)
+                / sum(structure_composition.values())
+                for element in elements
+            }
+
+            data_dict.update(structure_composition_frac)
+
         data_dict.update(
             {
                 "fepa": doc.formation_energy_per_atom,
@@ -77,7 +89,10 @@ def get_mp_binary(
     df = pd.DataFrame(data_list).round(5)
     print(df)
 
-    csv_fn = f"{'_'.join(element_list)}.csv"
+    if isinstance(elements, list):
+        csv_fn = f"{'_'.join(elements)}_mp.csv"
+    else:
+        csv_fn = f"{elements}_mp.csv"
     df.to_csv(csv_fn, index=False)
 
     print(f"\nData saved to {csv_fn}.")
@@ -85,11 +100,11 @@ def get_mp_binary(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Get Materials Project binary data.",
+        description="Get Materials Project unary/binary data.",
         epilog="Author: SLY.",
     )
 
-    parser.add_argument("element_list", nargs=2, help="element list (e.g. Ti Al)")
+    parser.add_argument("elements", nargs="+", help="elements (e.g. Ti, Ti Al)")
     parser.add_argument("--stable", action="store_true", help="only get stable data")
     parser.add_argument(
         "-eah",
@@ -101,8 +116,13 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    get_mp_binary(
-        element_list=args.element_list,
+    if len(args.elements) == 1:
+        args.elements = args.elements[0]
+    elif len(args.elements) > 2:
+        raise ValueError("Number of elements should not more than 2.")
+
+    get_mp_data(
+        elements=args.elements,
         stable=args.stable,
         energy_above_hull=args.energy_above_hull,
     )
