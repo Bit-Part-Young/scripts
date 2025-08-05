@@ -106,10 +106,10 @@ if args.element:
         print(f"\nElement {args.element} not found. Exit.")
         exit()
 
-if args.sort:
-    df = df.sort_values(by="atomic_number")
-
 print()
-print(df)
+if args.sort:
+    print(df.sort_values(by="atomic_number"))
+else:
+    print(df)
 
 note()
