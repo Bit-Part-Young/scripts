@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """计算表面能"""
 
 import argparse
@@ -41,6 +43,7 @@ if __name__ == "__main__":
         "-p",
         "--path",
         default=".",
+        nargs="?",
         const=".",
         metavar="path",
         help="path to the surface calculation directory.",
