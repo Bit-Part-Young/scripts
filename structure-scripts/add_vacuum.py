@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-"""在指定轴（默认 z 轴）顶部、底部、顶部底部两端添加真空层"""
+"""在指定轴（默认 z 轴）顶部、底部、顶部底部两端添加真空层（支持非正交胞，保持晶格角度不变）"""
 
 import argparse
 
+import numpy as np
 from ase.atoms import Atoms
 from ase.io import read, write
 
@@ -15,12 +16,11 @@ def add_vacuum(
     axis: str = "z",
     save_poscar: bool = False,
 ) -> Atoms:
-    """在指定轴（默认 z 轴）顶部、底部、顶部底部两端添加真空层"""
+    """在指定轴（默认 z 轴）顶部、底部、顶部底部两端添加真空层（支持非正交胞，保持晶格角度不变）"""
 
     atoms = read(structure_fn, format="vasp")
 
     cell = atoms.get_cell()
-    positions = atoms.get_positions()
 
     if axis == "z":
         axis_index = 2
@@ -28,28 +28,51 @@ def add_vacuum(
         axis_index = 1
     elif axis == "x":
         axis_index = 0
+    else:
+        raise ValueError(f"Invalid axis: {axis}. Must be 'x', 'y', or 'z'.")
 
+    # 指定轴的晶格基矢
+    lattice_vector = cell[axis_index]
+    # 归一化得到单位基矢
+    unit_vector = lattice_vector / np.linalg.norm(lattice_vector)
+
+    # 添加的真空层对应的向量，以保持晶格角度不变
+    vacuum_vector = vacuum * unit_vector
+
+    # 确保 (axis_index, axis_index) 的增量值 为 vacuum
+    # 计算当前真空层向量在指定轴方向的投影
+    current_projection = vacuum_vector[axis_index]
+    if abs(current_projection - vacuum) > 1e-6:
+        # 调整真空层向量
+        scale_factor = vacuum / current_projection
+        vacuum_vector *= scale_factor
+
+    # 在顶部添加真空层
     if mode == "top":
-        cell[axis_index, axis_index] += vacuum
+        cell[axis_index] += vacuum_vector
+    # 在底部添加真空层
     elif mode == "bottom":
-        cell[axis_index, axis_index] += vacuum
-        positions[:, axis_index] += vacuum
+        cell[axis_index] += vacuum_vector
+        positions = atoms.get_positions()
+        positions += vacuum_vector
         atoms.set_positions(positions)
+    # 在两端添加真空层
     elif mode == "both":
-        cell[axis_index, axis_index] += vacuum * 2
-        positions[:, axis_index] += vacuum
+        cell[axis_index] += 2 * vacuum_vector
+        positions = atoms.get_positions()
+        positions += vacuum_vector
         atoms.set_positions(positions)
+    else:
+        raise ValueError(f"Invalid mode: {mode}. Must be 'top', 'bottom', or 'both'.")
 
     atoms.set_cell(cell)
 
     if save_poscar:
         output_fn = "vacuum.vasp"
         write(output_fn, atoms, format="vasp", vasp5=True, direct=True)
-        print(
-            f"Added {args.vacuum} Å vacuum to {args.mode} side and saved to {output_fn}."
-        )
+        print(f"\nAdded {vacuum} Å vacuum to {mode} side and saved to {output_fn}.")
     else:
-        print(f"Added {args.vacuum} Å vacuum to {args.mode} side.")
+        print(f"\nAdded {vacuum} Å vacuum to {mode} side.")
 
     return atoms
 
@@ -57,7 +80,7 @@ def add_vacuum(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Add vacuum to the top, bottom, or both ends in z axis.",
+        description="Add vacuum to the top, bottom, or both ends in specified axis.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )
