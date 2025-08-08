@@ -2,8 +2,6 @@
 
 # FCC 结构 (100), (110), (111) 表面模型构建
 
-# [ ] 是否要固定中间原子层？
-
 
 surface_fcc() {
   # 设置默认值 元素符号 晶格常数 超胞尺寸 原子层层数 真空层厚度
@@ -12,21 +10,19 @@ surface_fcc() {
   dup_x="${dup_x:-1}"
   dup_y="${dup_y:-1}"
   num_layer="${num_layer:-12}"
-  vacuum="${vacuum:-15}"
+  vacuum="${vacuum:-15.0}"
   vacuum_half=$(awk "BEGIN {print ${vacuum}/2}")
 
 
+  #------------------------- (100) 表面 ---------------------------
   # (100) 表面；单胞 2 个原子，2 个原子层
   # 或使用 orient "[010]" "[001]" "[100]"
   dup_z=$(awk "BEGIN {print ${num_layer}/2}")
   atomsk --create fcc ${a} ${symbol} \
     orient "[01-1]" "[011]" "[100]" \
     -duplicate ${dup_x} ${dup_y} ${dup_z} \
-    -fix x -fix y \
-    -cell add ${vacuum} z \
-    -shift 0 0 ${vacuum_half} \
-    -sort species pack \
-    -fractional vasp
+    -cell add ${vacuum} z -shift 0 0 ${vacuum_half} \
+    -sort species pack -fractional vasp
 
   echo -e "\n"
   printf "%`tput cols`s" | tr ' ' '#'
@@ -35,16 +31,14 @@ surface_fcc() {
   mv POSCAR POSCAR.100
 
 
+  #------------------------- (110) 表面 ---------------------------
   # (110) 表面；单胞 2 个原子，2 个原子层
   dup_z=$(awk "BEGIN {print ${num_layer}/2}")
   atomsk --create fcc ${a} ${symbol} \
     orient "[1-10]" "[001]" "[110]" \
-    -fix x -fix y \
     -duplicate ${dup_x} ${dup_y} ${dup_z} \
-    -cell add ${vacuum} z \
-    -shift 0 0 ${vacuum_half} \
-    -sort species pack \
-    -fractional vasp
+    -cell add ${vacuum} z -shift 0 0 ${vacuum_half} \
+    -sort species pack -fractional vasp
 
   echo -e "\n"
   printf "%`tput cols`s" | tr ' ' '#'
@@ -53,16 +47,14 @@ surface_fcc() {
   mv POSCAR POSCAR.110
 
 
+  #------------------------- (111) 表面 ---------------------------
   # (111) 表面；单胞 6 个原子，3 个原子层
   dup_z=$(awk "BEGIN {print ${num_layer}/3}")
   atomsk --create fcc ${a} ${symbol} \
     orient "[11-2]" "[-110]" "[111]" \
     -duplicate ${dup_x} ${dup_y} ${dup_z} \
-    -fix x -fix y \
-    -cell add ${vacuum} z \
-    -shift 0 0 ${vacuum_half} \
-    -sort species pack \
-    -fractional vasp
+    -cell add ${vacuum} z -shift 0 0 ${vacuum_half} \
+    -sort species pack -fractional vasp
 
   echo -e "\n"
   printf "%`tput cols`s" | tr ' ' '#'
@@ -93,11 +85,11 @@ get_help() {
   echo "    -e element                 element symbol (default: Al)"
   echo "    -lc lattice_constant       lattice constant (default: 4.041)"
   echo "    -d dup_x dup_y num_layer   x y dimension, layers of z direction (default: 1 1 12)"
-  echo "    -vac vacuum                vacuum thickness (default: 15)"
+  echo "    -vac vacuum                vacuum thickness (default: 15.0)"
 
   echo -e "\nExamples:"
   echo "    ${script_name}"
-  echo "    ${script_name} -e Al -lc 4.041 -d 1 1 12 -vac 15"
+  echo "    ${script_name} -e Al -lc 4.041 -d 1 1 12 -vac 15.0"
 }
 
 
