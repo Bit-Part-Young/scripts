@@ -39,12 +39,10 @@ def add_vacuum(
     # 添加的真空层对应的向量，以保持晶格角度不变
     vacuum_vector = vacuum * unit_vector
 
-    # 确保 (axis_index, axis_index) 的增量值 为 vacuum
-    # 计算当前真空层向量在指定轴方向的投影
-    current_projection = vacuum_vector[axis_index]
-    if abs(current_projection - vacuum) > 1e-6:
-        # 调整真空层向量
-        scale_factor = vacuum / current_projection
+    # 确保指定轴的分量增量值 为 vacuum
+    projection = vacuum_vector[axis_index]
+    if abs(projection - vacuum) > 1e-6:
+        scale_factor = vacuum / projection
         vacuum_vector *= scale_factor
 
     # 在顶部添加真空层
