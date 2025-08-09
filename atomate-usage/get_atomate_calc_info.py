@@ -81,6 +81,7 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
                         "Energy": energy,
                         "Time_Cost": time_cost,
                         "namefile": namefile,
+                        "launch_dir": dir_name,
                     }
                     data_list.append(data_dict)
 
@@ -95,6 +96,7 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
                     "Energy": None,
                     "Time_Cost": None,
                     "namefile": namefile,
+                    "launch_dir": dir_name,
                 }
                 data_list.append(data_dict)
 
