@@ -28,17 +28,20 @@ get_opt_data() {
           dir=$(basename "${dir}")
         fi
 
+        # 只取后 21 个字符
+        dir=$(echo "${dir}" | rev | cut -c -21 | rev)
+
         if grep -q 'F=' "${oszicar_fn}"; then
 
           # 能量、温度数据获取获取
           if grep -q -E '^TEBEG' "${incar_fn}"; then
             energy=$(grep 'F=' "${oszicar_fn}" | tail -n 1 | awk '{printf "%.6f", $9}')
-            # temperature=$(grep 'TEBEG' "$outcar_fn" | awk -F';' '{print $1}' | awk '{print $3}')
+            # temperature=$(grep 'TEBEG' "${outcar_fn}" | awk -F';' '{print $1}' | awk '{print $3}')
           else
             energy=$(grep 'F=' "${oszicar_fn}" | tail -n 1 | awk '{printf "%.6f", $5}')
           fi
 
-          natoms=$(grep 'NIONS' "${outcar_fn}" | tail -1 | awk '{print $12}')
+          natoms=$(grep 'NIONS' "${outcar_fn}" | tail -n 1 | awk '{print $12}')
           energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
 
           nsteps=$(grep 'F=' "${oszicar_fn}" | tail -n 1 | awk '{print $1}')

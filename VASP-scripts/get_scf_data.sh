@@ -27,6 +27,9 @@ get_scf_data() {
           dir=$(basename "${dir}")
         fi
 
+        # 只取后 21 个字符
+        dir=$(echo "${dir}" | rev | cut -c -21 | rev)
+
         if grep -q 'DAV' "${oszicar_fn}"; then
           natoms=$(grep 'NIONS' "${outcar_fn}" | tail -n 1 | awk '{print $12}')
           nsteps=$(grep 'DAV' "${oszicar_fn}" | tail -n 1 | awk '{print $2}')
