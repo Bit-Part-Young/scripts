@@ -6,6 +6,7 @@ import argparse
 import pandas as pd
 import os
 from pymatgen.io.vasp import Vasprun, Outcar
+import subprocess
 
 
 def format_time(time_cost: float):
@@ -44,7 +45,6 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
 
         data_list = []
         for dir_name in dir_list:
-            # 首先找到该目录下的 FW-- 文件
             namefile = None
             for fn in os.listdir(dir_name):
                 if "FW--" in fn:
@@ -56,7 +56,6 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
             if namefile is None:
                 continue
 
-            # 然后尝试找到对应的 OUTCAR 和 vasprun.xml 文件
             found_files = False
             for outcar_fn, vasprun_fn in zip(outcar_fn_list, vasprun_fn_list):
                 outcar_fn = os.path.join(dir_name, outcar_fn)
@@ -71,14 +70,35 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
                         vasprun = Vasprun(vasprun_fn)
                         nsteps = int(vasprun.nionic_steps)
                         energy = vasprun.final_energy
+                        state = "Completed"
                     else:
-                        time_cost = None
-                        nsteps = None
-                        energy = None
+                        try:
+                            results = subprocess.run(
+                                f"vasp_timecost.sh {dir_name}",
+                                shell=True,
+                                capture_output=True,
+                            )
+
+                            results_str = results.stdout.decode("utf-8").strip()
+
+                            nsteps = int(results_str.split(" ")[0])
+                            time_cost = results_str.split("cost: ")[1]
+                            energy = round(
+                                float(results_str.split("energy: ")[1].split(" ")[0]), 5
+                            )
+                        except:
+                            print(f"vasp_timecost.sh excutable script not found!")
+
+                            nsteps = None
+                            time_cost = None
+                            energy = None
+
+                        state = "Running"
 
                     data_dict = {
                         "Ion_Step": nsteps,
                         "Energy": energy,
+                        "State": state,
                         "Time_Cost": time_cost,
                         "namefile": namefile,
                         "launch_dir": dir_name,
@@ -89,7 +109,6 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
 
                     break
 
-            # 如果没有找到任何 OUTCAR/vasprun.xml 文件，添加一个只有 namefile 的记录
             if not found_files:
                 data_dict = {
                     "Ion_Step": None,
@@ -97,6 +116,7 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
                     "Time_Cost": None,
                     "namefile": namefile,
                     "launch_dir": dir_name,
+                    "State": None,
                 }
                 data_list.append(data_dict)
 
