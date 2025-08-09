@@ -24,10 +24,11 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
     # 仅当 添加 --flag 时，才显示保存的 csv 文件
     csv_fn = "atomate_calc_info.csv"
     if os.path.exists(csv_fn) and flag:
-        df = pd.read_csv(csv_fn)
+        if os.path.getsize(csv_fn) > 0.0:
+            df = pd.read_csv(csv_fn)
 
-        print()
-        print(df)
+            print()
+            print(df)
     else:
 
         dir_list = []
@@ -42,17 +43,25 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
 
         data_list = []
         for dir_name in dir_list:
+            # 首先找到该目录下的 FW-- 文件
+            namefile = None
+            for fn in os.listdir(dir_name):
+                if "FW--" in fn:
+                    namefile = fn
+                    if "gz" in namefile:
+                        namefile = namefile.replace(".gz", "")
+                    break
+
+            if namefile is None:
+                continue
+
+            # 然后尝试找到对应的 OUTCAR 和 vasprun.xml 文件
+            found_files = False
             for outcar_fn, vasprun_fn in zip(outcar_fn_list, vasprun_fn_list):
                 outcar_fn = os.path.join(dir_name, outcar_fn)
                 vasprun_fn = os.path.join(dir_name, vasprun_fn)
 
-                for namefile in os.listdir(dir_name):
-                    if "FW--" in namefile:
-                        if "gz" in namefile:
-                            namefile = namefile.replace(".gz", "")
-                        break
-
-                if os.path.exists(outcar_fn):
+                if os.path.exists(outcar_fn) and os.path.exists(vasprun_fn):
                     if "gz" in outcar_fn:
                         outcar = Outcar(outcar_fn)
                         time_cost = outcar.run_stats["Total CPU time used (sec)"]
@@ -74,8 +83,19 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
                     }
                     data_list.append(data_dict)
 
-                else:
-                    continue
+                    found_files = True
+
+                    break
+
+            # 如果没有找到任何 OUTCAR/vasprun.xml 文件，添加一个只有 namefile 的记录
+            if not found_files:
+                data_dict = {
+                    "Ion_Step": None,
+                    "Energy": None,
+                    "Time_Cost": None,
+                    "namefile": namefile,
+                }
+                data_list.append(data_dict)
 
         df = pd.DataFrame(data_list)
         print()
