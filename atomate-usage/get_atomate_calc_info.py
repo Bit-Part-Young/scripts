@@ -8,6 +8,14 @@ import os
 from pymatgen.io.vasp import Vasprun, Outcar
 
 
+def format_time(time_cost: float):
+    hour = time_cost // 3600
+    minute = (time_cost % 3600) // 60
+    second = time_cost % 60
+
+    return f"{hour:02d}h {minute:02d}m {second:02d}s"
+
+
 def get_atomate_calc_info(root_dir: str, flag: bool = False):
     """获取 atomate VASP 计算目录的计算信息"""
 
@@ -48,6 +56,7 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
                     if "gz" in outcar_fn:
                         outcar = Outcar(outcar_fn)
                         time_cost = outcar.run_stats["Total CPU time used (sec)"]
+                        time_cost = format_time(time_cost)
 
                         vasprun = Vasprun(vasprun_fn)
                         nsteps = int(vasprun.nionic_steps)
@@ -71,6 +80,8 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
         df = pd.DataFrame(data_list)
         print()
         print(df)
+
+        df.to_csv(csv_fn, index=False, sep=",")
 
 
 if __name__ == "__main__":
