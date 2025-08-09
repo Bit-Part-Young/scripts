@@ -24,13 +24,14 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
     # 仅当 添加 --flag 时，才显示保存的 csv 文件
     csv_fn = "atomate_calc_info.csv"
     if os.path.exists(csv_fn) and flag:
-        if os.path.getsize(csv_fn) > 0.0:
+        try:
             df = pd.read_csv(csv_fn)
-
             print()
             print(df)
+        except pd.errors.EmptyDataError:
+            print(f"\n{csv_fn} is empty.")
+            exit()
     else:
-
         dir_list = []
 
         for dir_name in os.listdir("."):
