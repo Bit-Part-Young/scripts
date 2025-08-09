@@ -1,15 +1,15 @@
 #!/bin/bash
 
-# 获取当前 目录/子目录 下的 VASP 计算数据
+# 获取当前 目录/子目录 下的 VASP 弛豫计算数据
 
 
-#-------------------------------- 获取 VASP 数据 --------------------------------
-get_vasp_data() {
+#-------------------------------- 获取 VASP 弛豫计算数据 --------------------------------
+get_opt_data() {
 
   # 输出表头
-  echo "|-------------------------------------------------------------------------------------"
-  printf "%21s %10s %13s %11s   %-13s\n" "Folder" "Ion_Step" "Energy" "Energy_pa" "TimeCost"
-  echo "|-------------------------------------------------------------------------------------"
+  echo "|---------------------------------------------------------------------------------------------"
+  printf "%21s %10s %13s %11s %16s %13s\n" "Folder" "Ion_Step" "Energy" "Energy_pa" "TimeCost" "State"
+  echo "|---------------------------------------------------------------------------------------------"
 
   unfinished_dirs=()
 
@@ -28,34 +28,38 @@ get_vasp_data() {
           dir=$(basename "${dir}")
         fi
 
-        if grep -q 'F=' "$oszicar_fn"; then
+        if grep -q 'F=' "${oszicar_fn}"; then
 
           # 能量、温度数据获取获取
-          if grep -q -E '^TEBEG' "$incar_fn"; then
-            energy=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $9}')
+          if grep -q -E '^TEBEG' "${incar_fn}"; then
+            energy=$(grep 'F=' "${oszicar_fn}" | tail -n 1 | awk '{printf "%.6f", $9}')
             # temperature=$(grep 'TEBEG' "$outcar_fn" | awk -F';' '{print $1}' | awk '{print $3}')
           else
-            energy=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $5}')
+            energy=$(grep 'F=' "${oszicar_fn}" | tail -n 1 | awk '{printf "%.6f", $5}')
           fi
 
-          natoms=$(grep 'NIONS' "$outcar_fn" | tail -1 | awk '{print $12}')
+          natoms=$(grep 'NIONS' "${outcar_fn}" | tail -1 | awk '{print $12}')
           energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
 
-          ionstep=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{print $1}')
+          nsteps=$(grep 'F=' "${oszicar_fn}" | tail -n 1 | awk '{print $1}')
 
           # 获取耗时数据
-          time=$(grep 'Total CPU time used' "$outcar_fn" | awk '{print $6}')
+          time=$(grep 'Total CPU time used' "${outcar_fn}" | awk '{print $6}')
           time=${time%.*}
           if [[ ${time} -gt 0 ]]; then
-            hours=$((time / 3600))
-            minutes=$(((time % 3600) / 60))
-            seconds=$((time % 60))
-            time=$(printf "%02dh %02dm %02ds" "$hours" "$minutes" "$seconds")
+            state="Completed"
           elif [[ ${time} -eq 0 ]]; then
-            time="Still Running"
+            time=$(grep 'LOOP+' "${outcar_fn}" | awk '{sum+=$7} END {print sum}')
+            time=${time%.*}
+            state="Running"
           fi
 
-          printf "%21s %10s %13s %11s   %-13s\n" "${dir}" "${ionstep}" "${energy}" "${energy_pa}" "${time}"
+          hours=$((time / 3600))
+          minutes=$(((time % 3600) / 60))
+          seconds=$((time % 60))
+          time_info=$(printf "%02dh %02dm %02ds" "${hours}" "${minutes}" "${seconds}")
+
+          printf "%21s %10s %13s %11s %16s %13s\n" "${dir}" "${nsteps}" "${energy}" "${energy_pa}" "${time_info}" "${state}"
 
         else
           unfinished_dirs+=("${dir}")
@@ -64,7 +68,7 @@ get_vasp_data() {
     fi
   done
 
-  echo "|-------------------------------------------------------------------------------------"
+  echo "|---------------------------------------------------------------------------------------------"
 
   # 统一输出未完成第一个离子步的 VASP 计算目录
   if [[ ${#unfinished_dirs[@]} -gt 0 ]]; then
@@ -82,7 +86,7 @@ get_help() {
 
   echo -e "\nUsage: $script_name [dirs...]"
 
-  echo -e "\nGet ion steps, energy and time cost data in VASP calculation dirs with table format."
+  echo -e "\nGet ion steps, energy and time cost data in VASP relaxation calculation dirs with table format."
 
   echo -e "\nOptions:"
   echo "  -h, --help      Show this help message and exit"
@@ -109,10 +113,10 @@ elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
 elif [[ "$1" == "." ]]; then
   for item in ./*; do
     if [ -d "$item" ]; then
-      get_vasp_data "$item"
+      get_opt_data "$item"
     fi
   done
 
 else
-  get_vasp_data "$@"
+  get_opt_data "$@"
 fi

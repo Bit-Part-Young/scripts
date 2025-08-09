@@ -7,9 +7,9 @@
 get_scf_data() {
 
   # 输出表头
-  echo "|------------------------------------------------------------------------------------------------------------"
-  printf "%21s %8s %17s %13s %15s %11s   %-13s\n" "Folder" "natoms" "Electronic_Step" "Energy" "dE" "Energy_pa" "TimeCost"
-  echo "|------------------------------------------------------------------------------------------------------------"
+  echo "|--------------------------------------------------------------------------------------------------------------------------"
+  printf "%21s %8s %17s %13s %15s %11s %16s %13s\n" "Folder" "natoms" "Electronic_Step" "Energy" "dE" "Energy_pa" "TimeCost" "State"
+  echo "|--------------------------------------------------------------------------------------------------------------------------"
 
   unfinished_dirs=()
 
@@ -17,7 +17,7 @@ get_scf_data() {
     if [ -d "$dir" ]; then
       oszicar_fn="${dir}/OSZICAR"
       outcar_fn="${dir}/OUTCAR"
-      if [ -f "$oszicar_fn" ]; then
+      if [ -f "${oszicar_fn}" ]; then
 
         # 若目录层级数大于 2，则获取最后 3 层目录
         if [[ $(echo "${dir}" | awk -F'/' '{print NF}') -gt 2 ]]; then
@@ -27,40 +27,45 @@ get_scf_data() {
           dir=$(basename "${dir}")
         fi
 
-        if grep -q 'DAV' "$oszicar_fn"; then
-          natoms=$(grep 'NIONS' "$outcar_fn" | tail -1 | awk '{print $12}')
-          electronic_step=$(grep 'DAV' "$oszicar_fn" | tail -n 1 | awk '{print $2}')
+        if grep -q 'DAV' "${oszicar_fn}"; then
+          natoms=$(grep 'NIONS' "${outcar_fn}" | tail -n 1 | awk '{print $12}')
+          nsteps=$(grep 'DAV' "${oszicar_fn}" | tail -n 1 | awk '{print $2}')
 
-          energy=$(grep 'DAV' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $3}')
-          energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
-
-          time=$(grep 'Total CPU time used' "$outcar_fn" | awk '{print $6}')
+          time=$(grep 'Total CPU time used' "${outcar_fn}" | awk '{print $6}')
           time=${time%.*}
           if [[ ${time} -gt 0 ]]; then
-            hours=$((time / 3600))
-            minutes=$(((time % 3600) / 60))
-            seconds=$((time % 60))
-            time=$(printf "%02dh %02dm %02ds" "$hours" "$minutes" "$seconds")
+            state="Completed"
 
             dE=""
 
             # 运行结束时需使用 F= 行所对应的 E0 数据
-            energy=$(grep 'F=' "$oszicar_fn" | tail -n 1 | awk '{printf "%.6f", $5}')
-            energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
+            energy=$(grep 'F=' "${oszicar_fn}" | tail -n 1 | awk '{printf "%.6f", $5}')
 
           elif [[ ${time} -eq 0 ]]; then
-            time="Still Running"
+            state="Running"
 
-            dE=$(grep 'DAV' "$oszicar_fn" | tail -n 1 | awk '{print $4}')
+            time=$(grep 'LOOP:' "${outcar_fn}" | awk '{sum+=$7} END {print sum}')
+            time=${time%.*}
+
+            dE=$(grep 'DAV' "${oszicar_fn}" | tail -n 1 | awk '{print $4}')
+
+            energy=$(grep 'DAV' "${oszicar_fn}" | tail -n 1 | awk '{printf "%.6f", $3}')
           fi
+          energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
 
-          printf "%21s %8s %17s %13s %15s %11s   %-13s\n" "${dir}" "${natoms}" "${electronic_step}" "${energy}" "${dE}" "${energy_pa}" "${time}"
+          hours=$((time / 3600))
+          minutes=$(((time % 3600) / 60))
+          seconds=$((time % 60))
+          time_info=$(printf "%02dh %02dm %02ds" "${hours}" "${minutes}" "${seconds}")
+
+
+          printf "%21s %8s %17s %13s %15s %11s %16s %13s\n" "${dir}" "${natoms}" "${nsteps}" "${energy}" "${dE}" "${energy_pa}" "${time_info}" "${state}"
         fi
       fi
     fi
   done
 
-  echo "|------------------------------------------------------------------------------------------------------------"
+  echo "|--------------------------------------------------------------------------------------------------------------------------"
 
 }
 
