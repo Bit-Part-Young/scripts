@@ -9,9 +9,9 @@ from pymatgen.io.vasp import Vasprun, Outcar
 
 
 def format_time(time_cost: float):
-    hour = time_cost // 3600
-    minute = (time_cost % 3600) // 60
-    second = time_cost % 60
+    hour = int(time_cost // 3600)
+    minute = int((time_cost % 3600) // 60)
+    second = int(time_cost % 60)
 
     return f"{hour:02d}h {minute:02d}m {second:02d}s"
 
