@@ -87,7 +87,9 @@ def get_atomate_calc_info(root_dir: str, flag: bool = False):
                                 float(results_str.split("energy: ")[1].split(" ")[0]), 5
                             )
                         except:
-                            print(f"vasp_timecost.sh excutable script not found!")
+                            print(
+                                f"vasp_timecost.sh excutable script not found or first ionic step is not finished!"
+                            )
 
                             nsteps = None
                             time_cost = None
