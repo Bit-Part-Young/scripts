@@ -6,7 +6,7 @@ parent_root_dir=$1
 # 若 parent... 为空，则 root_dir 为当前目录
 if [ -z "$parent_root_dir" ]; then
     # 还有 atomate 计算在运行
-    root_dir_list=$(squeue -u yangsl -t RUNNING --format "%.6i %.7T %.8j %.9N %.4C %.11M  %Z" | grep 'FW_job' | awk '{print $6}' | grep "yangsl")
+    root_dir_list=$(squeue -u yangsl -t RUNNING --format "%.6i %.7T %.8j %.9N %.4C %.11M  %Z" | grep 'FW_job' | awk '{print $7}' | grep "yangsl")
 else
     # 所有 atomate 计算已完成
     root_dir_list=$(ls -d $parent_root_dir/*)
