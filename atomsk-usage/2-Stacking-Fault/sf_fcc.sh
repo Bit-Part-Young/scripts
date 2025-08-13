@@ -1,7 +1,7 @@
 #!/bin/bash
 
 : '
-FCC 晶体 {111}<112> 滑移系中的 ISF（本征堆垛层错）, ESF（非本征堆垛层错） 和 TWIN（孪晶层错）模型构建
+Generate ISF, ESF and TWIN configurations of FCC {111}<112> slip system for VASP GSFE calculation.
 
 reference:
 - https://mp.weixin.qq.com/s/o0ldM-87tGulOEIBFXSsSw
@@ -16,30 +16,38 @@ sf_generation() {
   a="${a:-4.041}"
   dup_x="${dup_x:-1}"
   dup_y="${dup_y:-1}"
-  dup_z="${dup_z:-6}"
+  dup_z="${dup_z:-4}"
+  num_interval="${num_interval:-10}"
   vacuum="${vacuum:-15.0}"
-  vacuum2=$((2 * vacuum))
 
-  # z 方向的原子层间距
-  gap_z=$(echo "scale=15; ${a}*sqrt(3)/3" | bc -l)
-  # z 方向长度
-  len_z=$(echo "scale=15; ${a}*sqrt(3)*${dup_z}" | bc -l)
 
-  # z 方向长度一半
-  len_i=$(echo "scale=15; ${len_z}/2" | bc -l)
-  # z 方向长度一半 + 1 * z 方向原子层间距
-  len_e=$(echo "scale=15; ${len_i}+${gap_z}" | bc -l)
-  # z 方向长度一半 + 2 * z 方向原子层间距
-  len_t=$(echo "scale=15; ${len_e}+${gap_z}" | bc -l)
+  interlayer_distance=$(echo "scale=15; ${a}*sqrt(3)/3" | bc -l)
+  length_z=$(echo "scale=15; ${a}*sqrt(3)*${dup_z}" | bc -l)
 
-  # a*[112]/6 分 40 次滑移
-  ndisp=20
-  # 沿 [11-2] 方向每次移动的距离
-  disp=$(echo "scale=15; ${a}/sqrt(6)/${ndisp}" | bc -l)
+  length_intrinsic=$(echo "scale=15; 0.985*(${length_z}/2)" | bc -l)
+  length_extrinsic=$(echo "scale=15; 0.985*(${length_z}/2+${interlayer_distance})" | bc -l)
+  length_twin=$(echo "scale=15; 0.985*(${length_z}/2+2*${interlayer_distance})" | bc -l)
+
+  # calculate the slip step length
+  b_interval=$(echo "scale=15; ${a}/sqrt(6)/${num_interval}" | bc -l)
+
+
+  #------------------------- 初始位向超胞构建 ---------------------------
+  printf "%`tput cols`s" | tr ' ' '#'
+  echo -e "\n\nInitial configuration:\n"
+
+  atomsk --create fcc ${a} ${element} \
+    orient "[1-10]" "[11-2]" "[111]" \
+    -duplicate ${dup_x} ${dup_y} ${dup_z} \
+    -fix x -fix y \
+    -sort species pack \
+    -fractional -ow vasp
+
+  echo
 
 
   #-------------------------     创建存储结构文件夹     ---------------------------
-  folders=("ISF" "ESF" "TWIN")
+  folders=("1-ISF" "2-ESF" "3-TWIN")
 
   for folder in "${folders[@]}"; do
       if [ -d "${folder}" ]; then
@@ -51,46 +59,71 @@ sf_generation() {
   done
 
 
-  #------------------------- 初始位向超胞构建 ---------------------------
-  atomsk --create fcc ${a} ${element} \
-         orient "[1-10]" "[11-2]" "[111]" \
-         -duplicate ${dup_x} ${dup_y} ${dup_z} \
-         -shift 0 0 ${vacuum} \
-         -cell add ${vacuum2} z \
-         -wrap ${element}_init.lmp
-
-
   #------------------------- ISF 模型 ---------------------------
-  atomsk ${element}_init.lmp ${element}_0_isf.lmp
-  for i in $(seq 1 ${ndisp}); do
-    atomsk ${element}_$((i-1))_isf.lmp \
-           -shift above ${len_i} z 0 ${disp} 0 \
-           -wrap ${element}_${i}_isf.lmp
+  cd 1-ISF
+
+  for i in $(seq 0 1 ${num_interval}); do
+    disp=$(echo "scale=15; ${b_interval}*${i}" | bc)
+
+    atomsk ../POSCAR \
+      -shift above ${length_intrinsic} z 0.0 ${disp} 0.0 \
+      -cell add ${vacuum} z \
+      -fractional -wrap -ow vasp
+
+    mv POSCAR "POSCAR.${i}"
+
+    echo
+
   done
+
+  printf "%`tput cols`s" | tr ' ' '#'
+  echo
+
+  cd ..
 
 
   #------------------------- ESF 模型 ---------------------------
-  atomsk ${element}_${ndisp}_isf.lmp ${element}_0_esf.lmp
-  for i in $(seq 1 ${ndisp}); do
-    atomsk ${element}_$((i-1))_esf.lmp \
-           -shift above ${len_e} z 0 ${disp} 0 \
-           -wrap ${element}_${i}_esf.lmp
+  cd 2-ESF
+
+  for i in $(seq 0 1 ${num_interval}); do
+    disp=$(echo "scale=15; ${b_interval}*${i}" | bc)
+
+    atomsk ../1-ISF/POSCAR.${num_interval} \
+      -shift above ${length_extrinsic} z 0.0 ${disp} 0.0 \
+      -fractional -wrap -ow vasp
+
+    mv POSCAR "POSCAR.${i}"
+
+    echo
+
   done
+
+  printf "%`tput cols`s" | tr ' ' '#'
+  echo
+
+  cd ..
 
 
   #------------------------- TWIN 模型 ---------------------------
-  atomsk ${element}_${ndisp}_esf.lmp ${element}_0_twin.lmp
-  for i in $(seq 1 ${ndisp}); do
-    atomsk ${element}_$((i-1))_twin.lmp \
-           -shift above ${len_t} z 0 ${disp} 0 \
-           -wrap ${element}_${i}_twin.lmp
+  cd 3-TWIN
+
+  for i in $(seq 1 ${num_interval}); do
+    disp=$(echo "scale=15; ${b_interval}*${i}" | bc)
+
+    atomsk ../2-ESF/POSCAR.${num_interval} \
+      -shift above ${length_twin} z 0 ${disp} 0 \
+      -fractional -wrap -ow vasp
+
+    mv POSCAR "POSCAR.${i}"
+
+    echo
+
   done
 
+  printf "%`tput cols`s" | tr ' ' '#'
+  echo
 
-  # 移动构型文件至对应的文件夹
-  mv ${element}_*_isf.lmp  ISF
-  mv ${element}_*_esf.lmp  ESF
-  mv ${element}_*_twin.lmp TWIN
+  cd ..
 }
 
 
@@ -100,19 +133,19 @@ get_help() {
 
   echo -e "\nUsage: ${script_name} [-e symbol] [-lc lattice_constant] [-d dup_x dup_y dup_z] [-vac vacuum] [-ni num_interval]"
 
-  echo -e "\nGenerate stacking fault configurations of BCC {110}<111> slip system for VASP calculation."
+  echo -e "\nGenerate ISF, ESF and TWIN configurations of FCC {111}<112> slip system for VASP GSFE calculation."
 
   echo -e "\nOptions:"
   echo "    -h, --help                 show this help message and exit"
-  echo "    -e element                 element symbol (default: Ti)"
-  echo "    -lc lattice_constant       lattice constant (default: 3.252)"
+  echo "    -e element                 element symbol (default: Al)"
+  echo "    -lc lattice_constant       lattice constant (default: 4.041)"
   echo "    -d dup_x dup_y dup_z       duplicate system in the three directions (default: 1 1 6)"
   echo "    -vac vacuum                vacuum thickness (default: 15.0)"
   echo "    -ni num_interval           number of intervals (default: 10)"
 
   echo -e "\nExamples:"
   echo "    Default settings: ${script_name}"
-  echo "    For pure system: ${script_name} -e Ti -lc 3.252 -d 1 1 6 -vac 15.0 -ni 10"
+  echo "    For pure system: ${script_name} -e Al -lc 4.041 -d 1 1 4 -vac 15.0 -ni 10"
 }
 
 
