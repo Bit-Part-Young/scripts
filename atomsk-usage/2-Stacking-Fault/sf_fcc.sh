@@ -107,7 +107,7 @@ sf_generation() {
   #------------------------- TWIN 模型 ---------------------------
   cd 3-TWIN
 
-  for i in $(seq 1 ${num_interval}); do
+  for i in $(seq 0 1 ${num_interval}); do
     disp=$(echo "scale=15; ${b_interval}*${i}" | bc)
 
     atomsk ../2-ESF/POSCAR.${num_interval} \
