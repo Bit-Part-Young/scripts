@@ -16,7 +16,7 @@ surface_gamma_TiAl() {
   #------------------------- (111) 表面 ---------------------------
   # (111) 表面；单胞 6 个原子，3 个原子层
   atomsk --create fcc ${a} Al Ti \
-    orient "[-110]" "[11-2]" "[111]" \
+    orient "[1-10]" "[11-2]" "[111]" \
     -duplicate ${dup_x} ${dup_y} ${dup_z} \
     -cell add ${vacuum} z -shift 0 0 ${vacuum_half} \
     -sort species pack -fractional vasp

@@ -51,7 +51,7 @@ surface_fcc() {
   # (111) 表面；单胞 6 个原子，3 个原子层
   dup_z=$(awk "BEGIN {print ${num_layer}/3}")
   atomsk --create fcc ${a} ${symbol} \
-    orient "[-110]" "[11-2]" "[111]" \
+    orient "[1-10]" "[11-2]" "[111]" \
     -duplicate ${dup_x} ${dup_y} ${dup_z} \
     -cell add ${vacuum} z -shift 0 0 ${vacuum_half} \
     -sort species pack -fractional vasp
