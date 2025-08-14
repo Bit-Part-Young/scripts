@@ -5,6 +5,8 @@ Generate ISF, ESF/TWIN configurations of FCC {111}<112> slip system for VASP GSF
 
 上半部分原子层向右滑移 a/√6，形成 ISF 模型；下半部分原子层（去除第一个原子层）向左滑移 a/√6，形成 ESF/TWIN 模型（实际只为 ESF 模型）。
 
+效果与 sf_fcc.sh 的前两步一致。
+
 reference: Materials Today Communications 43 (2025) 111639, https://doi.org/10.1016/j.mtcomm.2025.111639
 '
 
