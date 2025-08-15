@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# HCP Basal / {0001}, Prismatic / {11-20} , PyramidalI / {10-11}, PyramidalII / {11-22} 表面模型构建
+# HCP Basal / {0001}, Prismatic / {11-20} , Pyramidal I / {10-11}, Pyramidal II / {11-22} 表面模型构建
 
 
 surface_hcp() {
@@ -47,7 +47,7 @@ surface_hcp() {
   mv POSCAR POSCAR.prismatic
 
 
-  #------------------------- PyramidalI / {10-11} 表面 ---------------------------
+  #------------------------- Pyramidal I / {10-11} 表面 ---------------------------
   # 默认扩胞 1x1x2
   dup_z=$(awk "BEGIN {print ${num_layer}/6}")
   atomsk --create hcp ${a} ${c} ${symbol} \
@@ -63,7 +63,7 @@ surface_hcp() {
   mv POSCAR POSCAR.pyramidalI
 
 
-  #------------------------- PyramidalII / {11-22} 表面 ---------------------------
+  #------------------------- Pyramidal II / {11-22} 表面 ---------------------------
   # 默认扩胞 1x1x1
   dup_z=$(awk "BEGIN {print ${num_layer}/12}")
   atomsk --create hcp ${a} ${c} ${symbol} \
@@ -87,7 +87,7 @@ surface_hcp() {
 
   mv POSCAR.basal POSCAR.prismatic POSCAR.pyramidalI POSCAR.pyramidalII ${structure_folder}
 
-  echo "Total HCP Basal / {0001}, Prismatic / {11-20}, PyramidalI / {10-11}, PyramidalII / {11-22} surface models of HCP ${symbol} generated!"
+  echo "Total HCP Basal / {0001}, Prismatic / {11-20}, Pyramidal I / {10-11}, Pyramidal II / {11-22} surface models of HCP ${symbol} generated!"
 }
 
 
@@ -97,7 +97,7 @@ get_help() {
 
   echo -e "\nUsage: ${script_name} [-e symbol] [-lc lattice_constant] [-d dup_x dup_y num_layer] [-vac vacuum]"
 
-  echo -e "\nGenerate HCP Basal / {0001}, Prismatic / {11-20}, PyramidalI / {10-11}, PyramidalII / {11-22} surface models for VASP calculation."
+  echo -e "\nGenerate HCP Basal / {0001}, Prismatic / {11-20}, Pyramidal I / {10-11}, Pyramidal II / {11-22} surface models for VASP calculation."
 
   echo -e "\nOptions:"
   echo "    -h, --help                 show this help message and exit"

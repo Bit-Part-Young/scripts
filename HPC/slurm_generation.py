@@ -9,12 +9,11 @@ platform_partition = {
     "sy": "64c512g",
     "pi": "cpu",
     "master": "cpu",
-    "node2": "g4",
 }
 
 
 def slurm_generation(
-    platform: Literal["sy", "pi", "master", "node2"] = "sy",
+    platform: Literal["sy", "pi", "master"] = "sy",
     calculation_type: Literal["vasp", "lammps", "misc"] = "vasp",
     num_cpus: int = 1,
     time: str = "72:00:00",
@@ -38,8 +37,6 @@ def slurm_generation(
 
         if platform == "master":
             f.write("#SBATCH -x master\n\n")
-            # f.write("#SBATCH -w node2\n")
-            # f.write("#SBATCH -x node1\n\n")
             f.write("#SBATCH --no-requeue\n\n")
 
         if calculation_type == "vasp":
@@ -89,7 +86,6 @@ if __name__ == "__main__":
         nargs="?",
         const="sy",
         default="sy",
-        type=str,
         choices=["sy", "pi", "master"],
         help="Platform",
     )
@@ -100,7 +96,6 @@ if __name__ == "__main__":
         nargs="?",
         const="vasp",
         default="vasp",
-        type=str,
         choices=["vasp", "lammps", "misc"],
         help="calculation type",
     )

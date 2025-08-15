@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # 批量查看 atomate VASP 计算目录的计算信息
+
+
 parent_root_dir=$1
 
 # 若 parent... 为空，则 root_dir 为当前目录

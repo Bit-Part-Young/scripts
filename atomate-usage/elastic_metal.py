@@ -1,3 +1,5 @@
+"""atomate FCC Al 弹性常数计算"""
+
 from atomate.common.powerups import add_namefile, add_tags
 from atomate.vasp.powerups import add_modify_incar
 from atomate.vasp.workflows.presets.core import wf_elastic_constant

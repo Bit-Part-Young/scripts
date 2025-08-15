@@ -22,13 +22,7 @@ def supercell_generation(
     supercell = atoms * dimension
 
     output_fn = f"POSCAR.{dimension[0]}{dimension[1]}{dimension[2]}"
-    write(
-        output_fn,
-        images=supercell,
-        format="vasp",
-        direct=True,
-        sort=True,
-    )
+    write(output_fn, images=supercell, format="vasp", direct=True, sort=True)
 
     print(f"\n{input_fn} make supercell to {output_fn}!")
 

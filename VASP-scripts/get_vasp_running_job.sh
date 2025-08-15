@@ -11,4 +11,3 @@ if [ "$type" == "scf" ]; then
 elif [ "$type" == "opt" ]; then
     get_opt_data.sh ${root_dir_list[@]}
 fi
-

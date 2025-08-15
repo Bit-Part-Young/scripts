@@ -1,7 +1,9 @@
 #!/bin/bash
 
+# 获取正在运行的任务 JobId 信息
+# sacct 需开启（课题组服务器未开启，超算已开启）
 
-#-------------------------------- 获取正在运行的任务 JobId 信息 --------------------------------
+
 running_jobid_info() {
 
   tmp_fn="running_jobid_info.txt"

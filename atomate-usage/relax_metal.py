@@ -1,4 +1,4 @@
-"""采用 atomate 弛豫计算 workflow，修改 INCAR、KPOINTS 参数以适用于金属体系"""
+"""atomate BCC Nb 弛豫计算（修改 INCAR、KPOINTS 参数以适用于金属体系）"""
 
 from atomate.common.powerups import add_namefile, add_tags
 from atomate.vasp.powerups import (

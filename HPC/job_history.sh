@@ -1,7 +1,8 @@
 #!/bin/bash
 
 # 查看提交至 Slurm 队列系统的 job 历史
-# sacct 需 enabled
+# sacct 需开启（课题组服务器未开启，超算已开启）
+
 
 start=$1     # eg. "2025-06-29"
 end=$2       # eg. "2025-07-02"

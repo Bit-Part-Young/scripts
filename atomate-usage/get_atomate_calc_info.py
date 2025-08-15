@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""获取 atomate VASP 计算目录的计算信息"""
+"""获取 atomate VASP 计算目录的计算信息, 配合 get_atomate_calc_info.sh 使用"""
 
 import argparse
 import pandas as pd

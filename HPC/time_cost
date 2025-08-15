@@ -13,5 +13,5 @@ for jobid in $(ls [0-9]*.out | sed 's/\.out$//'); do
   hours=$((time_diff / 3600))
   minutes=$(((time_diff % 3600) / 60))
 
-  echo "JOBID ${jobid} time cost: ${hours}h ${minutes}min"
+  echo "JOBID ${jobid} time cost: ${hours}h ${minutes}min."
 done

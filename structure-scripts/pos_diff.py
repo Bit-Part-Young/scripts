@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""查看两个构型之间的原子坐标变化/差异（主要为弛豫/变形前后）"""
+"""比较两个构型之间的原子坐标变化/差异（主要为弛豫/变形前后）"""
 
 import argparse
 import pprint
@@ -16,7 +16,7 @@ def pos_diff(
     wrap: bool = False,
     atom_indices: int | list[int] | None = None,
 ) -> np.ndarray:
-    """查看两个构型之间的原子坐标变化/差异（主要为弛豫/变形前后）"""
+    """比较两个构型之间的原子坐标变化/差异（主要为弛豫/变形前后）"""
 
     atoms1 = read(structure1_fn)
     atoms2 = read(structure2_fn)

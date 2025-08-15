@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""生成 GPU 任务的 slurm 提交脚本（课题组服务器平台）"""
+"""生成 GPU 任务的 Slurm 提交脚本（课题组服务器平台）"""
 
 import argparse
 from typing import Literal
@@ -12,7 +12,7 @@ def write_slurm(
     num_gpus: Literal[1, 2] = 1,
     calculation_type: Literal["nep", "gpumd"] = "gpumd",
 ):
-    """生成 GPU 任务的 slurm 提交脚本（课题组服务器平台）"""
+    """生成 GPU 任务的 Slurm 提交脚本（课题组服务器平台）"""
 
     with open("job.slurm", "w") as f:
         f.write(
@@ -44,7 +44,7 @@ fi
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Generate slurm submission file for GPU jobs in group server platform (NEP/GPUMD).",
+        description="Generate Slurm submission file for GPU jobs in group server platform (NEP/GPUMD).",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )

@@ -1,4 +1,4 @@
-"""采用 atomate 弛豫计算 workflow 默认参数"""
+"""atomate Diamond Si 弛豫计算"""
 
 from atomate.common.powerups import add_namefile, add_tags
 from atomate.vasp.powerups import add_modify_incar
