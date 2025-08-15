@@ -1,6 +1,6 @@
 # CMS Scripts
 
-计算材料科学相关代码/脚本（脚本总数：100+）。
+计算材料领域相关实用 Python、Shell 脚本（脚本总数：接近 200）。
 
 注意事项：
 
@@ -95,19 +95,29 @@ CheckVaspDone                        # 检查 VASP 计算是否完成（可多�
 CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（可多个目录）
 sigma.sh                             # 检查 entropy T*S 是否小于 1 meV/atom
 
-psp_comparison.py                    # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)
+plot_energy_force.sh                 # 获取 VASP 弛豫过程中的能量、原子受力（考虑原子位置方向固定情况，计算受力的模长）信息并绘制演化图
+plot_energy_force2.sh                # 获取 VASP 弛豫过程中的能量、原子受力（不考虑原子位置方向固定情况，不计算受力的模长）信息并绘制演化图
+plot_rdf_AIMD.sh                     # 获取 AIMD 的 RDF 数据并绘制
+plot_temperature_energy_AIMD.sh      # 获取 AIMD 的温度和能量数据并绘制
+plot_ev.py                           # EV（能量-体积）曲线绘制
+
 get_psp.py                           # 生成 VASP 和 pymatgen 推荐的 PBE 赝势 POTCAR 文件
+get_psp2.py                          # 生成 VASP 和 pymatgen 推荐的 PBE 赝势 POTCAR 文件（不依赖 pymatgen，速度更快）
+psp_comparison.py                    # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)
 get_vasp_data.py                     # 获取 VASP 计算目录的输出数据（利用 atomate package）
 get_vasp_data2.py                    # 获取 VASP 计算目录的输出数据（利用 pymatgen package）
-get_vasp_data.sh                     # 获取多个 VASP 计算目录的输出数据
+get_opt_data.sh                      # 获取当前 目录/子目录 下的 VASP 弛豫计算数据
+get_scf_data.sh                      # 获取当前 目录/子目录 下的 VASP 静态计算数据
+get_vasp_running_job.sh              # 获取正在运行的 VASP 作业信息
+vasp_timecost.sh                     # 统计 VASP 计算目录的离子步步数、计算耗时、能量信息
 kgrid2kspacing.py                    # 从 KPOINTS 和 POSCAR 文件获取 K-spacing 数值
 kspacing2kgrid.py                    # 从 K-spacing 数值和 POSCAR 获取 K-grid 数值
 incar_generation.py                  # 根据计算类型生成 VASP INCAR 文件
 get_kpts_atomate.py                  # 获取 atomate 中不同 workflows 的默认 kpts 设置
 get_kpath.py                         # 根据构型生成 K-Path
-
-plot_ev.py                           # EV（能量-体积）曲线绘制
 eos_fit.py                           # Birch-Murnaghan EOS 拟合
+get_surface_energy.py                # 计算表面能
+pde_cal.py                           # 点缺陷形成能计算
 
 hdf5.ipynb                           # 读取 vaspout.h5 格式数据文件内容（无法获取具体数值）
 
@@ -128,23 +138,25 @@ plot_dos_element_spd.py              # 使用 pymatgen 模块绘制元素分态�
 - `structure-scripts/`: 结构相关脚本
 
 ```bash
+add_vacuum.py                        # 在指定轴（默认 z 轴）顶部、底部、顶部底部两端添加真空层（支持非正交胞，保持晶格角度不变）
 layers_count.py                      # 统计原子层数及每层原子数
+layers_identify.py                   # 识别原子层及其对应的原子
+layers_fix.py                        # 固定（特定）原子层 x/y/z 轴
 interlayer_separations.py            # 统计原子层间距变化（适用于表面/界面模型弛豫前后的原子层间距变化）
-identify_layer.py                    # 识别每个原子所在的原子层
-fix_layer.py                         # 固定（特定）原子层 x/y/z 轴
 
 wrap_pos.py                          # 将 VASP POSCAR 中分数坐标范围 wrap 在 0-1 之间
-pos_diff.py                          # 比较构型弛豫前后原子坐标的变化
+pos_diff.py                          # 比较两个构型之间的原子坐标变化/差异（主要为弛豫/变形前后）
 posconv.py                           # 构型文件格式互相转换（基于 ASE，支持 ASE 大部分可识别的格式）
+supercell.py                         # 扩胞
 atat.py                              # 解析 ATAT 中的 str.out 文件（单个和枚举）的构型并转换为 ASE Atoms 对象
 hexa2ortho.py                        # 将六方胞转换为正交胞
 build_structure_spacegroup.ipynb     # PyXtal、ASE、pymatgen 通过空间群构建复杂结构
 
 symmetry_info.py                     # 获取结构的对称性信息
 sg_info.py                           # 获取结构的空间群信息
+get_pearson_symbol.py                # 获取结构的 Pearson 符号
 spglib_python.ipynb                  # 使用 spglib 的 Python API 获取对称性信息
 spglib_julia.ipynb                   # 使用 spglib 的 Julia API 获取对称性信息
-get_pearson_symbol.py                # 获取结构的 Pearson 符号
 
 hcp_direction_index.py               # HCP 方向指数的三指数和四指数坐标转换
 hcp_plane_index.py                   # HCP 面指数的三指数和四指数坐标转换
@@ -152,7 +164,9 @@ hcp_plane_index.py                   # HCP 面指数的三指数和四指数坐�
 get_cn.py                            # 计算原子配位数
 get_nn.py                            # 获取 BCC/FCC/Diamond/HCP 晶体结构的最近邻距离
 get_distance.py                      # 获取构型中原子对的最小和最大距离
+get_orthogonal_c.py                  # 强制使 c 轴与 a、b 轴垂直（对于生成晶界、界面结构时有用）
 
+element_data.py                      # 元素周期表常见元素数据
 
 get_interface.py                     # 生成界面结构（待优化）
 
@@ -242,10 +256,14 @@ get_rdf_ovito.py                     # 计算轨迹文件平均 RDF
 # 1-Surface/ 目录
 surface_bcc.sh                       # BCC (100), (110), (111) 表面模型构建
 surface_fcc.sh                       # FCC (100), (110), (111) 表面模型构建
+surface_hcp.sh                       # HCP Basal, Prismatic , Pyramidal I, Pyramidal II 表面模型构建
 surface_diamond.sh                   # Diamond (100), (110), (111) 表面模型构建
+surface_alpha2_Ti3Al.sh              # alpha2-Ti3Al Basal / {0001} 表面模型构建
+surface_gamma_TiAl.sh                # gamma-TiAl (111) 表面模型构建；重要近似条件 c≈a
 
 # 2-Stacking-Fault/ 目录
-sf_fcc.sh                            # FCC 晶体的 ISF（本征堆垛层错）, ESF（非本征堆垛层错） 和 TWIN（孪晶）层错模型构建
+sf_fcc.sh                            # 生成 FCC {111}<112> 滑移系的 ISF, ESF 和 TWIN 层错构型
+sf_fcc2.sh                           # 生成 FCC {111}<112> 滑移系的 ISF, ESF/TWIN 层错构型（效果与 sf_fcc.sh 的前两步一致）
 twin_fcc.sh                          # FCC 孪晶模型构建
 
 1-Al-polycrystal/                    # FCC Al 多晶模型构建
@@ -257,11 +275,14 @@ twin_fcc.sh                          # FCC 孪晶模型构建
 - `HPC/`: 超算用脚本
 
 ```bash
-time_cost                            # 计算 HPC 提交任务运行耗时
-slurm_generation.py                  # 生成 VASP/LAMMPS/Python/Bash 任务 slurm 提交脚本
 sruns                                # 根据超算类型申请计算节点
-checkjob                             # 检查在队列中的 job 任务信息
-print_help.sh                        # 定义 print_help 函数，供其他 Shell 脚本调用
+time_cost                            # 计算 HPC 提交任务运行耗时
+slurm_generation.py                  # 生成不同平台的 VASP/LAMMPS/Python/Bash 任务 Slurm 提交脚本
+gpu_slurm_generation.py              # 生成 GPU 任务的 Slurm 提交脚本（课题组服务器平台）
+job_history.sh                       # 查看提交至 Slurm 队列系统的 job 历史
+running_jobid_info.sh                # 获取正在运行的任务 JobId 信息
+running_jobid_info2.sh               # 获取正在运行的任务 JobId 信息（针对 sacct 无法使用的情况）
+completed_jobid_info.sh              # 获取已完成任务 JobId 信息
 ```
 
 ---
@@ -269,10 +290,13 @@ print_help.sh                        # 定义 print_help 函数，供其他 Shel
 - `atomate-usage/`: atomate 程序使用
 
 ```bash
-static.py                            # 静态计算 workflow（默认参数，Si）
-relax.py                             # 弛豫计算 workflow（默认参数，Si）
-static_metal.py                      # 静态计算 workflow（修改 INCAR、KPOINTS 参数，以适用于金属体系）
-relax_metal.py                       # 弛豫计算 workflow（修改 INCAR、KPOINTS 参数，以适用于金属体系）
+static.py                            # Diamond Si 静态计算
+relax.py                             # Diamond Si 弛豫计算
+static_metal.py                      # BCC Nb 静态计算（修改 INCAR、KPOINTS 参数，以适用于金属体系）
+relax_metal.py                       # BCC Nb 弛豫计算（修改 INCAR、KPOINTS 参数，以适用于金属体系）
+elastic_metal.py                     # FCC Al 弹性常数计算
+get_atomate_calc_info.sh             # 批量查看 atomate VASP 计算目录的计算信息
+get_atomate_calc_info.py             # 查看 atomate VASP 计算目录的计算信息（配合 get_atomate_calc_info.sh 使用）
 atomate_basic.ipynb                  # atomate 基础使用
 atomate_db.ipynb                     # 获取使用 atomate 计算并存储到数据库（Mongodb）中的数据
 ```
@@ -341,6 +365,7 @@ git diff cb92b24 cec4770
 - `plots/`: 绘图示例
 
 ```bash
+config.gnu                           # gnuplot 绘图配置文件
 gamma_surface_plot.ipynb             # GSFE gamma surface 绘制
 matplotlib_basic.ipynb               # 各种绘图示例
 colors_template.py                   # 绘图配色
