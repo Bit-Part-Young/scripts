@@ -86,6 +86,12 @@ if __name__ == "__main__":
         help="output filename (default: train_filtered.xyz)",
     )
     parser.add_argument(
+        "removed_filename",
+        type=str,
+        default="train_removed.xyz",
+        help="removed filename (default: train_removed.xyz)",
+    )
+    parser.add_argument(
         "-f",
         "--force_threshold",
         type=float,
@@ -105,6 +111,7 @@ if __name__ == "__main__":
 
     input_filename = args.input_filename
     output_filename = args.output_filename
+    removed_filename = args.removed_filename
     force_threshold = args.force_threshold
     num_selected = args.num_selected
 
@@ -113,10 +120,10 @@ if __name__ == "__main__":
         frames, force_threshold, num_selected
     )
     write_xyz_file(filtered_frames, output_filename)
-    write_xyz_file(removed_frames, "removed.xyz")
+    write_xyz_file(removed_frames, removed_filename)
 
     print(f"\nRemoved frame indices (starting from 1): {removed_frames_indices}.")
 
     print(
-        f"\nFiltered structures saved to {output_filename}, removed structures saved to removed.xyz."
+        f"\nFiltered structures saved to {output_filename}, removed structures saved to {removed_filename}."
     )
