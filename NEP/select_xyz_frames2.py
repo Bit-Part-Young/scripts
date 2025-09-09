@@ -42,6 +42,9 @@ def force_exceeds_threshold(threshold: float = 5.0, num_selected: int = 5) -> li
 
     force = np.loadtxt("force_info.dat", skiprows=1)
 
+    if force.size == 1:
+        force = np.atleast_1d(force)
+
     # 按比例选取 N 个小于受力阈值的构型索引；若构型索引数小于 N，则返回所有构型索引
     index = np.where(force < threshold)[0]
     if len(index) < num_selected:

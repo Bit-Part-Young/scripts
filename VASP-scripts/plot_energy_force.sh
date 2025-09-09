@@ -91,7 +91,9 @@ unset multiplot
 unset output
 EOF
 
-gnuplot .plot.gnu
+if [[ "${ion_steps}" -gt 1 ]]; then
+  gnuplot .plot.gnu
+fi
 
 rm .plot.gnu
 
