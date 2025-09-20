@@ -18,7 +18,7 @@ surface_hcp() {
 
 
   #------------------------- Basal / (0001) 表面 ---------------------------
-  if surface_type == "basal"; then
+  if [[ ${surface_type} == "basal" ]]; then
     atomsk --create hcp ${a} ${c} ${symbol} \
       orient "[11-20]" "[-1100]" "[0001]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
@@ -34,7 +34,7 @@ surface_hcp() {
 
 
   #------------------------- Prismatic / (-1100) 表面 ---------------------------
-  elif surface_type == "prismatic"; then
+  elif [[ ${surface_type} == "prismatic" ]]; then
     atomsk --create hcp ${a} ${c} ${symbol} \
       orient "[11-20]" "[0001]" "[-1100]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
@@ -50,7 +50,7 @@ surface_hcp() {
 
 
   #------------------------- Pyramidal II / (11-22) 表面 ---------------------------
-  elif surface_type == "pyramidalII"; then
+  elif [[ ${surface_type} == "pyramidalII" ]]; then
     atomsk --create hcp ${a} ${c} ${symbol} \
       orient "[-1-123]" "[-1100]" "[11-22]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \

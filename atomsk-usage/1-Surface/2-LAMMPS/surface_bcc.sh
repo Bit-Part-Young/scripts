@@ -19,7 +19,7 @@ surface_bcc() {
   #------------------------- (100) 表面 ---------------------------
   # (100) 表面；单胞 2 个原子，2 个原子层
   # 或使用 "[01-1]" "[011]" "[100]" 位向
-  if surface_type == "100"; then
+  if [[ ${surface_type} == "100" ]]; then
     atomsk --create bcc ${a} ${symbol} \
       orient "[010]" "[001]" "[100]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
@@ -36,7 +36,7 @@ surface_bcc() {
 
   #------------------------- (110) 表面 ---------------------------
   # (110) 表面；单胞 4 个原子，2 个原子层
-  elif surface_type == "110"; then
+  elif [[ ${surface_type} == "110" ]]; then
     atomsk --create bcc ${a} ${symbol} \
       orient "[1-10]" "[001]" "[110]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
@@ -53,7 +53,7 @@ surface_bcc() {
 
   #------------------------- (111) 表面 ---------------------------
   # (111) 表面；单胞 6 个原子；3 个原子层
-  elif surface_type == "111"; then
+  elif [[ ${surface_type} == "111" ]]; then
     atomsk --create bcc ${a} ${symbol} \
       orient "[11-2]" "[-110]" "[111]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
