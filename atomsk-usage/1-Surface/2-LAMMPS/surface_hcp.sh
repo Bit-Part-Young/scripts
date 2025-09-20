@@ -71,7 +71,11 @@ surface_hcp() {
     mkdir ${structure_folder}
   fi
 
-  mv *.lmp ${structure_folder}
+  for file in *.lmp; do
+    if [[ ${file} != "in.lmp" ]]; then
+      mv ${file} ${structure_folder}
+    fi
+  done
 
   echo "Total Basal / (0001), Prismatic / (-1100), Pyramidal II / (11-22) surface models of HCP ${symbol} generated!"
 }

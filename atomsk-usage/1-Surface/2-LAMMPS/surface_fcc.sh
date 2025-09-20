@@ -73,7 +73,11 @@ surface_fcc() {
     mkdir ${structure_folder}
   fi
 
-  mv *.lmp ${structure_folder}
+  for file in *.lmp; do
+    if [[ ${file} != "in.lmp" ]]; then
+      mv ${file} ${structure_folder}
+    fi
+  done
 
   echo "Total (100), (110), (111) surface models of FCC ${symbol} generated!"
 }
