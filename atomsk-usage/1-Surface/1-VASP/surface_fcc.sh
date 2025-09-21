@@ -79,7 +79,7 @@ surface_fcc() {
 get_help() {
   script_name=$(basename "$0")
 
-  echo -e "\nUsage: ${script_name} [-st STR] [-e STR] [-lc FLOAT] [-d INT INT INT] [-vac FLOAT]"
+  echo -e "\nUsage: ${script_name} [-st STR] [-e STR] [-lc FLOAT] [-d N N N] [-vac FLOAT]"
 
   echo -e "\nGenerate FCC (100), (110), (111) surface models for VASP calculation."
 
@@ -88,7 +88,7 @@ get_help() {
   echo "    -st STR                    surface type (default: 100)"
   echo "    -e STR                     element symbol (default: Al)"
   echo "    -lc FLOAT                  lattice constant (default: 4.041)"
-  echo "    -d INT INT INT             x y z dimension (default: 1 1 6)"
+  echo "    -d N N N                   x y z dimension (default: 1 1 6)"
   echo "    -vac FLOAT                 vacuum thickness (default: 15.0)"
 
   echo -e "\nExamples:"

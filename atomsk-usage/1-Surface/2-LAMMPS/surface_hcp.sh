@@ -85,7 +85,7 @@ surface_hcp() {
 get_help() {
   script_name=$(basename "$0")
 
-  echo -e "\nUsage: ${script_name} [-st STR] [-e STR] [-lc FLOAT FLOAT] [-d INT INT INT] [-vac FLOAT]"
+  echo -e "\nUsage: ${script_name} [-st STR] [-e STR] [-lc FLOAT FLOAT] [-d N N N] [-vac FLOAT]"
 
   echo -e "\nGenerate HCP Basal / (0001), Prismatic / (-1100), Pyramidal II / (11-22) surface models for LAMMPS calculation."
 
@@ -94,7 +94,7 @@ get_help() {
   echo "    -st STR                    surface type (default: basal)"
   echo "    -e STR                     element symbol (default: Ti)"
   echo "    -lc FLOAT FLOAT            lattice constant (default: 2.928 4.640)"
-  echo "    -d INT INT INT             x y z dimension (default: 10 10 20)"
+  echo "    -d N N N                   x y z dimension (default: 10 10 20)"
   echo "    -vac FLOAT                 vacuum thickness (default: 40.0)"
 
   echo -e "\nExamples:"
