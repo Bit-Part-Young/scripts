@@ -63,29 +63,25 @@ if __name__ == "__main__":
         "input_filename",
         type=str,
         default="train.xyz",
-        help="input filename (default: train.xyz)",
+        help="input xyz filename (default: train.xyz)",
     )
     parser.add_argument(
         "output_filename",
         type=str,
         default="train_filtered.xyz",
-        help="output filename (default: train_filtered.xyz)",
+        help="output xyz filename (default: train_filtered.xyz)",
     )
     parser.add_argument(
         "--group",
-        type=str,
-        required=True,
         default="stacking fault",
+        metavar="STR",
         help="group name (default: stacking fault)",
     )
     parser.add_argument(
-        "--weight",
-        type=float,
-        default=2.0,
-        required=True,
-        help="weight",
+        "--weight", type=float, default=2.0, metavar="FLOAT", help="weight"
     )
     args = parser.parse_args()
+
     input_filename = args.input_filename
     output_filename = args.output_filename
     group = args.group

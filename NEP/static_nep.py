@@ -10,10 +10,7 @@ from ase.units import GPa
 from calorine.calculators import CPUNEP
 
 
-def relax_nep(
-    structure_fn: str = "POSCAR",
-    potential_fn: str = "nep.txt",
-):
+def static_nep(structure_fn: str = "POSCAR", potential_fn: str = "nep.txt"):
     """NEP 势函数 静态计算"""
 
     atoms = read(structure_fn)
@@ -53,13 +50,8 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument(
-        "structure_fn",
-        type=str,
-        default="POSCAR",
-        help="structure filename",
-    )
+    parser.add_argument("structure_fn", default="POSCAR", help="structure filename")
 
     args = parser.parse_args()
 
-    relax_nep(args.structure_fn)
+    static_nep(args.structure_fn, args.potential_fn)

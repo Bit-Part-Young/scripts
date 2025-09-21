@@ -118,7 +118,7 @@ if __name__ == "__main__":
 
     parser.add_argument("data_fn", type=str, help="data filename")
 
-    parser.add_argument("--bins", type=int, default=30, help="bins number")
+    parser.add_argument("--bins", type=int, default=30, metavar="N", help="bins number")
     args = parser.parse_args()
 
     property_name = args.data_fn.split("_")[0]

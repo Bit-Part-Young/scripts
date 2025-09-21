@@ -34,7 +34,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "vaspout_fn", type=str, help="VASP output filename, eg. OUTCAR vasprun.xml"
+        "vaspout_fn", type=str, help="VASP output filename, eg. OUTCAR / vasprun.xml"
     )
     parser.add_argument("xyz_fn", type=str, help="xyz filename")
     parser.add_argument(

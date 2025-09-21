@@ -135,7 +135,7 @@ if __name__ == "__main__":
         nargs="?",
         const="POSCAR",
         default="POSCAR",
-        help="input filename (default: POSCAR)",
+        help="input structure filename (default: POSCAR)",
     )
     parser.add_argument(
         "output_fn",
@@ -143,21 +143,19 @@ if __name__ == "__main__":
         nargs="?",
         const="strained.xyz",
         default="strained.xyz",
-        help="output filename (default: strained.xyz)",
+        help="output xyz filename (default: strained.xyz)",
     )
     parser.add_argument(
         "-sl",
         "--strain_limit",
         type=float,
         default=0.1,
+        metavar="FLOAT",
         help="strain limit",
     )
 
     args = parser.parse_args()
 
     strained_structure_generation(
-        args.order,
-        args.input_fn,
-        args.output_fn,
-        args.strain_limit,
+        args.order, args.input_fn, args.output_fn, args.strain_limit
     )

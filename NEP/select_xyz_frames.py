@@ -94,20 +94,20 @@ if __name__ == "__main__":
         "input_filename",
         type=str,
         default="train.xyz",
-        help="input filename (default: train.xyz)",
+        help="input xyz filename (default: train.xyz)",
     )
     parser.add_argument(
         "output_filename",
         type=str,
         default="train_filtered.xyz",
-        help="output filename (default: train_filtered.xyz)",
+        help="output xyz filename (default: train_filtered.xyz)",
     )
     parser.add_argument(
         "-f",
         "--force_threshold",
         type=float,
         default=50.0,
-        required=True,
+        metavar="FLOAT",
         help="force threshold",
     )
     args = parser.parse_args()

@@ -43,16 +43,13 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument(
-        "structure_fn",
-        type=str,
-        help="structure filename",
-    )
+    parser.add_argument("structure_fn", type=str, help="structure filename")
     parser.add_argument(
         "-ess",
         type=str,
         nargs="+",
         required=True,
+        metavar="STR",
         help="element symbol sequence, e.g. Ti Al Nb",
     )
     parser.add_argument(
@@ -60,7 +57,8 @@ if __name__ == "__main__":
         "--output_fn",
         type=str,
         default="model.xyz",
-        help="output filename",
+        metavar="FILE",
+        help="output xyz filename",
     )
 
     args = parser.parse_args()

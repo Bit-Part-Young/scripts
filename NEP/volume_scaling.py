@@ -9,7 +9,7 @@ from ase.io import read, write
 
 def volume_scaling(
     structure_fn: str = "POSCAR",
-    scaling: float = 1.05,
+    scaling: float = 1.1,
     output_fn: str = "volume_scaled.vasp",
 ):
     """生成体积缩放的结构"""
@@ -43,15 +43,16 @@ if __name__ == "__main__":
     parser.add_argument(
         "scaling",
         type=float,
-        default=1.05,
-        help="cell scaling factor (default: 1.05)",
+        default=1.1,
+        help="volume scaling factor (default: 1.1)",
     )
     parser.add_argument(
         "-o",
         "--output_fn",
         type=str,
         default="volume_scaled.vasp",
-        help="output filename",
+        metavar="FILE",
+        help="output vasp filename",
     )
 
     args = parser.parse_args()

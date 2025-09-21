@@ -80,26 +80,26 @@ if __name__ == "__main__":
         "input_filename",
         type=str,
         default="train.xyz",
-        help="input filename (default: train.xyz)",
+        help="input xyz filename (default: train.xyz)",
     )
     parser.add_argument(
         "output_filename",
         type=str,
         default="train_filtered.xyz",
-        help="output filename (default: train_filtered.xyz)",
+        help="output xyz filename (default: train_filtered.xyz)",
     )
     parser.add_argument(
         "removed_filename",
         type=str,
         default="train_removed.xyz",
-        help="removed filename (default: train_removed.xyz)",
+        help="removed xyz filename (default: train_removed.xyz)",
     )
     parser.add_argument(
         "-f",
         "--force_threshold",
         type=float,
         default=5.0,
-        required=True,
+        metavar="FLOAT",
         help="force threshold",
     )
     parser.add_argument(
@@ -107,6 +107,7 @@ if __name__ == "__main__":
         "--num_selected",
         type=int,
         default=5,
+        metavar="N",
         help="number of frames to select",
     )
 

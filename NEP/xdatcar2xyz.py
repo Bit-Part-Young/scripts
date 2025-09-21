@@ -15,9 +15,7 @@ def xdatcar2xyz(
     """将 VASP XDATCAR 文件转换为 NEP xyz 文件，并指定间隔"""
 
     atoms_list = read(
-        xdatcar_fn,
-        index=f"{interval - 1}::{interval}",
-        format="vasp-xdatcar",
+        xdatcar_fn, index=f"{interval - 1}::{interval}", format="vasp-xdatcar"
     )
 
     write(xyz_fn, atoms_list, format="extxyz", append=True)
@@ -27,7 +25,7 @@ def xdatcar2xyz(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Convert VASP XDATCAR to NEP xzy file with specific interval sampling.",
+        description="Convert VASP XDATCAR to NEP xyz file with specific interval sampling.",
         epilog="Author: SLY.",
     )
 
@@ -54,8 +52,8 @@ if __name__ == "__main__":
         "--interval",
         type=int,
         nargs="?",
-        const=1,
         default=1,
+        metavar="N",
         help="The interval of the frames to be converted.",
     )
 

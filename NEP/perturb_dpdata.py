@@ -48,13 +48,14 @@ if __name__ == "__main__":
         "output_fn",
         type=str,
         default="perturbed.xyz",
-        help="output filename (default: perturbed.xyz)",
+        help="output xyz filename (default: perturbed.xyz)",
     )
     parser.add_argument(
         "-pn",
         "--pert_num",
         type=int,
         default=50,
+        metavar="N",
         help="number of perturbed structures",
     )
     parser.add_argument(
@@ -62,6 +63,7 @@ if __name__ == "__main__":
         "--cell_perturb",
         type=float,
         default=0.10,
+        metavar="FLOAT",
         help="cell perturbation fraction",
     )
     parser.add_argument(
@@ -69,6 +71,7 @@ if __name__ == "__main__":
         "--atom_perturb",
         type=float,
         default=0.1,
+        metavar="FLOAT",
         help="atom perturbation distance magnitude",
     )
 
