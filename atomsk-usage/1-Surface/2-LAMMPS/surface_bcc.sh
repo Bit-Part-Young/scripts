@@ -24,8 +24,7 @@ surface_bcc() {
       orient "[010]" "[001]" "[100]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
       -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} \
-      data.lmp
+      -shift 0 0 ${vacuum_half} data.lmp
 
     echo -e "\n"
     printf "%`tput cols`s" | tr ' ' '#'
@@ -41,8 +40,7 @@ surface_bcc() {
       orient "[1-10]" "[001]" "[110]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
       -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} \
-      data.lmp
+      -shift 0 0 ${vacuum_half} data.lmp
 
     echo -e "\n"
     printf "%`tput cols`s" | tr ' ' '#'
@@ -58,8 +56,7 @@ surface_bcc() {
       orient "[11-2]" "[-110]" "[111]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
       -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} \
-      data.lmp
+      -shift 0 0 ${vacuum_half} data.lmp
 
     echo -e "\n"
     printf "%`tput cols`s" | tr ' ' '#'
@@ -98,14 +95,14 @@ get_help() {
   echo "    -st STR                    surface type (default: 100)"
   echo "    -e STR                     element symbol (default: Nb)"
   echo "    -lc FLOAT                  lattice constant (default: 3.307)"
-  echo "    -d N N N                   x y z dimension (default: 10 10 20)"
+  echo "    -d N N N                   x y z dimension (default: 6 6 10)"
   echo "    -vac FLOAT                 vacuum thickness (default: 40.0)"
 
   echo -e "\nExamples:"
   echo "    ${script_name}"
-  echo "    ${script_name} -st 100 -e Nb -lc 3.307 -d 10 10 20 -vac 40.0"
-  echo "    ${script_name} -st 110 -e Nb -lc 3.307 -d 10 10 20 -vac 40.0"
-  echo "    ${script_name} -st 111 -e Nb -lc 3.307 -d 10 10 10 -vac 40.0"
+  echo "    ${script_name} -st 100 -e Nb -lc 3.307 -d 6 6 10 -vac 40.0"
+  echo "    ${script_name} -st 110 -e Nb -lc 3.307 -d 6 6 10 -vac 40.0"
+  echo "    ${script_name} -st 111 -e Nb -lc 3.307 -d 6 6 10 -vac 40.0"
 }
 
 

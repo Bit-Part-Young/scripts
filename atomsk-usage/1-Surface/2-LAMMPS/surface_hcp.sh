@@ -23,8 +23,7 @@ surface_hcp() {
       orient "[11-20]" "[-1100]" "[0001]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
       -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} \
-      data.lmp
+      -shift 0 0 ${vacuum_half} data.lmp
 
     echo -e "\n"
     printf "%`tput cols`s" | tr ' ' '#'
@@ -39,24 +38,37 @@ surface_hcp() {
       orient "[11-20]" "[0001]" "[-1100]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
       -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} \
-      data.lmp
+      -shift 0 0 ${vacuum_half} data.lmp
 
     echo -e "\n"
     printf "%`tput cols`s" | tr ' ' '#'
     echo -e "\n"
 
-    mv data.lmp prism.lmp
+    mv data.lmp prismatic.lmp
+
+
+  #------------------------- Pyramidal I / (01-11) 表面 ---------------------------
+  elif [[ ${surface_type} == "pyramidalI" ]]; then
+    echo n | atomsk --create hcp ${a} ${c} ${symbol} \
+      orient "[-2110]" "[1-213]" "[01-11]" \
+      -dup ${dup_x} ${dup_y} ${dup_z} \
+      -cell add ${vacuum} z \
+      -shift 0 0 ${vacuum_half} data.lmp
+
+    echo -e "\n"
+    printf "%`tput cols`s" | tr ' ' '#'
+    echo -e "\n"
+
+    mv data.lmp pyramidalI.lmp
 
 
   #------------------------- Pyramidal II / (11-22) 表面 ---------------------------
   elif [[ ${surface_type} == "pyramidalII" ]]; then
-    atomsk --create hcp ${a} ${c} ${symbol} \
+    echo n | atomsk --create hcp ${a} ${c} ${symbol} \
       orient "[-1-123]" "[-1100]" "[11-22]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
       -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} \
-      data.lmp
+      -shift 0 0 ${vacuum_half} data.lmp
 
     echo -e "\n"
     printf "%`tput cols`s" | tr ' ' '#'
@@ -77,7 +89,7 @@ surface_hcp() {
     fi
   done
 
-  echo "Total Basal / (0001), Prismatic / (-1100), Pyramidal II / (11-22) surface models of HCP ${symbol} generated!"
+  echo "Total Basal / (0001), Prismatic / (-1100), Pyramidal I / (01-11), Pyramidal II / (11-22) surface models of HCP ${symbol} generated!"
 }
 
 
@@ -87,21 +99,22 @@ get_help() {
 
   echo -e "\nUsage: ${script_name} [-st STR] [-e STR] [-lc FLOAT FLOAT] [-d N N N] [-vac FLOAT]"
 
-  echo -e "\nGenerate HCP Basal / (0001), Prismatic / (-1100), Pyramidal II / (11-22) surface models for LAMMPS calculation."
+  echo -e "\nGenerate HCP Basal / (0001), Prismatic / (-1100), Pyramidal I / (01-11), Pyramidal II / (11-22) surface models for LAMMPS calculation."
 
   echo -e "\nOptions:"
   echo "    -h, --help                 show this help message and exit"
   echo "    -st STR                    surface type (default: basal)"
   echo "    -e STR                     element symbol (default: Ti)"
   echo "    -lc FLOAT FLOAT            lattice constant (default: 2.928 4.640)"
-  echo "    -d N N N                   x y z dimension (default: 10 10 20)"
+  echo "    -d N N N                   x y z dimension (default: 6 6 10)"
   echo "    -vac FLOAT                 vacuum thickness (default: 40.0)"
 
   echo -e "\nExamples:"
   echo "    ${script_name}"
-  echo "    ${script_name} -st basal -e Ti -lc 2.928 4.640 -d 10 10 20 -vac 40.0"
-  echo "    ${script_name} -st prismatic -e Ti -lc 2.928 4.640 -d 10 10 10 -vac 40.0"
-  echo "    ${script_name} -st pyramidalII -e Ti -lc 2.928 4.640 -d 10 10 4 -vac 40.0"
+  echo "    ${script_name} -st basal -e Ti -lc 2.928 4.640 -d 6 6 10 -vac 40.0"
+  echo "    ${script_name} -st prismatic -e Ti -lc 2.928 4.640 -d 6 6 5 -vac 40.0"
+  echo "    ${script_name} -st pyramidalI -e Ti -lc 2.928 4.640 -d 6 6 4 -vac 40.0"
+  echo "    ${script_name} -st pyramidalII -e Ti -lc 2.928 4.640 -d 6 6 2 -vac 40.0"
 }
 
 

@@ -52,7 +52,7 @@ surface_hcp() {
   #------------------------- Pyramidal I / (01-11) 表面 ---------------------------
   # 默认扩胞 1x1x2
   elif [[ ${surface_type} == "pyramidalI" ]]; then
-    atomsk --create hcp ${a} ${c} ${symbol} \
+    echo n | atomsk --create hcp ${a} ${c} ${symbol} \
       orient "[-2110]" "[1-213]" "[01-11]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
       -cell add ${vacuum} z -shift 0 0 ${vacuum_half} \
@@ -68,7 +68,7 @@ surface_hcp() {
   #------------------------- Pyramidal II / (11-22) 表面 ---------------------------
   # 默认扩胞 1x1x1
   elif [[ ${surface_type} == "pyramidalII" ]]; then
-    atomsk --create hcp ${a} ${c} ${symbol} \
+    echo n | atomsk --create hcp ${a} ${c} ${symbol} \
       orient "[-1-123]" "[-1100]" "[11-22]" \
       -dup ${dup_x} ${dup_y} ${dup_z} \
       -cell add ${vacuum} z -shift 0 0 ${vacuum_half} \
