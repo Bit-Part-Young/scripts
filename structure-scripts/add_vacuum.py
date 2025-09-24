@@ -79,36 +79,32 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Add vacuum to the top, bottom, or both ends in specified axis.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )
     parser.add_argument(
-        "structure_fn",
-        nargs="?",
-        default="POSCAR",
-        metavar="structure_fn",
-        help="structure filename",
+        "structure_fn", nargs="?", default="POSCAR", help="structure filename"
     )
     parser.add_argument(
         "vacuum",
         type=float,
+        nargs="?",
         default=10.0,
-        metavar="vacuum",
-        help="vacuum thickness",
+        help="vacuum thickness (default: 10.0)",
     )
     parser.add_argument(
         "mode",
         choices=["top", "bottom", "both"],
-        metavar="mode",
-        help="mode to add vacuum",
+        nargs="?",
+        default="both",
+        help="mode to add vacuum (default: both)",
     )
 
     parser.add_argument(
         "--axis",
         choices=["x", "y", "z"],
         default="z",
-        metavar="axis",
-        help="axis to add vacuum",
+        metavar="STR",
+        help="axis to add vacuum (default: z)",
     )
 
     parser.add_argument("-o", action="store_true", help="write file")
