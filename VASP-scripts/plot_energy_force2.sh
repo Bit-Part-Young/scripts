@@ -2,7 +2,7 @@
 
 # 获取 VASP 弛豫过程中的能量、原子受力信息（不考虑原子位置方向固定情况，不计算受力的模长）并绘制演化图
 
-set -e
+set -eu
 
 # 离子步数
 ion_steps=$(grep 'free  ene' OUTCAR | wc -l)

@@ -1,10 +1,9 @@
 #!/bin/bash
 
+set -eu
+
 # 统计 xyz 文件中的 element 字段类别及其数量
 # reference: https://github.com/Kick-H/For_gpumd/blob/master/NEP_related/Count/count_xyz.sh
-
-set -e
-set -u
 
 count_xyz_type() {
 

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # Diamond (100), (110), (111) 表面模型构建
 
 

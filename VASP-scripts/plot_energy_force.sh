@@ -2,7 +2,7 @@
 
 # 获取 VASP 弛豫过程中的能量、原子受力（考虑原子位置方向固定情况，计算受力的模长）信息并绘制演化图
 
-set -e
+set -eu
 
 awk '{if($4=="F"||$4=="T") print $4,$5,$6}' POSCAR > temp.fixed
 

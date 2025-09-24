@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # reference: https://github.com/zhyan0603/GPUMDkit/blob/main/Scripts/analyzer/time_consuming_nep.sh
 
 # Get total steps from nep.in (still needed for remaining time calculation)

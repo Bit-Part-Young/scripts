@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # gamma-TiAl (111) 表面模型构建；重要近似条件 c≈a
 
 

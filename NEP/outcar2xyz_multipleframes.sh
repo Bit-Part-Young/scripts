@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # 将弛豫 OUTCAR 文件多帧转换为 xyz 文件
 
 outcar2xyz_multipleframes(){

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# HCP Basal / (0001), Prismatic / (-1100), Pyramidal II / (11-22) 表面模型构建
-
 set -eu
+
+# HCP Basal / (0001), Prismatic / (-1100), Pyramidal II / (11-22) 表面模型构建
 
 surface_hcp() {
   # 设置默认值 元素符号 晶格常数 超胞尺寸 原子层层数 真空层厚度

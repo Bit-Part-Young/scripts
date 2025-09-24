@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # 获取正在运行的 VASP 作业信息
 
 type=$1

@@ -15,6 +15,8 @@ reference: https://github.com/K4ys4r/VASP_Scripts/tree/master/Extract_Forces
   extract_force.sh -outcar=OUTCAR -iter=1 -atom=1
 '
 
+set -eu
+
 
 #------------------     帮助信息     ------------------
 get_help() {

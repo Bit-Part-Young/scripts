@@ -2,7 +2,7 @@
 
 # 获取 AIMD 过程中温度和能量数据并绘制演化图
 
-set -e
+set -eu
 
 natoms=$(sed -n '7p' POSCAR | awk '{ for(i=1; i<=NF; i++) a+=$i; print a}')
 # 获取平均原子能量

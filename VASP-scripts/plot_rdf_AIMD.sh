@@ -2,7 +2,7 @@
 
 # 获取 AIMD 的 RDF 数据并绘制
 
-set -e
+set -eu
 
 # 使用 vaspkit获取 RDF.dat
 if [[ -x $(command -v vaspkit) ]]; then

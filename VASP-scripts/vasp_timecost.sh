@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # 统计 VASP 计算目录的离子步步数、计算耗时、能量信息
 
 outcar_path=$1

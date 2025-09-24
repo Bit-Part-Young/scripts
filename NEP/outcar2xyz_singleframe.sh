@@ -6,6 +6,8 @@
 reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/vasp2xyz/outcar2xyz/singleFrame-outcars2nep-exyz.sh
 '
 
+set -eu
+
 
 #-------------------------------- 将 OUTCAR 转换为 xyz 文件 --------------------------------
 outcar2xyz_singleframe(){

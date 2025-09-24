@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # alpha2-Ti3Al Basal / {0001} 表面模型构建
 
 

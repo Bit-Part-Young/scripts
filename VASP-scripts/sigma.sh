@@ -6,6 +6,9 @@
 reference: https://github.com/tamaswells/VASP_script/blob/master/sigma.sh
 '
 
+set -eu
+
+
 entropy=$(grep 'entropy T\*S' OUTCAR | tail -1 | awk '{print $5}')
 natoms=$(grep 'NIONS' OUTCAR | tail -1 | awk '{print $12}')
 

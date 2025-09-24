@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # reference: https://github.com/zhyan0603/GPUMDkit/blob/main/Scripts/analyzer/time_consuming_gpumd.sh
 
 # Check if the first argument ($1) exists and is not empty
