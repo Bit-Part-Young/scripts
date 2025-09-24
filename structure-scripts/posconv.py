@@ -32,6 +32,8 @@ def posconv(
         print(f"{input_fn} Frames: {len(atoms)}.")
     elif input_format in ["lmp", "data", "lammps-data"]:
         atoms: Atoms = read(input_fn, format="lammps-data", sort_by_id=False)
+    elif input_format in ["lammpstrj"]:
+        atoms: Atoms = read(input_fn, format="lammps-dump-text")
     elif input_format in ["xyz", "extxyz"]:
         atoms: list[Atoms] = read(input_fn, index=":", format="extxyz")
         # 对单个构型进行元素排序
@@ -98,7 +100,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "input_fn",
         type=str,
-        help="input filename, include: POSCAR, CONTCAR, XDATCAR, OUTCAR, vasprun.xml, *.vasp, *.xsd, *.xyz, *.lmp, *.lammps-data, ...",
+        help="input filename, include: POSCAR, CONTCAR, XDATCAR, OUTCAR, vasprun.xml, *.vasp, *.xsd, *.xyz, *.lmp, *.lammps-data, *.lammpstrj, ...",
     )
 
     parser.add_argument(
