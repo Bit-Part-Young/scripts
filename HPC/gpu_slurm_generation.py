@@ -9,7 +9,8 @@ from typing import Literal
 # [ ] 添加 VASP GPU、LAMMPS GPU 任务
 def write_slurm(
     num_cpus: int = 1,
-    num_gpus: Literal[1, 2] = 1,
+    num_gpus: int = 1,
+    platform: Literal["master", "node2"] = "node2",
     calculation_type: Literal["nep", "gpumd"] = "gpumd",
 ):
     """生成 GPU 任务的 Slurm 提交脚本（课题组服务器平台）"""
@@ -26,13 +27,19 @@ def write_slurm(
 #SBATCH -o %j.out
 #SBATCH -e %j.err
 
+#SBATCH -w {platform}
+
 #SBATCH --gres=gpu:{num_gpus}
 
 #SBATCH --no-requeue
 
 
 if [[ "$SLURMD_NODENAME" == 'master' ]]; then
-  {calculation_type}
+  if [[ $SLURM_GPUS_ON_NODE == 1 ]]; then
+    CUDA_VISIBLE_DEVICES=1 {calculation_type}
+  else
+    {calculation_type}
+  fi
 elif [[ "$SLURMD_NODENAME" == 'node2' ]]; then
   {calculation_type}_node2
 fi
@@ -50,12 +57,22 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "-p",
+        "--platform",
+        nargs="?",
+        choices=["master", "node2"],
+        default="node2",
+        metavar="STR",
+        help="platform",
+    )
+
+    parser.add_argument(
         "-nc",
         "--num_cpus",
         nargs="?",
-        const=1,
-        default=1,
         type=int,
+        default=1,
+        metavar="N",
         help="number of cpus, 1 or 2 is enough",
     )
 
@@ -63,26 +80,28 @@ if __name__ == "__main__":
         "-ng",
         "--num_gpus",
         nargs="?",
-        const=1,
-        default=1,
         type=int,
         choices=[1, 2],
+        default=1,
+        metavar="N",
         help="number of gpus",
     )
 
     parser.add_argument(
         "-ct",
         "--calculation_type",
-        choices=["nep", "gpumd"],
-        const="gpumd",
-        default="gpumd",
         nargs="?",
+        choices=["nep", "gpumd"],
+        default="gpumd",
+        metavar="STR",
         help="calculation type",
     )
 
     args = parser.parse_args()
-    num_cpus = args.num_cpus
-    num_gpus = args.num_gpus
-    calculation_type = args.calculation_type
 
-    write_slurm(num_cpus, num_gpus, calculation_type)
+    write_slurm(
+        num_cpus=args.num_cpus,
+        num_gpus=args.num_gpus,
+        platform=args.platform,
+        calculation_type=args.calculation_type,
+    )
