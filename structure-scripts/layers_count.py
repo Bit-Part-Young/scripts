@@ -58,17 +58,14 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "structure_fn",
-        nargs="?",
-        default="POSCAR",
-        metavar="structure_fn",
-        help="structure filename",
+        "structure_fn", nargs="?", default="POSCAR", help="structure filename"
     )
 
     parser.add_argument(
         "--axis",
+        choices=["x", "y", "z"],
         default="z",
-        metavar="axis",
+        metavar="STR",
         help="axis perpendicular to atomic layers (x, y, z)",
     )
 

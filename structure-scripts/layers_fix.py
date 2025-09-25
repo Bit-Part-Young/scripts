@@ -84,25 +84,22 @@ if __name__ == "__main__":
         allow_abbrev=True,
     )
     parser.add_argument(
-        "structure_fn",
-        nargs="?",
-        default="POSCAR",
-        metavar="structure_fn",
-        help="structure filename",
+        "structure_fn", nargs="?", default="POSCAR", help="structure filename"
     )
     parser.add_argument(
         "-li",
         "--layer_indices",
         type=int,
         nargs="*",
-        metavar="layer_indices",
+        metavar="N",
         help="atomic layer indices (eg. 1, 1 2)",
     )
     parser.add_argument(
         "-fa",
         "--fixed_axes",
         nargs=3,
-        metavar="fixed_axes",
+        choices=["F", "T"],
+        metavar="STR",
         help="fixed axes (eg. F F T, F F F)",
     )
     parser.add_argument("-o", action="store_true", help="write file")
