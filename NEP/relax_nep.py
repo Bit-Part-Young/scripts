@@ -38,17 +38,9 @@ def relax_nep(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Relaxation using NEP potential.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
+    parser = argparse.ArgumentParser(description="Relaxation using NEP potential.")
 
-    parser.add_argument(
-        "structure_fn",
-        type=str,
-        default="POSCAR",
-        help="structure filename",
-    )
+    parser.add_argument("structure_fn", default="POSCAR", help="structure filename")
 
     args = parser.parse_args()
 
