@@ -3,10 +3,10 @@
 """识别原子层及其对应的原子"""
 
 import argparse
-from ase.io import read
 
 import numpy as np
 import pandas as pd
+from ase.io import read
 
 
 def layer_identify(
@@ -80,11 +80,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "structure_fn",
-        nargs="?",
-        default="POSCAR",
-        metavar="structure_fn",
-        help="structure filename",
+        "structure_fn", nargs="?", default="POSCAR", help="structure filename"
     )
 
     parser.add_argument(
@@ -92,14 +88,15 @@ if __name__ == "__main__":
         "--layer_indices",
         type=int,
         nargs="*",
-        metavar="layer_indices",
+        metavar="N",
         help="atomic layer indices",
     )
 
     parser.add_argument(
         "--axis",
+        choices=["x", "y", "z"],
         default="z",
-        metavar="axis",
+        metavar="STR",
         help="axis perpendicular to atomic layers (x, y, z)",
     )
 
@@ -109,8 +106,4 @@ if __name__ == "__main__":
     layer_indices = args.layer_indices
     axis = args.axis
 
-    layer_identify(
-        structure_fn=structure_fn,
-        layer_indices=layer_indices,
-        axis=axis,
-    )
+    layer_identify(structure_fn=structure_fn, layer_indices=layer_indices, axis=axis)
