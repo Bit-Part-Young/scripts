@@ -78,16 +78,14 @@ def note():
 
 
 parser = argparse.ArgumentParser(
-    description="Common elements data.",
-    epilog="Author: SLY.",
+    description="Common elements data.", epilog="Author: SLY."
 )
 
 parser.add_argument(
     "-e",
     "--element",
-    type=str,
     nargs="+",
-    metavar="element",
+    metavar="STR",
     help="element symbol, e.g. Ti, Ti Al",
 )
 

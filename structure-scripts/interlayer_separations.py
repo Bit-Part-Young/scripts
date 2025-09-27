@@ -10,8 +10,7 @@ from ase.io import read
 
 
 def get_interlayer_distance(
-    structure_fn: str,
-    precision: float = 0.001,
+    structure_fn: str, precision: float = 0.001
 ) -> tuple[np.ndarray, int]:
     """统计原子层间距"""
 
@@ -78,24 +77,20 @@ if __name__ == "__main__":
         "structure1_fn",
         nargs="?",
         default="CONTCAR",
-        type=str,
-        help="Structure file after relaxation",
+        metavar="STR",
+        help="Structure filename after relaxation",
     )
     parser.add_argument(
         "structure2_fn",
         nargs="?",
         default="POSCAR",
-        type=str,
-        help="Structure file before relaxation",
+        metavar="STR",
+        help="Structure filename before relaxation",
     )
 
     args = parser.parse_args()
 
-    structure1_fn = args.structure1_fn
-    structure2_fn = args.structure2_fn
-
     info = interlayer_separations_cal(
-        structure1_fn=structure1_fn,
-        structure2_fn=structure2_fn,
+        structure1_fn=args.structure1_fn, structure2_fn=args.structure2_fn
     )
     print(info)

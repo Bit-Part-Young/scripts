@@ -36,19 +36,13 @@ def sg_info(structure_fn: str = "POSCAR"):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Get space group info.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(
-        "structure_fn",
-        type=str,
-        nargs="?",
-        default="POSCAR",
-        help="Structure filename.",
+        "structure_fn", nargs="?", default="POSCAR", help="structure filename"
     )
 
     args = parser.parse_args()
 
-    structure_fn = args.structure_fn
-
-    sg_info(structure_fn=structure_fn)
+    sg_info(structure_fn=args.structure_fn)

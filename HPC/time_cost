@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # 计算 HPC 提交任务运行耗时
 
 for jobid in $(ls [0-9]*.out | sed 's/\.out$//'); do

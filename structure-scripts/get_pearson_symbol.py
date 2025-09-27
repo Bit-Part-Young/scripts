@@ -57,20 +57,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Get Pearson symbol of a structure",
         epilog="Author: SLY.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument(
-        "structure_fn",
-        type=str,
-        default="POSCAR",
-        nargs="?",
-        metavar="structure_fn",
-        help="structure file",
+        "structure_fn", nargs="?", default="POSCAR", help="structure filename"
     )
 
     args = parser.parse_args()
-    structure_fn = args.structure_fn
 
-    pearson_symbol = get_pearson_symbol(structure_fn)
+    pearson_symbol = get_pearson_symbol(structure_fn=args.structure_fn)
     print(f"Pearson Symbol: {pearson_symbol}")

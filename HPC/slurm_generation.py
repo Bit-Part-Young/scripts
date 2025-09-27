@@ -84,7 +84,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "platform",
         nargs="?",
-        const="sy",
         default="sy",
         choices=["sy", "pi", "master"],
         help="Platform",
@@ -94,8 +93,8 @@ if __name__ == "__main__":
         "-ct",
         "--calculation_type",
         nargs="?",
-        const="vasp",
         default="vasp",
+        metavar="STR",
         choices=["vasp", "lammps", "misc"],
         help="calculation type",
     )
@@ -104,9 +103,9 @@ if __name__ == "__main__":
         "-nc",
         "--num_cpus",
         nargs="?",
-        const=1,
-        default=1,
         type=int,
+        default=1,
+        metavar="N",
         help="number of cpus",
     )
 

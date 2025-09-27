@@ -75,7 +75,7 @@ def symmetry_info(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Get structure symmetry info.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(

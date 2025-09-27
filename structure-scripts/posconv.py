@@ -99,14 +99,12 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "input_fn",
-        type=str,
-        help="input filename, include: POSCAR, CONTCAR, XDATCAR, OUTCAR, vasprun.xml, *.vasp, *.xsd, *.xyz, *.lmp, *.lammps-data, *.lammpstrj, ...",
+        help="input structure filename, include: POSCAR, CONTCAR, XDATCAR, OUTCAR, vasprun.xml, *.vasp, *.xsd, *.xyz, *.lmp, *.lammps-data, *.lammpstrj, ...",
     )
 
     parser.add_argument(
         "output_fn",
-        type=str,
-        help="output filename, include: POSCAR, *.vasp, *.xsd, *.xyz, *.lmp, *.lammps-data, ...",
+        help="output structure filename, include: POSCAR, *.vasp, *.xsd, *.xyz, *.lmp, *.lammps-data, ...",
     )
 
     parser.add_argument(
@@ -117,8 +115,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    posconv(
-        input_fn=args.input_fn,
-        output_fn=args.output_fn,
-        specorder=args.specorder,
-    )
+    posconv(input_fn=args.input_fn, output_fn=args.output_fn, specorder=args.specorder)

@@ -86,24 +86,24 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "vacuum",
-        type=float,
         nargs="?",
+        type=float,
         default=10.0,
         help="vacuum thickness (default: 10.0)",
     )
     parser.add_argument(
         "mode",
-        choices=["top", "bottom", "both"],
         nargs="?",
         default="both",
+        choices=["top", "bottom", "both"],
         help="mode to add vacuum (default: both)",
     )
 
     parser.add_argument(
         "--axis",
-        choices=["x", "y", "z"],
         default="z",
         metavar="STR",
+        choices=["x", "y", "z"],
         help="axis to add vacuum (default: z)",
     )
 

@@ -83,26 +83,21 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Compare the cell & positions difference between two structures (mainly for relaxation/deformation).",
-        epilog="Author: SLY.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         allow_abbrev=True,
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(
         "structure1_fn",
         nargs="?",
-        type=str,
         default="CONTCAR",
-        metavar="structure1_fn",
         help="structure1 filename after relaxation/deformation",
     )
 
     parser.add_argument(
         "structure2_fn",
         nargs="?",
-        type=str,
         default="POSCAR",
-        metavar="structure2_fn",
         help="structure2 filename before relaxation/deformation",
     )
 
@@ -111,24 +106,14 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "-ai",
-        "--atom_indices",
-        nargs="*",
-        type=int,
-        metavar="atom_indices",
-        help="atom indices",
+        "-ai", "--atom_indices", nargs="*", type=int, metavar="N", help="atom indices"
     )
 
     args = parser.parse_args()
 
-    structure1_fn = args.structure1_fn
-    structure2_fn = args.structure2_fn
-    atom_indices = args.atom_indices
-    wrap = args.wrap
-
     pos_diff(
-        structure1_fn=structure1_fn,
-        structure2_fn=structure2_fn,
-        atom_indices=atom_indices,
-        wrap=wrap,
+        structure1_fn=args.structure1_fn,
+        structure2_fn=args.structure2_fn,
+        atom_indices=args.atom_indices,
+        wrap=args.wrap,
     )

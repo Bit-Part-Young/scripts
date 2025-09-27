@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # 获取正在运行的任务 JobId 信息
 # 针对 sacct 无法使用的情况，使用 squeue
 

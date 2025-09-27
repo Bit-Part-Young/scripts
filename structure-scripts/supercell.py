@@ -37,8 +37,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "input_fn",
-        type=str,
-        help="Input filename of VASP POSCAR format",
+        help="input structure filename of VASP POSCAR format",
     )
 
     parser.add_argument(
@@ -46,14 +45,11 @@ if __name__ == "__main__":
         "--dim",
         type=int,
         nargs=3,
-        metavar=("x", "y", "z"),
-        default=(1, 1, 1),
+        metavar="N",
+        default=[1, 1, 1],
         help="x y z dimension",
     )
 
     args = parser.parse_args()
 
-    supercell_generation(
-        input_fn=args.input_fn,
-        dimension=args.dim,
-    )
+    supercell_generation(input_fn=args.input_fn, dimension=args.dim)

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -eu
+
 # 获取已完成任务 JobId 信息
 # sacct 需开启（课题组服务器未开启，超算已开启）
 
