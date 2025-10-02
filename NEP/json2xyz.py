@@ -12,6 +12,7 @@ dict_keys(['energy', 'forces', 'virial_stress'])
 """
 
 import argparse
+import os
 from typing import Any
 
 import numpy as np
@@ -71,6 +72,9 @@ def json2atoms(json_data: dict, output_virial: bool = False):
 
 def json2xyz(json_fn: str, xyz_fn: str, output_virial: bool = False):
     json_data_list = loadfn(json_fn)
+
+    if os.path.exists(xyz_fn):
+        os.remove(xyz_fn)
 
     flag = 0
     for json_data in json_data_list:
