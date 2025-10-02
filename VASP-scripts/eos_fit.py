@@ -21,7 +21,9 @@ def Birch_Murnaghan(params, volumes):
     E0, V0, B0, B1 = params
     eta = (V0 / volumes) ** (2 / 3)
 
-    return E0 + (9 * V0 * B0 / 16) * (((eta - 1) ** 3) * B1 + ((eta - 1) ** 2) * (6 - 4 * eta))
+    return E0 + (9 * V0 * B0 / 16) * (
+        ((eta - 1) ** 3) * B1 + ((eta - 1) ** 2) * (6 - 4 * eta)
+    )
 
 
 def error(params, volumes, energies):
@@ -49,11 +51,7 @@ def fit(volumes, energies):
 
     x0 = initial_guess(volumes, energies)
 
-    fitted_params = leastsq(
-        func=error,
-        x0=x0,
-        args=(volumes, energies),
-    )
+    fitted_params = leastsq(func=error, x0=x0, args=(volumes, energies))
 
     E0, V0, B0, _ = fitted_params[0]
     coeffs_GPa = 1.602176634e-19 / (1e-30 * 1e9)
@@ -68,7 +66,7 @@ def fit(volumes, energies):
     print("\nAssuming cubic box:")
     for i in range(1, 9):
         lattice_a = np.power(V0 * i, 1 / 3)
-        print(f"If {i} atoms per cell, a = {lattice_a:.5f} Å")
+        print(f"If {i} atoms per cell, a = {lattice_a:.5f} Å.")
 
 
 if __name__ == "__main__":
@@ -79,17 +77,23 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("data_fn", type=str, nargs="?", default="ev.dat", help="EOS data filename")
     parser.add_argument(
-        "cols", type=int, nargs=2, default=[2, 3], help="Column numbers for volume and energy data"
+        "data_fn", nargs="?", default="eos.dat", help="EOS data filename"
+    )
+    parser.add_argument(
+        "cols",
+        type=int,
+        nargs=2,
+        default=[2, 3],
+        help="Column numbers for volume and energy data",
     )
 
     args = parser.parse_args()
 
     data_fn = args.data_fn
-    df = pd.read_csv(data_fn, sep=None, engine="python")
-
     cols = args.cols
+
+    df = pd.read_csv(data_fn, sep=None, engine="python")
     df_volume = df.iloc[:, cols[0] - 1]
     df_energy = df.iloc[:, cols[1] - 1]
 
