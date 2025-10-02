@@ -30,7 +30,12 @@ def plot_eos_multiple(
             df_energy = df.iloc[:, 1]
 
         ax.plot(
-            df_volume, df_energy, linestyle_list[i], markerfacecolor="none", label=label
+            df_volume,
+            df_energy,
+            linestyle_list[i],
+            linewidth=3.0,
+            markerfacecolor="none",
+            label=label,
         )
 
     ax.set_xlabel("Volume ($\AA^3$/atom)")
@@ -47,7 +52,7 @@ def plot_eos_multiple(
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Plot EOS curve.", epilog="Author: SLY."
+        description="Plot multiple EOS curves.", epilog="Author: SLY."
     )
 
     parser.add_argument(
@@ -59,7 +64,11 @@ if __name__ == "__main__":
     )
     parser.add_argument("-l", "--label_list", nargs="+", metavar="STR", help="labels")
     parser.add_argument(
-        "-o", "--figure_fn", default="eos.png", help="output figure filename"
+        "-o",
+        "--figure_fn",
+        default="eos.png",
+        metavar="FILE",
+        help="output figure filename",
     )
     parser.add_argument(
         "--deltaE", action="store_true", help="whether plot deltaE-v EOS curve"

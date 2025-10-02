@@ -26,7 +26,7 @@ def plot_eos(
     set_roman_plot_params()
     fig, ax = plt.subplots(figsize=(6, 6))
 
-    ax.plot(df_volume, df_energy, marker="o", markerfacecolor="none", linestyle="-")
+    ax.plot(df_volume, df_energy, "o-", linewidth=3.0, markerfacecolor="none")
 
     ax.set_xlabel("Volume ($\AA^3$/atom)")
     if not deltaE:
