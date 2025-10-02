@@ -94,13 +94,11 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "input_xyz_fn",
-        type=str,
         default="train.xyz",
         help="input xyz filename (default: train.xyz)",
     )
     parser.add_argument(
         "output_xyz_fn",
-        type=str,
         default="train_filtered.xyz",
         help="output xyz filename (default: train_filtered.xyz)",
     )
@@ -115,7 +113,8 @@ if __name__ == "__main__":
     write_xyz_file(filtered_frames, output_xyz_fn)
     write_xyz_file(removed_frames, "removed.xyz")
 
-    print(f"\nRemoved frame indices (starting from 1): {removed_frames_indices}.")
+    print(f"\nRemoved frame indices (starting from 1):\n")
+    print(f"{removed_frames_indices}.")
 
     print(
         f"\nFiltered structures saved to {output_xyz_fn}, removed structures saved to removed.xyz."

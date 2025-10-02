@@ -6,6 +6,7 @@
 """
 
 import argparse
+import os
 
 import numpy as np
 
@@ -44,6 +45,10 @@ def force_exceeds_threshold(
     force_threshold: float = 5.0, num_selected: int = 5
 ) -> list:
     """按比例选取指定个数的小于受力阈值的构型索引"""
+
+    if not os.path.exists("force_info.dat"):
+        print(f"force_info.dat does not exist! Please check.")
+        exit()
 
     force = np.loadtxt("force_info.dat", skiprows=1)
 
@@ -127,7 +132,8 @@ if __name__ == "__main__":
     write_xyz_file(filtered_frames, output_xyz_fn)
     write_xyz_file(removed_frames, removed_xyz_fn)
 
-    print(f"\nRemoved frame indices (starting from 1): {removed_frames_indices}.")
+    print(f"\nRemoved frame indices (starting from 1):\n")
+    print(f"{removed_frames_indices}.")
 
     print(
         f"\nFiltered structures saved to {output_xyz_fn}, removed structures saved to {removed_xyz_fn}."

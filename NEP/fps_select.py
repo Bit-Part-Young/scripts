@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-通过最远点采样选择结构
+通过最远点采样 FPS 选择结构
 
 reference: https://github.com/bigd4/PyNEP/blob/master/examples/plot_select_structure.py
 """
@@ -51,6 +51,7 @@ def fps_select(
     selected_atoms = [atoms_list[i] for i in selected_indices]
     if os.path.exists(output_xyz_fn):
         os.remove(output_xyz_fn)
+    # 使用 ase 保存 extxyz 文件，会改变第二行中的信息的 key 顺序，但内容不变
     write(output_xyz_fn, selected_atoms, format="extxyz", append=True)
 
     # 保存 FPS 未选中的构型
@@ -60,10 +61,11 @@ def fps_select(
         os.remove(kept_xyz_fn)
     write(kept_xyz_fn, kept_atoms, format="extxyz", append=True)
 
-    print(f"Number of selected structures: {len(selected_indices)}.")
+    print(f"\nIndex of selected structures:\n")
+    print(f"{selected_indices}.")
+    print(f"\nNumber of selected structures: {len(selected_indices)}.")
     print(f"Selected structures saved to {output_xyz_fn}.")
     print(f"Kept structures saved to {kept_xyz_fn}.")
-    print(f"\nIndex of selected structures: {selected_indices}.")
 
     return descriptors, selected_indices
 
@@ -89,10 +91,15 @@ def plot_pca(descriptors, selected_indices):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("input_xyz_fn", type=str)
-    parser.add_argument("model_fn", type=str, default="nep.txt")
-    parser.add_argument("output_xyz_fn", type=str, default="selected.xyz")
+    parser = argparse.ArgumentParser(
+        description="FPS select structures from extxyz file."
+    )
+
+    parser.add_argument("input_xyz_fn", default="train.xyz", help="input xyz filename")
+    parser.add_argument("model_fn", default="nep.txt", help="NEP model filename")
+    parser.add_argument(
+        "output_xyz_fn", default="selected.xyz", help="selected xyz filename"
+    )
     parser.add_argument("-md", "--min_distance", type=float, default=0.05)
     args = parser.parse_args()
 
