@@ -13,7 +13,7 @@ get_xyz_efs() {
   grep -oP 'energy=\K[^ ]+' ${xyz_fn} > energy_${suffix}_tmp.dat
   paste energy_${suffix}_tmp.dat natoms_${suffix}.dat | awk '{printf "%.10f\n", $1/$2}' >energy_${suffix}.dat
 
-  if [[ grep -q "virial" ${xyz_fn} ]]; then
+  if grep -q "virial" ${xyz_fn}; then
     grep -oP 'virial="\K[^"]+' ${xyz_fn} > virial_${suffix}_tmp.dat
     ncol_virial=$(awk 'END { print NF }' virial_${suffix}_tmp.dat)
     if [[ ${ncol_virial} -eq 6 ]]; then
