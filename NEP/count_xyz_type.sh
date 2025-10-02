@@ -2,25 +2,44 @@
 
 set -eu
 
-# 统计 xyz 文件中的 element 字段类别及其数量
+# 统计 xyz 文件中的 element & group 字段类别及其数量
 # reference: https://github.com/Kick-H/For_gpumd/blob/master/NEP_related/Count/count_xyz.sh
+
 
 count_xyz_type() {
 
-  fxyz=$1
+  xyz_fn=$1
 
-  echo -e "\n$fxyz count info:"
+  if [ ! -f ${xyz_fn} ]; then
+    echo "Error: ${xyz_fn} not found!"
+    exit 1
+  fi
 
+  echo -e "\n${xyz_fn} info:"
+
+  # ----------------------------- 统计 element 类型 -----------------------------
+  echo -e "\nElement type count:"
   count_total=0
-  elements=$(grep -o 'element=[^ ]*' ${fxyz} | awk -F= '{print $2}' | sort | uniq)
+  elements=$(grep -o 'element=[^ ]*' ${xyz_fn} | awk -F= '{print $2}' | sort | uniq)
   for element in ${elements[@]}; do
     echo -e "${element}: \c"
-    count=$(grep -E element=${element} ${fxyz} | wc -l)
+    count=$(grep -E element=${element} ${xyz_fn} | wc -l)
     echo ${count}
     count_total=$((count_total + count))
   done
-  echo "Total: ${count_total}"
+  echo "Total: ${count_total}."
 
+  # ----------------------------- 统计 group 类型 -----------------------------
+  echo -e "\nGroup type count:"
+  count_total=0
+  groups=$(grep -o 'group=[^ ]*' ${xyz_fn} | awk -F= '{print $2}' | sort | uniq)
+  for group in ${groups[@]}; do
+    echo -e "${group}: \c"
+    count=$(grep -E group=${group} ${xyz_fn} | wc -l)
+    echo ${count}
+    count_total=$((count_total + count))
+  done
+  echo "Total: ${count_total}."
 }
 
 
@@ -30,7 +49,7 @@ get_help() {
 
   echo -e "\nUsage: $script_name [xyz_fn...]"
 
-  echo -e "\nCount element type in xyz file."
+  echo -e "\nCount element & group type in extxyz file."
 
   echo -e "\nOptions:"
   echo "  -h, --help      Show this help message and exit"
@@ -48,8 +67,8 @@ get_help() {
 #-------------------------------- 主函数 --------------------------------
 if [ $# -eq 0 ]; then
 
-  for fxyz in $(ls *.xyz); do
-    count_xyz_type ${fxyz}
+  for xyz_fn in $(ls *.xyz); do
+    count_xyz_type ${xyz_fn}
   done
 
 elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
@@ -57,8 +76,8 @@ elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
   exit 0
 
 else
-  for fxyz in "$@"; do
-    count_xyz_type ${fxyz}
+  for xyz_fn in "$@"; do
+    count_xyz_type ${xyz_fn}
   done
 
 fi
