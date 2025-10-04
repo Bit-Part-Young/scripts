@@ -7,7 +7,6 @@ import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.ticker import MultipleLocator
-
 from spt.plot_params import set_roman_plot_params
 
 
