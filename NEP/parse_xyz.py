@@ -5,7 +5,10 @@
 
 import argparse
 
+import numpy as np
 from ase.io import read
+
+np.set_printoptions(precision=10, suppress=True)
 
 
 def parse_xyz(xyz_fn: str, atoms_indices: list[int]):
@@ -34,12 +37,12 @@ def parse_xyz(xyz_fn: str, atoms_indices: list[int]):
         print(f"energy: {round(energy, 5)} eV.\n")
 
         virial = None
-        virial_str_list = ["virial", "Virial", "virials", "Virials", "stress", "Stress"]
-        for virial_str in virial_str_list:
-            if virial_str in atoms.info:
-                virial = atoms.info.get(virial_str, "N/A")
+        virial_tag_list = ["virial", "Virial", "virials", "Virials", "stress", "Stress"]
+        for virial_tag in virial_tag_list:
+            if virial_tag in atoms.info:
+                virial = atoms.info.get(virial_tag, "N/A")
 
-                print(f"{virial_str}:")
+                print(f"{virial_tag}:")
                 print(virial)
                 print()
 
@@ -49,12 +52,12 @@ def parse_xyz(xyz_fn: str, atoms_indices: list[int]):
             print("Virial/Stress: N/A.\n")
 
         forces = None
-        forces_str_list = ["force", "forces"]
-        for forces_str in forces_str_list:
-            if forces_str in atoms.arrays:
-                forces = atoms.arrays.get(forces_str, "N/A")
+        forces_tag_list = ["force", "forces"]
+        for forces_tag in forces_tag_list:
+            if forces_tag in atoms.arrays:
+                forces = atoms.arrays.get(forces_tag, "N/A")
 
-                print(f"{forces_str} (only show first 10 atoms):")
+                print(f"{forces_tag} (only show first 10 atoms):")
                 if forces.shape[0] > 10:
                     print(forces[:10])
                 else:

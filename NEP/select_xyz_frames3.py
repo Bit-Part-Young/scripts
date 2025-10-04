@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-筛选原子受力均为 0.0 的构型
+筛选原子受力均为 0.0 的构型（个人用于对 二元置换固溶体 类型进行筛选）
 
 reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/Analysis_and_Processing/select_xyz_frames/select_xyz_frames.py
 """
@@ -11,7 +11,7 @@ import argparse
 import numpy as np
 
 
-def parse_xyz_file(input_xyz_fn: str) -> list:
+def parse_xyz(input_xyz_fn: str) -> list:
     """解析 extxyz 文件"""
 
     with open(input_xyz_fn, "r") as file:
@@ -35,7 +35,7 @@ def parse_xyz_file(input_xyz_fn: str) -> list:
     return frames
 
 
-def write_xyz_file(frames: list, output_xyz_fn: str):
+def write_xyz(frames: list, output_xyz_fn: str):
     """写入 extxyz 文件"""
 
     with open(output_xyz_fn, "w") as f:
@@ -108,10 +108,10 @@ if __name__ == "__main__":
     input_xyz_fn = args.input_xyz_fn
     output_xyz_fn = args.output_xyz_fn
 
-    frames = parse_xyz_file(input_xyz_fn)
+    frames = parse_xyz(input_xyz_fn)
     filtered_frames, removed_frames, removed_frames_indices = filter_frames(frames)
-    write_xyz_file(filtered_frames, output_xyz_fn)
-    write_xyz_file(removed_frames, "removed.xyz")
+    write_xyz(filtered_frames, output_xyz_fn)
+    write_xyz(removed_frames, "removed.xyz")
 
     print(f"\nRemoved frame indices (starting from 1):\n")
     print(f"{removed_frames_indices}.")

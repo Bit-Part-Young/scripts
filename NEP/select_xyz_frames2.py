@@ -11,7 +11,7 @@ import os
 import numpy as np
 
 
-def parse_xyz_file(input_xyz_fn: str) -> list:
+def parse_xyz(input_xyz_fn: str) -> list:
     """解析 extxyz 文件"""
 
     with open(input_xyz_fn, "r") as file:
@@ -30,15 +30,15 @@ def parse_xyz_file(input_xyz_fn: str) -> list:
     return frames
 
 
-def write_xyz_file(frames: list, output_xyz_fn: str):
+def write_xyz(frames: list, output_xyz_fn: str):
     """写入 extxyz 文件"""
 
-    with open(output_xyz_fn, "w") as file:
+    with open(output_xyz_fn, "w") as f:
         for natoms, frame_info, atoms_info in frames:
-            file.write(f"{natoms}\n")
-            file.write(f"{frame_info}\n")
+            f.write(f"{natoms}\n")
+            f.write(f"{frame_info}\n")
             for atom_info in atoms_info:
-                file.write(f"{atom_info.strip()}\n")
+                f.write(f"{atom_info.strip()}\n")
 
 
 def force_exceeds_threshold(
@@ -125,12 +125,12 @@ if __name__ == "__main__":
     force_threshold = args.force_threshold
     num_selected = args.num_selected
 
-    frames = parse_xyz_file(input_xyz_fn)
+    frames = parse_xyz(input_xyz_fn)
     filtered_frames, removed_frames, removed_frames_indices = filter_frames(
         frames, force_threshold, num_selected
     )
-    write_xyz_file(filtered_frames, output_xyz_fn)
-    write_xyz_file(removed_frames, removed_xyz_fn)
+    write_xyz(filtered_frames, output_xyz_fn)
+    write_xyz(removed_frames, removed_xyz_fn)
 
     print(f"\nRemoved frame indices (starting from 1):\n")
     print(f"{removed_frames_indices}.")
