@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
-"""给定初始结构，生成其 EOS 构型，共 21 个构型，晶胞体积/晶胞参数 ±10% 范围内"""
-
-import os
+"""给定初始结构，生成其 EOS 构型，共 21 个构型，应变范围 ±10%，应变方式: cell & volume"""
 
 import argparse
+import os
+from typing import Literal
 
 import numpy as np
 from ase.io import read, write
-from typing import Literal
 
 
 def eos_generation(
@@ -38,6 +37,8 @@ def eos_generation(
 
         write(output_fn, atoms_copy, format="extxyz", append=True)
 
+    print(f"Total {len(strain_range)} configurations generated with {type} variation!")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -45,8 +46,10 @@ if __name__ == "__main__":
         epilog="Author: SLY.",
     )
 
-    parser.add_argument("structure_fn", default="POSCAR", help="structure filename")
-    parser.add_argument("output_fn", default="eos.xyz", help="output filename")
+    parser.add_argument(
+        "structure_fn", default="POSCAR", help="structure vasp filename"
+    )
+    parser.add_argument("output_fn", default="eos.xyz", help="output extxyz filename")
     parser.add_argument(
         "-t",
         "--type",

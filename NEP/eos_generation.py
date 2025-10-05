@@ -2,11 +2,11 @@
 
 """
 生成 BCC/FCC/HCP 的 EOS 构型
-共 41 个构型，晶格常数附近 ±0.2 Å 范围内，其体积应变范围通常宽于 -10%~10%
+共 41 个构型，晶格常数附近 ±0.2 Å 范围内，应变范围比较: cell > lattice constant > volume
 """
 
-import os
 import argparse
+import os
 
 import numpy as np
 from ase.build import bulk
@@ -29,7 +29,7 @@ def eos_configurations_cubic_generation(element: str, a: float, crystalstructure
         write(structure_fn, atoms, format="vasp", direct=True, sort=True, vasp5=True)
         flag += 1
 
-    print(f"Total {flag} Configurations generated!")
+    print(f"Total {flag} configurations generated in BCC/FCC structure!")
 
 
 def eos_configurations_hcp_generation(
@@ -56,7 +56,7 @@ def eos_configurations_hcp_generation(
 
         flag += 1
 
-    print(f"Total {flag} Configurations with a variation generated!")
+    print(f"Total {flag} configurations with a variation generated in HCP structure!")
 
     # --------------------- c/a 变化 a 不变 ---------------------
 
@@ -80,7 +80,7 @@ def eos_configurations_hcp_generation(
 
         flag += 1
 
-    print(f"Total {flag} Configurations with c/a variation generated!")
+    print(f"Total {flag} configurations with c/a variation generated in HCP structure!")
 
 
 if __name__ == "__main__":
