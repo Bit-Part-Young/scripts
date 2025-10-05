@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""生成 cell 缩放的结构"""
+"""对结构进行 cell 缩放"""
 
 import argparse
 
@@ -12,7 +12,7 @@ def cell_scaling(
     scaling: float = 1.05,
     output_fn: str = "cell_scaled.vasp",
 ):
-    """生成 cell 缩放的结构"""
+    """对结构进行 cell 缩放"""
 
     atoms = read(structure_fn, format="vasp")
 
@@ -29,29 +29,28 @@ def cell_scaling(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Structure generation with cell scaling.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="Structure cell scaling.",
         epilog="Author: SLY.",
     )
 
     parser.add_argument(
         "structure_fn",
-        type=str,
         default="POSCAR",
-        help="structure filename (default: POSCAR)",
+        help="input structure filename",
     )
     parser.add_argument(
         "scaling",
         type=float,
         default=1.05,
-        help="cell scaling factor (default: 1.05)",
+        metavar="FLOAT",
+        help="cell scaling factor",
     )
     parser.add_argument(
         "-o",
         "--output_fn",
-        type=str,
         default="cell_scaled.vasp",
-        help="output filename",
+        metavar="FILE",
+        help="output structure filename",
     )
 
     args = parser.parse_args()

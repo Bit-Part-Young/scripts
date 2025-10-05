@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-"""生成 BCC/FCC/HCP 的 EOS 构型（晶格常数附近 0.2 Å 范围内，体积应变范围通常宽于 -10%~10%）"""
+"""
+生成 BCC/FCC/HCP 的 EOS 构型
+共 41 个构型，晶格常数附近 ±0.2 Å 范围内，其体积应变范围通常宽于 -10%~10%
+"""
 
 import os
 import argparse
