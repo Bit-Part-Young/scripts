@@ -8,20 +8,18 @@ reference: https://gitee.com/mayuan_JLUPHY/my_script/blob/master/lammps-toolkit/
 import argparse
 import warnings
 
+warnings.filterwarnings("ignore", message=".*OVITO.*PyPI")
+
+import ovito._extensions.pyscript
 from ovito.io import export_file, import_file
 from ovito.modifiers import CoordinationAnalysisModifier, TimeAveragingModifier
 from ovito.pipeline import Pipeline
 
-warnings.filterwarnings("ignore", message=".*OVITO.*PyPI")
-
 
 def rdf_cal(
-    trajectory_fn: str,
-    cutoff: float,
-    num_bins: int,
-    output_fn: str,
-    partial: bool,
+    trajectory_fn: str, cutoff: float, num_bins: int, output_fn: str, partial: bool
 ):
+    """计算轨迹文件平均 RDF"""
 
     pipeline = import_file(trajectory_fn)
     pipeline: Pipeline
@@ -66,36 +64,20 @@ if __name__ == "__main__":
         "-i",
         "--input_fn",
         default="XDATCAR",
-        required=True,
-        metavar="trajectory_fn",
+        metavar="FILE",
         help="configuration/trajectory filename",
     )
 
     parser.add_argument(
-        "-c",
-        "--cutoff",
-        default=5.0,
-        type=float,
-        metavar="cutoff",
-        help="cutoff radius",
+        "-c", "--cutoff", default=5.0, type=float, metavar="FLOAT", help="cutoff radius"
     )
 
     parser.add_argument(
-        "-n",
-        "--num_bins",
-        default=100,
-        type=int,
-        metavar="num_bins",
-        help="number of bins",
+        "-n", "--num_bins", default=100, type=int, metavar="N", help="number of bins"
     )
 
     parser.add_argument(
-        "-o",
-        "--output_fn",
-        default="rdf.txt",
-        type=str,
-        metavar="output_fn",
-        help="output filename",
+        "-o", "--output_fn", default="rdf.txt", metavar="FILE", help="output filename"
     )
 
     parser.add_argument(
