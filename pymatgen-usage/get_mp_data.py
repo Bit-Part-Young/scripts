@@ -100,7 +100,7 @@ def get_mp_data(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Get Materials Project unary/binary data.",
+        description="Get unary/binary data from Materials Project.",
         epilog="Author: SLY.",
     )
 
@@ -110,7 +110,7 @@ if __name__ == "__main__":
         "-eah",
         "--energy_above_hull",
         type=float,
-        metavar="energy_above_hull",
+        metavar="FLOAT",
         help="maximum energy above hull",
     )
 

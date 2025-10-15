@@ -51,9 +51,8 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "structure_fn",
-        nargs="?",
         default="POSCAR",
-        metavar="structure_fn",
+        metavar="FILE",
         help="structure filename",
     )
     parser.add_argument("-o", action="store_true", help="write file")
