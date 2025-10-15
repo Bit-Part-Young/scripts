@@ -16,11 +16,7 @@ from ase.build.tools import sort
 from ase.io import read, write
 
 
-def posconv(
-    input_fn: str,
-    output_fn: str,
-    specorder: bool = False,
-):
+def posconv(input_fn: str, output_fn: str, specorder: bool = False):
     """构型文件格式转换"""
 
     input_fn_basename = os.path.basename(input_fn)
@@ -45,17 +41,10 @@ def posconv(
     output_fn_basename = os.path.basename(output_fn)
     output_format = output_fn_basename.split(".")[-1]
     if output_format in ["vasp", "POSCAR"]:
-        write_param_dict = {
-            "format": "vasp",
-            "direct": True,
-            "sort": True,
-        }
+        write_param_dict = {"format": "vasp", "direct": True, "sort": True}
 
     elif output_format in ["XDATCAR"]:
-        write_param_dict = {
-            "format": "vasp-xdatcar",
-            "append": True,
-        }
+        write_param_dict = {"format": "vasp-xdatcar", "append": True}
 
     elif output_format in ["lmp", "lammps-data"]:
         write_param_dict = {
@@ -72,19 +61,12 @@ def posconv(
                 write_param_dict["specorder"] = element_sequence_list
 
     elif output_format in ["xyz", "extxyz"]:
-        write_param_dict = {
-            "format": "extxyz",
-            "append": True,
-        }
+        write_param_dict = {"format": "extxyz", "append": True}
 
     else:
         raise ValueError(f"Unsupported output format: {output_format}.")
 
-    write(
-        output_fn,
-        images=atoms,
-        **write_param_dict,
-    )
+    write(output_fn, images=atoms, **write_param_dict)
 
     print(f"\nConvert {input_fn} to {output_fn}!")
 

@@ -36,9 +36,7 @@ def unit2primitive(
 
 
 def disp_supercell_generation(
-    structure_fn: str = "POSCAR",
-    interface_mode: str = "vasp",
-    cellsize: int = 4,
+    structure_fn: str = "POSCAR", interface_mode: str = "vasp", cellsize: int = 4
 ):
     """生成含位移的超胞"""
 
@@ -67,15 +65,16 @@ def disp_supercell_generation(
     )
 
     write_supercells_with_displacements(
+        interface_mode=interface_mode,
         supercell=phonon.supercell,
         cells_with_disps=phonon.supercells_with_displacements,
-        interface_mode=interface_mode,
     )
 
     if interface_mode == "vasp":
         print(f"\nPPOSCAR, BPOSCAR, SPOSCAR and POSCAR-XXX generated.")
     elif interface_mode == "lammps":
         print(f"\nPunitcell, Bunitcell, supercell and supercell-XXX generated.")
+
     print(f"phonopy_disp.yaml generated.")
 
 
@@ -86,29 +85,13 @@ if __name__ == "__main__":
         epilog="Author: SLY.",
     )
 
-    parser.add_argument(
-        "structure_fn",
-        type=str,
-        default="POSCAR",
-        help="structure filename",
-    )
+    parser.add_argument("structure_fn", default="POSCAR", help="structure filename")
 
-    parser.add_argument(
-        "--cellsize",
-        type=int,
-        default=4,
-        const=4,
-        nargs="?",
-        metavar="N",
-        help="cellsize",
-    )
+    parser.add_argument("--cellsize", type=int, default=4, metavar="N", help="cellsize")
 
     parser.add_argument(
         "--interface",
-        type=str,
         default="vasp",
-        const="vasp",
-        nargs="?",
         choices=["vasp", "lammps"],
         help="interface mode.",
     )

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MultipleLocator
 from scipy.interpolate import make_interp_spline
+
 from spt.plot_params import set_roman_plot_params
 
 
@@ -82,6 +83,9 @@ def plot_gsfe_multiple(
     ax.legend()
 
     fig.savefig(figure_fn)
+
+    # 关闭图形以释放内存
+    plt.close(fig)
 
     print(f"\n{figure_fn} is generated.")
 

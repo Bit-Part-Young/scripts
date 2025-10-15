@@ -51,6 +51,8 @@ def count_structure_types(trajectory_fn: str):
 
     print(df)
 
+    df.to_csv("structure_types.dat", index=False)
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(

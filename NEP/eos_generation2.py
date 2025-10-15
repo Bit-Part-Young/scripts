@@ -19,7 +19,11 @@ def eos_generation(
     if os.path.exists(output_fn):
         os.remove(output_fn)
 
-    atoms = read(structure_fn, format="vasp")
+    input_fn_basename = os.path.basename(structure_fn)
+    input_format = input_fn_basename.split(".")[-1]
+
+    if input_format in ["vasp", "poscar", "POSCAR"]:
+        atoms = read(structure_fn, format="vasp")
 
     scaled_positions = atoms.get_scaled_positions()
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """六方胞转正交胞"""
 
 from ase.build.supercells import make_supercell
@@ -11,33 +13,16 @@ from ase.io import read, write
 def hexa2ortho(input_fn: str, output_fn: str):
     """六方胞转正交胞"""
 
-    T = [
-        [1, 1, 0],
-        [-1, 1, 0],
-        [0, 0, 1],
-    ]
-
+    T = [[1, 1, 0], [-1, 1, 0], [0, 0, 1]]
     # 或
-    # T = [
-    #     [1, 2, 0],
-    #     [0, 1, 0],
-    #     [0, 0, 1],
-    # ]
+    T = [[1, 2, 0], [0, 1, 0], [0, 0, 1]]
 
     atoms_hexagonal = read(input_fn)
 
-    atoms_orghogonal = make_supercell(
-        prim=atoms_hexagonal,
-        P=T,
-    )
+    atoms_orghogonal = make_supercell(prim=atoms_hexagonal, P=T)
 
     write(
-        output_fn,
-        atoms_orghogonal,
-        format="vasp",
-        vasp5=True,
-        sort=True,
-        direct=True,
+        output_fn, atoms_orghogonal, format="vasp", vasp5=True, sort=True, direct=True
     )
 
 
@@ -45,7 +30,4 @@ if __name__ == "__main__":
     input_fn = "hexagonal.vasp"
     output_fn = "orthogonal.vasp"
 
-    hexa2ortho(
-        input_fn=input_fn,
-        output_fn=output_fn,
-    )
+    hexa2ortho(input_fn=input_fn, output_fn=output_fn)
