@@ -12,8 +12,7 @@ API_KEY = os.getenv("PMG_MAPI_KEY")
 
 
 def get_mp_intermetallics(
-    elements: list[str],
-    formation_energy: bool = False,
+    elements: list[str], formation_energy: bool = False, energy_above_hull: bool = False
 ):
     """
     从 MP 获取指定元素的 intermetallics 构型数据
@@ -21,6 +20,7 @@ def get_mp_intermetallics(
     Args:
         elements: 元素列表
         formation_energy: 是否考虑形成能筛选条件
+        energy_above_hull: 是否考虑能量高于 convex hull 筛选条件
     """
 
     chemsys = "-".join(elements)
@@ -36,10 +36,13 @@ def get_mp_intermetallics(
     ]
 
     kwargs = {}
-    # 若 formation_energy 不为空，则search 函数添加 formation_energy 参数
+    # formation energy & energy above hull 的单位为 eV/atom
     if formation_energy:
         formation_energy = (None, 0)
         kwargs["formation_energy"] = formation_energy
+    if energy_above_hull:
+        energy_above_hull = (None, 0.04)
+        kwargs["energy_above_hull"] = energy_above_hull
 
     with MPRester(api_key=API_KEY) as mpr:
         docs = mpr.materials.summary.search(
@@ -56,6 +59,7 @@ def get_mp_intermetallics(
         for field in fields:
             if getattr(doc, field) is not None:
                 doc_simplified[field] = getattr(doc, field)
+
         docs_simplified_list.append(doc_simplified)
 
     json_fn = f"{chemsys}_mp_intermetallics.json"
@@ -66,24 +70,23 @@ def get_mp_intermetallics(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Get intermetallics from MP.",
-        epilog="Author: SLY.",
+        description="Get intermetallics from MP.", epilog="Author: SLY."
     )
 
-    parser.add_argument(
-        "-e",
-        "--elements",
-        nargs="+",
-        type=str,
-        help="elements",
-    )
+    parser.add_argument("-e", "--elements", nargs="+", help="elements")
 
     parser.add_argument(
         "-fe",
         "--formation_energy",
         action="store_true",
-        help="formation energy filter(less than 0.0 eV/atom)",
+        help="formation energy filter (less than 0.0 eV/atom)",
+    )
+    parser.add_argument(
+        "-eah",
+        "--energy_above_hull",
+        action="store_true",
+        help="energy above hull filter (less than 0.04 eV/atom)",
     )
     args = parser.parse_args()
 
-    get_mp_intermetallics(args.elements, args.formation_energy)
+    get_mp_intermetallics(args.elements, args.formation_energy, args.energy_above_hull)

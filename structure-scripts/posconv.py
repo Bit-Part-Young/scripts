@@ -61,7 +61,9 @@ def posconv(input_fn: str, output_fn: str, specorder: bool = False):
                 write_param_dict["specorder"] = element_sequence_list
 
     elif output_format in ["xyz", "extxyz"]:
-        write_param_dict = {"format": "extxyz", "append": True}
+        write_param_dict = {"format": "extxyz"}
+        if isinstance(atoms, list):
+            write_param_dict["append"] = True
 
     else:
         raise ValueError(f"Unsupported output format: {output_format}.")
