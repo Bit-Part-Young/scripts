@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
-"""从 json 文件中提取 MP 表面构型并保存为 xyz 文件"""
+"""将含 MP 表面构型的 json 文件转换为 extxyz 格式"""
 
 import argparse
+import os
 
 import pandas as pd
 from ase.io import write
@@ -13,8 +14,13 @@ from pymatgen.core.structure import Structure
 def json2surfaces(json_fn: str, max_index: int = None):
     data = loadfn(json_fn)
 
+    output_fn = json_fn.replace(".json", ".xyz")
+    if os.path.exists(output_fn):
+        os.remove(output_fn)
+
     surface_info_list = []
     num_surface = 0
+    # data 后面需添加 [0]
     for surface in data[0]["surfaces"]:
         miller_index = surface["miller_index"]
         # 将负指数中的负号替换成 m 字符
@@ -37,23 +43,17 @@ def json2surfaces(json_fn: str, max_index: int = None):
                 # "has_wulff",
             ]
             surface_info = {key: surface[key] for key in keys_list}
-            surface_info.update({"num_atoms": len(atoms)})
+            surface_info.update({"natoms": len(atoms)})
             surface_info.update({"miller_index": miller_index_str})
             surface_info_list.append(surface_info)
 
             atoms.info.update(surface_info)
 
-            output_fn = json_fn.replace(".json", ".xyz")
-            write(
-                output_fn,
-                atoms,
-                format="extxyz",
-                append=True,
-            )
+            write(output_fn, atoms, format="extxyz", append=True)
 
             num_surface += 1
 
-    surface_info_df = pd.DataFrame(surface_info_list)
+    surface_info_df = pd.DataFrame(surface_info_list).round(5)
 
     pd.set_option("display.max_columns", None)
     pd.set_option("display.max_rows", None)
@@ -67,11 +67,11 @@ def json2surfaces(json_fn: str, max_index: int = None):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Extract MP surface configurations from json file to extxyz format.",
+        description="Extract MP surface configurations from json to extxyz format.",
         epilog="Author: SLY.",
     )
 
-    parser.add_argument("json_fn", type=str, help="json filename")
+    parser.add_argument("json_fn", help="json filename")
     parser.add_argument("-mi", "--max_index", type=int, help="max miller index")
     args = parser.parse_args()
 

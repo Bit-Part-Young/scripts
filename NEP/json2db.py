@@ -9,6 +9,7 @@ outputs 数据中的 key
 dict_keys(['energy', 'forces', 'virial_stress'])
 """
 
+# [ ] 代码待优化
 from ase.db import connect
 from monty.serialization import loadfn
 from pymatgen.core.structure import Structure
@@ -31,11 +32,7 @@ for json_data in json_data_list:
     del json_data["outputs"]
     key_value_pairs = json_data
 
-    db.write(
-        atoms,
-        key_value_pairs=key_value_pairs,
-        data=data,
-    )
+    db.write(atoms, key_value_pairs=key_value_pairs, data=data)
 
     flag += 1
 

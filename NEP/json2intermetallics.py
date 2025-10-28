@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""从 json 文件中提取 MP intermetallics 构型并保存为 xyz 文件"""
+"""将含 MP intermetallics 构型的 json 文件转换为 extxyz 格式"""
 
 import argparse
 import os
@@ -56,26 +56,22 @@ def json2intermetallics(json_fn: str):
         info_dict_new.update({"is_stable": str(is_stable)})
         atoms.info.update(info_dict_new)
 
-        write(
-            output_fn,
-            atoms,
-            format="extxyz",
-            append=True,
-        )
+        write(output_fn, atoms, format="extxyz", append=True)
 
-    info_df = pd.DataFrame(info_list).round(3)
+    info_df = pd.DataFrame(info_list).round(5)
     print(info_df)
 
-    info_df.to_csv(json_fn.replace(".json", "_info.csv"), index=False)
+    csv_fn = json_fn.replace(".json", "_info.csv")
+    info_df.to_csv(csv_fn, index=False)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Convert MP intermetallics to xyz files.",
+        description="Convert MP intermetallic configurations from json to extxyz format.",
         epilog="Author: SLY.",
     )
 
-    parser.add_argument("json_fn", type=str, help="json filename")
+    parser.add_argument("json_fn", help="json filename")
 
     args = parser.parse_args()
 
