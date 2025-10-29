@@ -10,6 +10,7 @@ from typing import Literal
 def write_slurm(
     num_cpus: int = 1,
     num_gpus: int = 1,
+    gpu_index: int = 1,
     platform: Literal["master", "node2"] = "node2",
     calculation_type: Literal["nep", "gpumd"] = "gpumd",
 ):
@@ -36,7 +37,7 @@ def write_slurm(
 
 if [[ "$SLURMD_NODENAME" == 'master' ]]; then
   if [[ $SLURM_GPUS_ON_NODE == 1 ]]; then
-    CUDA_VISIBLE_DEVICES=1 {calculation_type}
+    CUDA_VISIBLE_DEVICES={gpu_index} {calculation_type}
   else
     {calculation_type}
   fi
@@ -59,7 +60,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "-p",
         "--platform",
-        nargs="?",
         choices=["master", "node2"],
         default="node2",
         metavar="STR",
@@ -69,7 +69,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "-nc",
         "--num_cpus",
-        nargs="?",
         type=int,
         default=1,
         metavar="N",
@@ -79,7 +78,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "-ng",
         "--num_gpus",
-        nargs="?",
         type=int,
         choices=[1, 2],
         default=1,
@@ -88,9 +86,17 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "-gi",
+        "--gpu_index",
+        type=int,
+        default=1,
+        metavar="N",
+        help="gpu index",
+    )
+
+    parser.add_argument(
         "-ct",
         "--calculation_type",
-        nargs="?",
         choices=["nep", "gpumd"],
         default="gpumd",
         metavar="STR",
@@ -102,6 +108,7 @@ if __name__ == "__main__":
     write_slurm(
         num_cpus=args.num_cpus,
         num_gpus=args.num_gpus,
+        gpu_index=args.gpu_index,
         platform=args.platform,
         calculation_type=args.calculation_type,
     )

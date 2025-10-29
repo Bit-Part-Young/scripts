@@ -131,7 +131,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "input_fn",
-        type=str,
         nargs="?",
         const="POSCAR",
         default="POSCAR",
@@ -139,7 +138,6 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "output_fn",
-        type=str,
         nargs="?",
         const="strained.xyz",
         default="strained.xyz",

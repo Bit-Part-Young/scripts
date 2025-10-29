@@ -30,13 +30,11 @@ def get_nn(crystalstructure: str) -> np.ndarray:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Get the nearest neighbour distances for BCC/FCC/Diamond/HCP crystal structure.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )
 
     parser.add_argument(
         "crystalstructure",
-        type=str,
         choices=["bcc", "fcc", "diamond", "hcp"],
         help="crystal structure",
     )

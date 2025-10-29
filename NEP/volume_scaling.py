@@ -29,14 +29,11 @@ def volume_scaling(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Structure generation with cell scaling.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        epilog="Author: SLY.",
+        description="Structure generation with cell scaling.", epilog="Author: SLY."
     )
 
     parser.add_argument(
         "structure_fn",
-        type=str,
         default="POSCAR",
         help="structure filename (default: POSCAR)",
     )
@@ -49,7 +46,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "-o",
         "--output_fn",
-        type=str,
         default="volume_scaled.vasp",
         metavar="FILE",
         help="output vasp filename",

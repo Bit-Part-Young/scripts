@@ -88,10 +88,9 @@ if __name__ == "__main__":
         description="Generate EOS configurations of BCC/FCC/HCP with lattice constants variation in -0.2~0.2 Å.",
         epilog="Author: SLY.",
     )
-    parser.add_argument("element", type=str, help="element symbol")
+    parser.add_argument("element", help="element symbol")
     parser.add_argument(
         "crystalstructure",
-        type=str,
         choices=["bcc", "fcc", "hcp"],
         help="crystal structure",
     )

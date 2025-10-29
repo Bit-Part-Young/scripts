@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-"""计算势函数预测与 DFT 计算的能量、力、应力/位力指标的 RMSE"""
+"""计算 NEP 势函数预测与 DFT 计算的能量、力、应力/位力指标的 RMSE"""
 
 import os
-from glob import glob
 
 import numpy as np
 
@@ -41,7 +40,7 @@ def main():
                     tag = "train"
                     if "test" in data_fn:
                         tag = "test"
-                    print(f"{label} {tag} RMSE: {rmse:.6f} {unit}.")
+                    print(f"{label} {tag} RMSE: {rmse:.5f} {unit}.")
             print("")
 
 

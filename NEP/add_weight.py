@@ -61,13 +61,11 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "input_filename",
-        type=str,
         default="train.xyz",
         help="input xyz filename (default: train.xyz)",
     )
     parser.add_argument(
         "output_filename",
-        type=str,
         default="train_filtered.xyz",
         help="output xyz filename (default: train_filtered.xyz)",
     )

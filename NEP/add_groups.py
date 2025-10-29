@@ -39,12 +39,11 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
-    parser.add_argument("structure_fn", type=str, help="structure filename")
+    parser.add_argument("structure_fn", help="structure filename")
 
     parser.add_argument(
         "-o",
         "--output_fn",
-        type=str,
         default="model.xyz",
         metavar="FILE",
         help="output xyz filename",
