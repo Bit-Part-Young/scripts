@@ -1,5 +1,5 @@
 """
-声子谱绘图（可绘制多组、可手动定义 K-path）
+声子谱绘图（可绘制多组进行对比、可手动定义 K-path）
 
 reference: https://github.com/wangchr1617/NEP_GT/blob/main/NEP_Phon/Fm-3m/phon.py
 """
@@ -14,8 +14,9 @@ from matplotlib.axes import Axes
 from phonopy import load
 from phonopy.api_phonopy import Phonopy
 from phonopy.units import VaspToTHz
+from pymatgen.core.structure import Structure
 
-from spt.plot_params import set_plot_params
+from spt.plot_params import set_roman_plot_params
 
 
 def get_kpoints(atoms: Atoms):
@@ -119,13 +120,13 @@ def plot_phonon_dispersion(
 ):
     """绘制（多组）声子色散曲线"""
 
-    set_plot_params()
+    set_roman_plot_params()
 
     # colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
     colors = [
-        "#bebebe",  # 灰色（用于不是很重要的数据）
-        "#2b72bc",  # 蓝色（对比数据）
-        "#fc0001",  # 红色（突出数据）
+        "#2b72bc",  # 蓝色（对比数据 DFT）
+        "#fc0001",  # 红色（突出数据 NEP）
+        "#bebebe",  # 灰色（EAM 用于不是很重要的数据）
         # "#1f77b4",  # 蓝色 matplotlib
         # "#ff7f0e",  # 橙色 matplotlib
         # "#d62728",  # 红色 matplotlib
@@ -159,6 +160,17 @@ def plot_phonon_dispersion(
     fig.savefig(fig_fn)
 
 
+def get_primitive(atoms: Atoms):
+    """获取原胞"""
+
+    structures = Structure.from_ase_atoms(atoms)
+
+    primitive = structures.to_primitive()
+
+    return primitive.to_ase_atoms()
+
+
+"""
 if __name__ == "__main__":
 
     high_symmetry_points = [
@@ -194,3 +206,4 @@ if __name__ == "__main__":
         labels,
         "phonon_disp.png",
     )
+"""
