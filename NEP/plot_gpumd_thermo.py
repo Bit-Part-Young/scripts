@@ -7,7 +7,6 @@ reference: https://github.com/zhyan0603/GPUMDkit/blob/main/Scripts/plt_scripts/p
 """
 
 import os
-import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -138,7 +137,7 @@ average_results = [
     f"Lattice Length X: {avg_length_x:.3f} Å",
     f"Lattice Length Y: {avg_length_y:.3f} Å",
     f"Lattice Length Z: {avg_length_z:.3f} Å",
-    f"Volume: {avg_volume*1000:.3f} Å^3",
+    f"Volume: {avg_volume * 1000:.3f} Å^3",
 ]
 if ncols == 18:
     average_results.extend(
@@ -160,7 +159,6 @@ with open("./average_results.txt", "w", encoding="utf-8") as f:
 
 
 def plot_gpumd_thermo():
-
     set_plot_params(savefig_dpi=300)
 
     fig, axs = plt.subplots(2, 3, figsize=(20, 10))
