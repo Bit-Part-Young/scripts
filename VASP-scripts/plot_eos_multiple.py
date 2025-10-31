@@ -7,6 +7,7 @@ import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.ticker import MultipleLocator
+
 from spt.plot_params import set_roman_plot_params
 
 
@@ -15,10 +16,52 @@ def plot_eos_multiple(
 ):
     """EOS 曲线多条绘制"""
 
-    set_roman_plot_params(lines_linewidth=3.0)
+    # 使所有的字体加粗
+    # 增加线、轴的线宽（3.0 有加粗效果）
+    # 增加主、次刻度线长度与宽度
+    # 不显示图例边框
+    set_roman_plot_params(
+        font_weight="bold",
+        axes_labelweight="bold",
+        axes_linewidth=3.0,
+        lines_linewidth=3.0,
+        xtick_major_width=3.0,
+        ytick_major_width=3.0,
+        xtick_minor_width=3.0,
+        ytick_minor_width=3.0,
+        xtick_major_size=6.0,
+        ytick_major_size=6.0,
+        xtick_minor_size=3.5,
+        ytick_minor_size=3.5,
+        legend_frameon=False,
+    )
+
     fig, ax = plt.subplots(figsize=(8, 6))
 
-    linestyle_list = ["o-", "s-", "D-", "p-", "x-", "v-"]
+    # 使得 axes 框为正方形
+    # ax.set_box_aspect(1)
+
+    prop_cycle_list = [
+        "#1f77b4",  # 蓝色
+        "#d62728",  # 红色
+        "#2ca02c",  # 绿色
+        "#ff7f0e",  # 橙色
+        "#9467bd",
+        "#8c564b",
+        "#e377c2",
+        "#7f7f7f",
+        "#bcbd22",
+        "#17becf",
+    ]
+    linestyle_list = [
+        "o-",  # 圆形
+        ">-",  # 又三角
+        "s-",  # 正方形
+        "D-",  # 菱形
+        "p-",
+        "x-",
+        "v-",
+    ]
 
     for i, (data_fn, label) in enumerate(zip(data_fn_list, label_list)):
         df = pd.read_csv(data_fn, sep=None, engine="python")
@@ -30,9 +73,25 @@ def plot_eos_multiple(
             df_volume = df.iloc[:, 0]
             df_energy = df.iloc[:, 1]
 
-        ax.plot(
-            df_volume, df_energy, linestyle_list[i], markerfacecolor="none", label=label
-        )
+        if i == 0:
+            ax.plot(
+                df_volume,
+                df_energy,
+                linestyle_list[i],
+                markersize=10,
+                color=prop_cycle_list[i],
+                label=label,
+            )
+        else:
+            ax.plot(
+                df_volume,
+                df_energy,
+                linestyle_list[i],
+                markersize=7,
+                markerfacecolor="none",
+                color=prop_cycle_list[i],
+                label=label,
+            )
 
     ax.legend()
 
@@ -45,7 +104,7 @@ def plot_eos_multiple(
         ax.set_ylabel("Energy (eV/atom)")
     else:
         ax.yaxis.set_minor_locator(MultipleLocator(0.05))
-        ax.set_ylabel(f"$\Delta$E (eV/atom)")
+        ax.set_ylabel("$\Delta E$ (eV/atom)")
 
     fig.savefig(figure_fn)
 

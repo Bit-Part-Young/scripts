@@ -27,17 +27,55 @@ def plot_gsfe_multiple(
     gsfe_fn_list: list[str],
     label_list: list[str],
     smooth: bool = False,
+    xlabel: str = "$u$/b",
     figure_fn: str = "gsfe_multiple.png",
 ):
     """绘制多条 GSFE 曲线"""
 
+    # 使所有的字体加粗
+    # 增加线、轴的线宽（3.0 有加粗效果）
+    # 增加主、次刻度线长度与宽度
+    # 不显示图例边框
     set_roman_plot_params(
-        lines_linewidth=3.0, legend_frameon=False, legend_handletextpad=0.2
+        font_weight="bold",
+        axes_labelweight="bold",
+        axes_linewidth=3.0,
+        lines_linewidth=3.0,
+        xtick_major_width=3.0,
+        ytick_major_width=3.0,
+        xtick_minor_width=3.0,
+        ytick_minor_width=3.0,
+        xtick_major_size=6.0,
+        ytick_major_size=6.0,
+        xtick_minor_size=3.5,
+        ytick_minor_size=3.5,
+        legend_frameon=False,
     )
     fig, ax = plt.subplots(figsize=(8, 6))
 
-    linestyle_list = ["o-", "s-", "D-", "p-", "x-", "v-"]
-    marker_list = ["o", "s", "D", "p", "v", "^"]
+    # matplotlib 默认颜色
+    color_list = [
+        "#1f77b4",  # 蓝色 DFT
+        "#d62728",  # 红色 NEP
+        "#2ca02c",  # 绿色 EAM
+        "#ff7f0e",  # 橙色
+        "#9467bd",
+        "#8c564b",
+        "#e377c2",
+        "#7f7f7f",
+        "#bcbd22",
+        "#17becf",
+    ]
+    linestyle_list = [
+        "o-",  # 圆形
+        ">-",  # 又三角
+        "s-",  # 正方形
+        "D-",  # 菱形
+        "p-",
+        "x-",
+        "v-",
+    ]
+    marker_list = ["o", ">", "s", "D", "p", "x", "v"]
 
     y_max_list = []
     y_min_list = []
@@ -50,18 +88,17 @@ def plot_gsfe_multiple(
         y_min_list.append(y.min())
 
         if not smooth:
-            ax.plot(x, y, linestyle_list[i], label=label)
+            ax.plot(x, y, linestyle_list[i], color=color_list[i], label=label)
         else:
-            ax.scatter(x, y, marker=marker_list[i], label=label, s=50)
+            ax.scatter(
+                x, y, marker=marker_list[i], color=color_list[i], label=label, s=50
+            )
 
             smooth_x, smooth_y = smooth_plot(x, y)
-            ax.plot(smooth_x, smooth_y)
+            ax.plot(smooth_x, smooth_y, color=color_list[i])
 
-    ax.set(
-        xlim=(-0.02, 1.02),
-        xlabel="$u$/b",
-        ylabel="$\gamma$ mJ/m$^2$",
-    )
+    # xlabel 写法示例: Displacement [111]/b; Slip Distance (<111>/2); Displacement-[112]/2
+    ax.set(xlim=(-0.02, 1.02), xlabel=xlabel, ylabel="SFE $\gamma$ (mJ/m$^2$)")
 
     ax.xaxis.set_major_locator(MultipleLocator(0.2))
     ax.xaxis.set_minor_locator(MultipleLocator(0.1))
@@ -99,6 +136,7 @@ if __name__ == "__main__":
         "-i", "--gsfe_fn_list", nargs="+", metavar="FILE", help="GSFE data filenames"
     )
     parser.add_argument("-l", "--label_list", nargs="+", metavar="STR", help="labels")
+    parser.add_argument("-xl", "--xlabel", metavar="STR", help="xlabel")
     parser.add_argument(
         "-o",
         "--figure_fn",
@@ -110,4 +148,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    plot_gsfe_multiple(args.gsfe_fn_list, args.label_list, args.smooth, args.figure_fn)
+    plot_gsfe_multiple(
+        args.gsfe_fn_list, args.label_list, args.smooth, args.xlabel, args.figure_fn
+    )

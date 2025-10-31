@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MultipleLocator
 from scipy.interpolate import make_interp_spline
+
 from spt.plot_params import set_roman_plot_params
 
 
@@ -23,14 +24,33 @@ def smooth_plot(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
 
 
 def plot_gsfe(
-    gsfe_data_fn: str, label: str, smooth: bool = False, figure_fn: str = "gsfe.png"
+    gsfe_data_fn: str,
+    label: str,
+    smooth: bool = False,
+    xlabel: str = "$u$/b",
+    figure_fn: str = "gsfe.png",
 ):
     """绘制单条 GSFE 曲线"""
 
+    # 使所有的字体加粗
+    # 增加线、轴的线宽（3.0 有加粗效果）
+    # 增加主、次刻度线长度与宽度
+    # 不显示图例边框
     set_roman_plot_params(
-        lines_linewidth=3.0, legend_frameon=False, legend_handletextpad=0.2
+        font_weight="bold",
+        axes_labelweight="bold",
+        axes_linewidth=3.0,
+        lines_linewidth=3.0,
+        xtick_major_width=3.0,
+        ytick_major_width=3.0,
+        xtick_minor_width=3.0,
+        ytick_minor_width=3.0,
+        xtick_major_size=6.0,
+        ytick_major_size=6.0,
+        xtick_minor_size=3.5,
+        ytick_minor_size=3.5,
+        legend_frameon=False,
     )
-
     fig, ax = plt.subplots(figsize=(8, 6))
 
     gsfe_data = np.loadtxt(gsfe_data_fn, skiprows=1)
@@ -45,11 +65,8 @@ def plot_gsfe(
         smooth_x, smooth_y = smooth_plot(x, y)
         ax.plot(smooth_x, smooth_y)
 
-    ax.set(
-        xlim=(-0.02, 1.02),
-        xlabel="$u$/b",
-        ylabel="$\gamma$ mJ/m$^2$",
-    )
+    # xlabel 写法示例: Displacement [111]/b; Slip Distance (<111>/2); Displacement-[112]/2
+    ax.set(xlim=(-0.02, 1.02), xlabel=xlabel, ylabel="SFE $\gamma$ (mJ/m$^2$)")
 
     ax.xaxis.set_major_locator(MultipleLocator(0.2))
     ax.xaxis.set_minor_locator(MultipleLocator(0.1))
@@ -84,7 +101,8 @@ if __name__ == "__main__":
     parser.add_argument("figure_fn", default="gsfe.png", help="output figure filename")
     parser.add_argument("-l", "--label", metavar="STR", help="label")
     parser.add_argument("-s", "--smooth", action="store_true", help="smooth the curve")
+    parser.add_argument("-xl", "--xlabel", metavar="STR", help="xlabel")
 
     args = parser.parse_args()
 
-    plot_gsfe(args.gsfe_data_fn, args.label, args.smooth, args.figure_fn)
+    plot_gsfe(args.gsfe_data_fn, args.label, args.smooth, args.xlabel, args.figure_fn)

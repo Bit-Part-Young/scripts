@@ -22,11 +22,7 @@ from spt.plot_params import set_roman_plot_params
 def get_kpoints(atoms: Atoms):
     """生成 K 点路径"""
 
-    structure_tuple = (
-        atoms.cell,
-        atoms.get_scaled_positions(),
-        atoms.numbers,
-    )
+    structure_tuple = (atoms.cell, atoms.get_scaled_positions(), atoms.numbers)
     path = seekpath.get_explicit_k_path(structure_tuple)
 
     kpoints_rel, kpoints_lincoord, labels = (
@@ -84,9 +80,7 @@ def create_phonon_dataframe(phonon: Phonopy, kpoints_rel, kpoints_lincoord):
     """生成声子数据的DataFrame"""
 
     phonon.run_band_structure(
-        paths=[kpoints_rel],
-        with_eigenvectors=True,
-        with_group_velocities=True,
+        paths=[kpoints_rel], with_eigenvectors=True, with_group_velocities=True
     )
 
     bandstructure_dict = phonon.get_band_structure_dict()
@@ -106,27 +100,40 @@ def _plot_a_band(ax: Axes, df: pd.DataFrame, color: str, label: str, **kwargs):
             lw=3.0,
             color=color,
             label=label if i == 0 else None,
-            **kwargs,
+            **kwargs
         )
 
 
 def plot_phonon_dispersion(
-    phonons: list[Phonopy],
-    kpoints_rel,
-    kpoints_lincoord,
-    labels,
-    fig_fn: str,
-    **kwargs,
+    phonons: list[Phonopy], kpoints_rel, kpoints_lincoord, labels, fig_fn: str, **kwargs
 ):
     """绘制（多组）声子色散曲线"""
 
-    set_roman_plot_params()
+    # set_roman_plot_params(legend_frameon=False)
+    # 使所有的字体加粗
+    # 增加线、轴的线宽（3.0 有加粗效果）
+    # 增加主、次刻度线长度与宽度
+    # 不显示图例边框
+    set_roman_plot_params(
+        font_weight="bold",
+        axes_labelweight="bold",
+        axes_linewidth=3.0,
+        lines_linewidth=3.0,
+        xtick_major_width=3.0,
+        ytick_major_width=3.0,
+        xtick_minor_width=3.0,
+        ytick_minor_width=3.0,
+        xtick_major_size=6.0,
+        ytick_major_size=6.0,
+        xtick_minor_size=3.5,
+        ytick_minor_size=3.5,
+        legend_frameon=False,
+    )
 
-    # colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
     colors = [
-        "#2b72bc",  # 蓝色（对比数据 DFT）
-        "#fc0001",  # 红色（突出数据 NEP）
-        "#bebebe",  # 灰色（EAM 用于不是很重要的数据）
+        "#2b72bc",  # 蓝色（首要对比数据 DFT）非 matplotlib
+        "#fc0001",  # 红色（突出数据 NEP）非 matplotlib
+        "#bebebe",  # 灰色（次要对比数据 EAM）非 matplotlib
         # "#1f77b4",  # 蓝色 matplotlib
         # "#ff7f0e",  # 橙色 matplotlib
         # "#d62728",  # 红色 matplotlib
@@ -153,7 +160,8 @@ def plot_phonon_dispersion(
         xticks=df_path.positions,
         xticklabels=df_path.labels,
     )
-    ax.legend(loc="upper right")
+    # 图例放在右下角
+    ax.legend(loc="lower right")
 
     plt.tight_layout()
 
