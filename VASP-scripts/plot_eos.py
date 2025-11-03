@@ -7,7 +7,8 @@ import argparse
 import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.ticker import MultipleLocator
-from spt.plot_params import set_roman_plot_params
+
+from spt.plot_params import set_plot_params
 
 
 def plot_eos(
@@ -24,7 +25,7 @@ def plot_eos(
         df_volume = df.iloc[:, 0]
         df_energy = df.iloc[:, 1]
 
-    set_roman_plot_params(lines_linewidth=3.0)
+    set_plot_params(roman_params=True, sci_params=False)
     fig, ax = plt.subplots(figsize=(8, 6))
 
     ax.plot(df_volume, df_energy, "o-", markerfacecolor="none", label="EOS")

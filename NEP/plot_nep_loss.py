@@ -20,6 +20,8 @@ from matplotlib.axes import Axes
 from spt.plot_params import set_plot_params
 
 set_plot_params(
+    roman_params=True,
+    sci_params=True,
     legend_fontsize=20,
     legend_labelspacing=0.2,
     savefig_dpi=500,
@@ -79,13 +81,7 @@ def load_data(
     )
 
 
-def parity_plot(
-    ax: Axes,
-    dft_values,
-    predicted_values,
-    color,
-    label,
-):
+def parity_plot(ax: Axes, dft_values, predicted_values, color, label):
     """绘制 DFT 计算值与 NEP 预测值对比图"""
 
     errors = predicted_values - dft_values
@@ -100,14 +96,7 @@ def parity_plot(
     )
 
 
-def plot_hist(
-    ax: Axes,
-    dft_values,
-    predicted_values,
-    title,
-    bins=15,
-    alpha=0.75,
-):
+def plot_hist(ax: Axes, dft_values, predicted_values, title, bins=15, alpha=0.75):
     """绘制误差绝对值分布图（归一化）"""
 
     errors = predicted_values - dft_values
@@ -133,10 +122,7 @@ def plot_hist(
     inset_ax.yaxis.tick_left()
 
 
-def plot_training_results(
-    stress: bool = False,
-    hist: bool = False,
-):
+def plot_training_results(stress: bool = False, hist: bool = False):
     """绘制损失、能量、力和应力的比较图"""
 
     (
@@ -186,12 +172,7 @@ def plot_training_results(
         title="(a) Loss Curve",
     )
 
-    ax.legend(
-        loc="lower left",
-        ncol=3,
-        labelspacing=0,
-        columnspacing=0.5,
-    )
+    ax.legend(loc="lower left", ncol=3, labelspacing=0, columnspacing=0.5)
 
     # ------------------  能量对比图 + 误差直方图  ------------------
     plt.subplot(2, 2, 2)
@@ -228,12 +209,7 @@ def plot_training_results(
     ax.legend(loc="upper left")
 
     if hist:
-        plot_hist(
-            ax,
-            energy_train[:, 1],
-            energy_train[:, 0],
-            r"$|E_{DFT}-E_{NEP}|$",
-        )
+        plot_hist(ax, energy_train[:, 1], energy_train[:, 0], r"$|E_{DFT}-E_{NEP}|$")
 
     # ------------------  力对比图 + 误差直方图  ------------------
     plt.subplot(2, 2, 3)

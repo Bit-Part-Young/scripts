@@ -11,7 +11,8 @@ import sys
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from spt.plot_params import set_roman_plot_params
+
+from spt.plot_params import set_plot_params
 
 # [ ] 添加提取能量并绘制的功能
 
@@ -53,7 +54,7 @@ def plot_forces(forces_df: pd.DataFrame):
     max_force = forces_df.max(axis=0)
     average_force = forces_df.mean(axis=0)
 
-    set_roman_plot_params()
+    set_plot_params(roman_params=True)
     fig, ax = plt.subplots(figsize=(10, 6))
 
     x = list(range(1, forces_df.shape[1] + 1))

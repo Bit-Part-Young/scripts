@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib.ticker import MultipleLocator
 from scipy.interpolate import make_interp_spline
 
-from spt.plot_params import set_roman_plot_params
+from spt.plot_params import set_plot_params
 
 
 def smooth_plot(x: np.ndarray, y: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -32,25 +32,8 @@ def plot_gsfe(
 ):
     """绘制单条 GSFE 曲线"""
 
-    # 使所有的字体加粗
-    # 增加线、轴的线宽（3.0 有加粗效果）
-    # 增加主、次刻度线长度与宽度
-    # 不显示图例边框
-    set_roman_plot_params(
-        font_weight="bold",
-        axes_labelweight="bold",
-        axes_linewidth=3.0,
-        lines_linewidth=3.0,
-        xtick_major_width=3.0,
-        ytick_major_width=3.0,
-        xtick_minor_width=3.0,
-        ytick_minor_width=3.0,
-        xtick_major_size=6.0,
-        ytick_major_size=6.0,
-        xtick_minor_size=3.5,
-        ytick_minor_size=3.5,
-        legend_frameon=False,
-    )
+    set_plot_params(roman_params=True, sci_params=True)
+
     fig, ax = plt.subplots(figsize=(8, 6))
 
     gsfe_data = np.loadtxt(gsfe_data_fn, skiprows=1)

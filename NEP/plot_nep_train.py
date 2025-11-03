@@ -81,6 +81,7 @@ def plot_nep_train(
     energy_data, force_data, virial_data, stress_data = load_data(test)
 
     set_plot_params(
+        roman_params=True,
         legend_fontsize=20,
         legend_handletextpad=0.2,
         savefig_dpi=500,
@@ -93,13 +94,7 @@ def plot_nep_train(
     energy_min, energy_max = calculate_limits(energy_data[:, 1])
     ax: Axes = axs[0]
 
-    parity_plot(
-        ax,
-        energy_data[:, 1],
-        energy_data[:, 0],
-        energy_min,
-        energy_max,
-    )
+    parity_plot(ax, energy_data[:, 1], energy_data[:, 0], energy_min, energy_max)
 
     ax.set(
         xlim=[energy_min, energy_max],
@@ -111,13 +106,8 @@ def plot_nep_train(
     ax.legend(labels=["energy"])
 
     energy_rmse = calculate_rmse(energy_data[:, 0], energy_data[:, 1]) * 1000
-    ax.text(
-        0.3,
-        0.08,
-        f"RMSE: {energy_rmse:.2f} meV/atom",
-        transform=ax.transAxes,
-        fontsize=20,
-    )
+    text = f"RMSE: {energy_rmse:.2f} meV/atom"
+    ax.text(0.3, 0.08, text, transform=ax.transAxes, fontsize=20)
 
     # 子图呈方形
     ax.set_aspect("equal", "box")
@@ -126,13 +116,7 @@ def plot_nep_train(
     force_min, force_max = calculate_limits(force_data[:, 3:6].reshape(-1))
     ax: Axes = axs[1]
 
-    parity_plot(
-        ax,
-        force_data[:, 3:6],
-        force_data[:, 0:3],
-        force_min,
-        force_max,
-    )
+    parity_plot(ax, force_data[:, 3:6], force_data[:, 0:3], force_min, force_max)
 
     ax.set(
         xlim=[force_min, force_max],
@@ -144,13 +128,8 @@ def plot_nep_train(
     ax.legend(labels=["fx", "fy", "fz"], ncols=3)
 
     force_rmse = calculate_rmse(force_data[:, 0:3], force_data[:, 3:6]) * 1000
-    ax.text(
-        0.3,
-        0.08,
-        f"RMSE: {force_rmse:.2f} meV/$\mathrm{{\AA}}$",
-        transform=ax.transAxes,
-        fontsize=20,
-    )
+    text = f"RMSE: {force_rmse:.2f} meV/$\mathrm{{\AA}}$"
+    ax.text(0.3, 0.08, text, transform=ax.transAxes, fontsize=20)
 
     ax.set_aspect("equal", "box")
 
@@ -166,13 +145,7 @@ def plot_nep_train(
     virial_min, virial_max = calculate_limits(virial_data[:, 6:12].reshape(-1))
     ax: Axes = axs[2]
 
-    parity_plot(
-        ax,
-        virial_data[:, 6:12],
-        virial_data[:, 0:6],
-        virial_min,
-        virial_max,
-    )
+    parity_plot(ax, virial_data[:, 6:12], virial_data[:, 0:6], virial_min, virial_max)
 
     ax.set(
         xlim=[virial_min, virial_max],
@@ -181,19 +154,11 @@ def plot_nep_train(
         ylabel=f"NEP {axes_label}",
     )
 
-    ax.legend(
-        labels=["xx", "yy", "zz", "xy", "yz", "zx"],
-        ncols=3,
-    )
+    ax.legend(ncols=3, labels=["xx", "yy", "zz", "xy", "yz", "zx"])
 
     virial_rmse = calculate_rmse(virial_data[:, 0:6], virial_data[:, 6:12])
-    ax.text(
-        0.3,
-        0.08,
-        f"RMSE: {virial_rmse:.4f} {rmse_unit}",
-        transform=ax.transAxes,
-        fontsize=20,
-    )
+    text = f"RMSE: {virial_rmse:.4f} {rmse_unit}"
+    ax.text(0.3, 0.08, text, transform=ax.transAxes, fontsize=20)
 
     ax.set_aspect("equal", "box")
 

@@ -16,7 +16,7 @@ from phonopy.api_phonopy import Phonopy
 from phonopy.units import VaspToTHz
 from pymatgen.core.structure import Structure
 
-from spt.plot_params import set_roman_plot_params
+from spt.plot_params import set_plot_params
 
 
 def get_kpoints(atoms: Atoms):
@@ -109,26 +109,7 @@ def plot_phonon_dispersion(
 ):
     """绘制（多组）声子色散曲线"""
 
-    # set_roman_plot_params(legend_frameon=False)
-    # 使所有的字体加粗
-    # 增加线、轴的线宽（3.0 有加粗效果）
-    # 增加主、次刻度线长度与宽度
-    # 不显示图例边框
-    set_roman_plot_params(
-        font_weight="bold",
-        axes_labelweight="bold",
-        axes_linewidth=3.0,
-        lines_linewidth=3.0,
-        xtick_major_width=3.0,
-        ytick_major_width=3.0,
-        xtick_minor_width=3.0,
-        ytick_minor_width=3.0,
-        xtick_major_size=6.0,
-        ytick_major_size=6.0,
-        xtick_minor_size=3.5,
-        ytick_minor_size=3.5,
-        legend_frameon=False,
-    )
+    set_plot_params(roman_params=True, sci_params=True)
 
     colors = [
         "#2b72bc",  # 蓝色（首要对比数据 DFT）非 matplotlib
