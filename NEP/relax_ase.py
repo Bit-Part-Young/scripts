@@ -14,7 +14,7 @@ def setup_calculator(calculator_type: str):
     if calculator_type == "nep":
         from calorine.calculators import CPUNEP, GPUNEP
 
-        return CPUNEP(model_filename="nep.txt")
+        return GPUNEP(model_filename="nep.txt")
 
     elif calculator_type == "mace-mpa":
         import torch
@@ -83,7 +83,6 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Structure relaxation using ASE",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )
 

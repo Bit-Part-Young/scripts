@@ -40,6 +40,10 @@ def get_mp_intermetallics(
     if formation_energy:
         formation_energy = (None, 0)
         kwargs["formation_energy"] = formation_energy
+
+    # energy above hull 上限取 0.04 eV/atom reference:
+    # Efficient small-cell sampling for machine-learning potentials of multi-principal element alloys
+    # http://arxiv.org/abs/2510.16697
     if energy_above_hull:
         energy_above_hull = (None, 0.04)
         kwargs["energy_above_hull"] = energy_above_hull
