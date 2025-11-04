@@ -25,7 +25,7 @@ def plot_eos(
         df_volume = df.iloc[:, 0]
         df_energy = df.iloc[:, 1]
 
-    set_plot_params(roman_params=True, sci_params=False)
+    set_plot_params(roman_params=True, sci_params=True)
     fig, ax = plt.subplots(figsize=(8, 6))
 
     ax.plot(df_volume, df_energy, "o-", markerfacecolor="none", label="EOS")

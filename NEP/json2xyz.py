@@ -21,8 +21,8 @@ from monty.serialization import loadfn
 from pymatgen.core.structure import Structure
 
 
-def json2atoms(json_data: dict, output_virial: bool = False):
-    """将 json 结构文件转换为 xyz 文件"""
+def json2atoms(json_data: dict[str, Any], output_virial: bool = False):
+    """将 json dict 转换为 ase.Atoms 对象"""
 
     structure: Structure = json_data["structure"]
     atoms = structure.to_ase_atoms()
@@ -71,6 +71,8 @@ def json2atoms(json_data: dict, output_virial: bool = False):
 
 
 def json2xyz(json_fn: str, xyz_fn: str, output_virial: bool = False):
+    """将 json 文件转换为 xyz 文件"""
+
     json_data_list = loadfn(json_fn)
 
     if os.path.exists(xyz_fn):

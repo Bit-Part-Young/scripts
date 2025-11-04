@@ -82,6 +82,7 @@ def plot_nep_train(
 
     set_plot_params(
         roman_params=True,
+        sci_params=True,
         legend_fontsize=20,
         legend_handletextpad=0.2,
         savefig_dpi=500,
