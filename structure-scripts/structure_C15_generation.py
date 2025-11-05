@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 
 """
-生成 C15 V2Zr 结构
-该方式得到的构型与文献中的相同，而 struct_gen 的则不太一致
+生成 C15 (V2Zr, Mo2Zr) 结构
+该方式得到的构型与文献中的相同，而 struct_gen 生成的则不太一致
+
+reference:
+- Structural, elastic, and thermal properties of laves phase ZrV2 under pressure
+- Irradiation induced structural change in Mo2Zr intermetallic phase
 """
 
 import argparse
 
+from ase.atoms import Atoms
 from ase.io import write
 from ase.spacegroup import crystal
 from pymatgen.core.structure import Structure
@@ -22,6 +27,16 @@ def get_structure_info(structure: Structure):
         print(site.species, site.frac_coords)
 
 
+# 输出原子位点信息
+def get_atoms_info(atoms: Atoms):
+
+    print(f"\nnatoms: {len(atoms)}.")
+    print("\natoms site info:")
+
+    for atom in atoms:
+        print(atom.symbol, atom.scaled_position)
+
+
 def structure_C15_generation(lattice_constant: float, element_symbols: list):
     a, b, c = lattice_constant, lattice_constant, lattice_constant
     spacegroup = 227
@@ -31,7 +46,7 @@ def structure_C15_generation(lattice_constant: float, element_symbols: list):
         (element_symbols[1], [0.625, 0.625, 0.625]),
     ]
 
-    crystal_structure = crystal(
+    atoms = crystal(
         symbols=[wyckoff_position[0] for wyckoff_position in wyckoff_positions],
         basis=[wyckoff_position[1] for wyckoff_position in wyckoff_positions],
         spacegroup=spacegroup,
@@ -39,10 +54,9 @@ def structure_C15_generation(lattice_constant: float, element_symbols: list):
         symprec=0.01,
     )
 
-    structure = Structure.from_ase_atoms(crystal_structure)
-    get_structure_info(structure)
+    get_atoms_info(atoms)
 
-    write("POSCAR", crystal_structure, format="vasp", direct=True, sort=True)
+    write("POSCAR", atoms, format="vasp", direct=True, sort=True)
 
     print("\nC15 structure generated.")
 
