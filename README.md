@@ -1,18 +1,22 @@
 # CMS Scripts
 
-计算材料领域相关实用 Python、Shell 脚本（脚本总数：接近 200）。
+计算材料领域（Computational Materials Science, CMS）相关实用 Python、Shell 脚本（脚本总数：接近 200）。
 
 注意事项：
 
-- 本仓库代码主要依赖 ASE、pymatgen、atomate、PyXtal、spglib 等 Python 包，以及 atomsk、vaspkit 等工具
+- 本仓库代码主要依赖 ASE、pymatgen、atomate、PyXtal、spglib、bsym 等 Python 包，以及 atomsk、vaspkit 等工具
 
-- 使用脚本前，请先阅读源码及其中的注释！
+- 使用脚本前，请先阅读源码及其中的注释！！！
 
-- 部分脚本可解析命令行参数，使用 `python xxx.py -h` 或 `./xxx.py -h` 查看帮助信息
+- 脚本功能主要贴合个人需求及使用，不一定保证通用性，仅供参考！！！
 
-- 对于 ipynb 格式脚本文件，可将其链接复制至 [nbviewer](https://nbviewer.org/) 在线查看
+- 本 `README.md` 的具体脚本文件及其对应功能介绍暂未及时更新，请打开对应的子目录进行查看
 
-- 默认 xyz 文件格式为 extxyz
+- 部分代码参考或拷贝自其他作者，在脚本开头均标明出处；如涉及侵权，请联系作者删除
+
+- 大部分脚本可解析命令行参数，使用 `python xxx.py -h` 或 `./xxx.py -h` 查看帮助信息
+
+- 对于 ipynb 文件，可将其链接复制至 [nbviewer](https://nbviewer.org/) 在线查看
 
 ---
 
