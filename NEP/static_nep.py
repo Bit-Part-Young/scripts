@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""NEP 势函数 静态计算"""
+"""NEP 势函数 静态计算（用于单个构型计算、检查）"""
 
 import argparse
 
@@ -11,7 +11,7 @@ from calorine.calculators import CPUNEP
 
 
 def static_nep(structure_fn: str = "POSCAR", potential_fn: str = "nep.txt"):
-    """NEP 势函数 静态计算"""
+    """NEP 势函数 静态计算（用于单个构型计算、检查）"""
 
     atoms = read(structure_fn)
     natoms = len(atoms)
@@ -46,11 +46,12 @@ def static_nep(structure_fn: str = "POSCAR", potential_fn: str = "nep.txt"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Static calculation using NEP potential.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="Static calculation using NEP potential (for single calculation & check).",
+        epilog="Author: SLY.",
     )
 
     parser.add_argument("structure_fn", default="POSCAR", help="structure filename")
+    parser.add_argument("potential_fn", default="nep.txt", help="potential filename")
 
     args = parser.parse_args()
 
