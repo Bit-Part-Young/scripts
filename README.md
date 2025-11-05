@@ -2,6 +2,16 @@
 
 计算材料领域（Computational Materials Science, CMS）相关实用 Python、Shell 脚本（脚本总数：接近 200）。
 
+内容包括：
+
+- ASE、pymatgen、ovito、phonopy、atomsk、vaspkit 等包/工具使用
+- 晶体、缺陷结构建模与操作
+- VASP 计算预处理、后处理
+- Molecular Dynamics 计算后处理
+- 机器学习势函数 MLIPs：NEP、MTP
+
+代码维护：Shenlu Yang, yangsl2126@sjtu.edu.cn。
+
 注意事项：
 
 - 本仓库代码主要依赖 ASE、pymatgen、atomate、PyXtal、spglib、bsym 等 Python 包，以及 atomsk、vaspkit 等工具
@@ -10,9 +20,9 @@
 
 - 脚本功能主要贴合个人需求及使用，不一定保证通用性，仅供参考！！！
 
-- 本 `README.md` 的具体脚本文件及其对应功能介绍暂未及时更新，请打开对应的子目录进行查看
+- **本 `README.md` 的具体脚本文件及其对应功能介绍暂未及时更新，请直接打开对应的子目录进行查看**
 
-- 部分代码参考或拷贝自其他作者，在脚本开头均标明出处；如涉及侵权，请联系作者删除
+- 部分脚本的代码参考或拷贝自其他作者，在脚本开头均标明出处；如涉及侵权，请联系作者删除
 
 - 大部分脚本可解析命令行参数，使用 `python xxx.py -h` 或 `./xxx.py -h` 查看帮助信息
 
