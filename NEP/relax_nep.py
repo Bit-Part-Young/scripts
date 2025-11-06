@@ -21,8 +21,12 @@ def relax_nep_single(atoms: Atoms, potential_fn: str = "nep.txt", output: bool =
     natoms = len(atoms)
     energy = atoms.get_potential_energy()
     energy_pa = energy / natoms
+    forces = atoms.get_forces()
 
+    # copy() 方法只会拷贝 Atoms，其 calculator 不会被拷贝
     atoms_static = atoms.copy()
+    atoms_static.info["energy"] = energy
+    atoms_static.arrays["forces"] = forces
 
     if output:
         print("\nBefore relaxation:")
@@ -33,8 +37,11 @@ def relax_nep_single(atoms: Atoms, potential_fn: str = "nep.txt", output: bool =
 
     energy = atoms.get_potential_energy()
     energy_pa = energy / natoms
+    forces = atoms.get_forces()
 
     atoms_relaxed = atoms.copy()
+    atoms_relaxed.info["energy"] = energy
+    atoms_relaxed.arrays["forces"] = forces
 
     if output:
         print("\nAfter relaxation:")
@@ -90,7 +97,8 @@ def relax_nep(structure_fn: str = "POSCAR", potential_fn: str = "nep.txt"):
         # 使用 NEP 静态计算的原子位置与初始导入的构型文件中的会不一致，因此需保存静态计算后的结构
         write(static_fn, atoms_static, format="vasp", direct=True, sort=True)
         write(relaxed_fn, atoms_relaxed, format="vasp", direct=True, sort=True)
-        write(relax_xyz_fn, atoms, format="extxyz", append=True)
+        # 讲静态、弛豫后的构型数据一起保存到 xyz 文件中
+        write(relax_xyz_fn, [atoms_static, atoms_relaxed], format="extxyz", append=True)
 
     print(
         f"\nNEP relaxation completed; Structures saved into {static_fn}, {relaxed_fn} and {relax_xyz_fn}."
