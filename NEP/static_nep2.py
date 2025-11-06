@@ -24,10 +24,21 @@ def static_nep(
     # calc = CPUNEP(potential_fn)
     calc = GPUNEP(potential_fn)
 
+    flag = 0
     for atoms in atoms_list:
+        # 删除已有的 virial 信息
+        if atoms.info.get("virial", None) is not None:
+            del atoms.info["virial"]
+
         atoms.calc = calc
 
+        # 添加改代码，才会计算能量、原子受力和应力；会对相关信息进行覆盖
+        atoms.get_potential_energy()
+
         write(output_xyz_fn, atoms, format="extxyz", append=True)
+
+        flag += 1
+        print(f"The {flag} configuration is calculated.")
 
     print(f"\nBatch static calculation completed. {output_xyz_fn} generated.")
 

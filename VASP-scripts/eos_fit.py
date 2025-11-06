@@ -85,7 +85,7 @@ if __name__ == "__main__":
         type=int,
         nargs=2,
         default=[2, 3],
-        help="Column numbers for volume and energy data",
+        help="column numbers for volume and energy data (starting from 1)",
     )
 
     args = parser.parse_args()
