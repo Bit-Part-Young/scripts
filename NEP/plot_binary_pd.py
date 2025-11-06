@@ -44,7 +44,7 @@ def plot_binary_pd(data_fn: str, cols: list[int], fig_fn: str):
 
     plt.savefig(fig_fn)
 
-    print(f"\n{fig_fn} is generated.")
+    print(f"\n0K binary phase diagram {fig_fn} is generated.")
 
 
 if __name__ == "__main__":
@@ -63,7 +63,11 @@ if __name__ == "__main__":
         help="column numbers for formula and energy (starting from 0)",
     )
     parser.add_argument(
-        "-o", "--fig_fn", default="binary_pd.png", help="output figure filename"
+        "-o",
+        "--fig_fn",
+        default="binary_pd.png",
+        metavar="FILE",
+        help="output figure filename",
     )
 
     args = parser.parse_args()

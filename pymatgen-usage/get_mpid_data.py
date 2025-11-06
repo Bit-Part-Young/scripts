@@ -39,12 +39,12 @@ def get_mpid_data(material_id: str):
         "crystal_system": str(docs.symmetry.crystal_system),
         "spacegroup": docs.symmetry.symbol,
         "nsites": docs.nsites,
-        "fepa": docs.formation_energy_per_atom,
+        "fe": docs.formation_energy_per_atom,
         "energy_above_hull": docs.energy_above_hull,
         "is_stable": docs.is_stable,
     }
 
-    df = pd.DataFrame([data_dict])
+    df = pd.DataFrame([data_dict]).round(5)
     print()
     print(df)
 

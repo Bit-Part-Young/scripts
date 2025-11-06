@@ -25,6 +25,10 @@ fields = [
 
 API_KEY = os.getenv("PMG_MAPI_KEY")
 
+# 优先以元素 Al 作为 0K 二元相图的 x 轴变量
+element_sequence_list = ["Al", "Ti", "Nb", "Mo", "Zr", "V"]
+# element_sequence_list = ["Ti", "Al", "Nb", "Mo", "Zr", "V"]
+
 
 def get_mp_data(
     elements: str | list[str],
@@ -91,7 +95,11 @@ def get_mp_data(
         }
 
         if isinstance(elements, list):
+            # 按照给定的元素顺序排序
+            elements.sort(key=lambda x: element_sequence_list.index(x))
+
             composition: dict[str, float] = doc.composition_reduced.as_dict()
+
             # 成分 分数形式
             composition_fractional = {
                 element: composition.get(element, 0.0) / sum(composition.values())
@@ -103,6 +111,7 @@ def get_mp_data(
         data_list.append(data_dict)
 
     df = pd.DataFrame(data_list).round(5)
+    print()
     print(df)
 
     if isinstance(elements, list):

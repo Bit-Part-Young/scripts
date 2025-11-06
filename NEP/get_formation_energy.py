@@ -9,6 +9,10 @@ import pandas as pd
 from ase.formula import Formula
 from ase.io import read
 
+# 优先以元素 Al 作为 0K 二元相图的 x 轴变量
+element_sequence_list = ["Al", "Ti", "Nb", "Mo", "Zr", "V"]
+# element_sequence_list = ["Ti", "Al", "Nb", "Mo", "Zr", "V"]
+
 # DFT 元素基态结构的平均原子能量
 element_energy_dict = {
     "Ti": -7.83539,
@@ -62,14 +66,17 @@ def get_formation_energy(structure_fn: str):
     data2_list = []
     for formula, energy in formula_energy_list:
         composition = Formula(formula).count()
+
         natoms = sum(composition.values())
         element_list = list(composition.keys())
+        # 按照给定的元素顺序排序
+        element_list.sort(key=lambda x: element_sequence_list.index(x))
 
         composition_fractional = {
             element: composition.get(element, 0) / natoms for element in element_list
         }
 
-        # 计算形成能
+        # 形成能计算
         formation_energy = energy
         for element, count in composition.items():
             formation_energy -= element_energy_dict[element] * count
@@ -89,7 +96,8 @@ def get_formation_energy(structure_fn: str):
         data2_list.append(data2_dict)
 
     # 分别保存成 化学式-能量-形成能 和 成分-形成能 两个数据文件
-    # 成分-形成能 是使用 pycxl 脚本绘制 0K 二元相图需要的数据
+    # 化学式-能量-形成能 是使用 plot_binary_pd.py 脚本绘制 0K 二元相图需要的数据
+    # 成分-形成能 是使用 pycxl 和 plot_binary_pd.py 脚本绘制 0K 二元相图需要的数据
     df1 = pd.DataFrame(data1_list).round(5)
     df2 = pd.DataFrame(data2_list).round(5)
     df1.to_csv("formula_formation_energy.dat", sep=" ", index=False)
