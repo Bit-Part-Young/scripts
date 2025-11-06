@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-"""二元 0K 计算相图绘制，与 get_mp_binary.py 配合使用"""
+"""
+二元 0K 计算相图绘制（根据数据文件中的 formula fe e_above_hull 数据列绘制）
+与 get_mp_binary.py 配合使用
+"""
 
 import argparse
 import re
@@ -9,7 +12,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.ticker import MultipleLocator
-from spt.plot_params import set_roman_plot_params
+
+from spt.plot_params import set_plot_params
 
 
 def to_subscript(formula_list: list[str]) -> list[str]:
@@ -22,7 +26,7 @@ def to_subscript(formula_list: list[str]) -> list[str]:
 
 
 def binary_pd_plot(data_fn: str, element_list: list[str]):
-    """二元 0K 计算相图绘制"""
+    """二元 0K 计算相图绘制（根据数据文件中的 formula fepa e_above_hull 数据列绘制）"""
 
     df = pd.read_csv(data_fn)
 
@@ -35,11 +39,11 @@ def binary_pd_plot(data_fn: str, element_list: list[str]):
     # unstable_df 用于绘制散点图
     unstable_df = df[df["e_above_hull"] > 0.0]
 
-    set_roman_plot_params()
+    set_plot_params(roman_params=True, sci_params=True)
     fig, ax = plt.subplots(figsize=(6, 6))
 
     # 散点数据绘制
-    ax.scatter(unstable_df[solute], unstable_df["fepa"], s=50)
+    ax.scatter(unstable_df[solute], unstable_df["fe"], s=50)
 
     stable_formula_list = stable_df["formula"]
     stable_formula_subscript_list = to_subscript(stable_formula_list)
@@ -49,13 +53,13 @@ def binary_pd_plot(data_fn: str, element_list: list[str]):
     for i in range(stable_df.shape[0]):
         ax.scatter(
             stable_df[solute].iloc[i],
-            stable_df["fepa"].iloc[i],
+            stable_df["fe"].iloc[i],
             marker=markers[i],
             label=rf"$\rm{{{stable_formula_subscript_list[i]}}}$",
         )
 
     # Hull 绘制
-    ax.plot(stable_df[solute], stable_df["fepa"], "-", color="green")
+    ax.plot(stable_df[solute], stable_df["fe"], "-", color="green")
 
     x = np.arange(0, 1.1, 0.2)
     ax.set_xticks(x, labels=[f"{i:.1f}" for i in x])
@@ -72,18 +76,20 @@ def binary_pd_plot(data_fn: str, element_list: list[str]):
     fig_fn = f"{'_'.join(element_list)}.png"
     fig.savefig(fig_fn)
 
-    print(f"Figure of {' '.join(element_list)} binary 0K phase diagram is generated.")
+    print(f"\nFigure of {' '.join(element_list)} binary 0K phase diagram is generated.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Plot binary 0K phase diagram.",
+        description="Plot binary 0K phase diagram from formula fe e_above_hull data.",
         epilog="Author: SLY.",
     )
 
-    parser.add_argument("data_fn", help="data file")
-    parser.add_argument("element_list", nargs=2, help="element list (e.g. Ti Al)")
+    parser.add_argument(
+        "data_fn", help="data filename (must contain formula fe e_above_hull columns)"
+    )
+    parser.add_argument("element_list", nargs=2, help="2 element symbol (e.g. Ti Al)")
 
     args = parser.parse_args()
 
-    binary_pd_plot(data_fn=args.data_fn, element_list=args.element_list)
+    binary_pd_plot(args.data_fn, args.element_list)
