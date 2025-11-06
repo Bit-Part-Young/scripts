@@ -7,6 +7,7 @@ import os
 
 import pandas as pd
 from mp_api.client import MPRester
+from pymatgen.core.structure import Structure
 
 fields = [
     "material_id",
@@ -19,6 +20,7 @@ fields = [
     "formation_energy_per_atom",
     "energy_above_hull",
     "is_stable",
+    "structure",
 ]
 
 API_KEY = os.getenv("PMG_MAPI_KEY")
@@ -40,6 +42,9 @@ def get_mp_data(
     if energy_above_hull is not None:
         energy_above_hull = (0.0, energy_above_hull)
 
+    if stable is False:
+        stable = None
+
     with MPRester(API_KEY) as mpr:
         docs = mpr.materials.summary.search(
             chemsys=chemsys_list,
@@ -58,32 +63,43 @@ def get_mp_data(
     data_list = []
     for doc in docs:
 
+        structure: Structure = doc.structure
+        # 删除磁性信息
+        if "magmom" in structure.site_properties.keys():
+            structure.remove_site_property("magmom")
+
+        atoms = structure.to_ase_atoms()
+        natoms = len(atoms)
+        formula = atoms.get_chemical_formula()
+        cell_info = atoms.cell.cellpar().round(3).tolist()
+
+        # formula 直接使用 doc.formula_pretty 会导致后面的 0K 二元相图绘制不准确
+        # formula_pretty 会导致获取的所有一元的化学式均为 如 Ti Al 之类，而非 Ti2 Al4
+        # formula_pretty 对金属间化合物无影响
         data_dict = {
+            "formula": formula,
+            "natoms": natoms,
             "material_id": str(doc.material_id),
-            "formula": doc.formula_pretty,
+            "energy": doc.energy_per_atom * doc.nsites,
+            "fe": doc.formation_energy_per_atom,
+            "e_above_hull": doc.energy_above_hull,
+            "is_stable": doc.is_stable,
             "crystal_system": str(doc.symmetry.crystal_system),
-            "spacegroup": doc.symmetry.symbol,
-            "nsites": doc.nsites,
+            "spg_symbol": doc.symmetry.symbol,
+            "spg_number": doc.symmetry.number,
+            "cell_info": cell_info,
         }
 
         if isinstance(elements, list):
-            structure_composition: dict[str, float] = doc.composition_reduced.as_dict()
+            composition: dict[str, float] = doc.composition_reduced.as_dict()
             # 成分 分数形式
-            structure_composition_frac = {
-                element: structure_composition.get(element, 0.0)
-                / sum(structure_composition.values())
+            composition_fractional = {
+                element: composition.get(element, 0.0) / sum(composition.values())
                 for element in elements
             }
 
-            data_dict.update(structure_composition_frac)
+            data_dict.update(composition_fractional)
 
-        data_dict.update(
-            {
-                "fepa": doc.formation_energy_per_atom,
-                "e_above_hull": doc.energy_above_hull,
-                "stable": doc.is_stable,
-            }
-        )
         data_list.append(data_dict)
 
     df = pd.DataFrame(data_list).round(5)
@@ -94,6 +110,9 @@ def get_mp_data(
     else:
         csv_fn = f"{elements}_mp.csv"
     df.to_csv(csv_fn, index=False)
+
+    print("\nNote: The energy in MP is not real DFT calculated energy?")
+    print("Note: The stable entry in MP for pure element may be not the common one.")
 
     print(f"\nData saved to {csv_fn}.")
 
