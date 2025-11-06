@@ -29,6 +29,8 @@ def get_mp_intermetallics(
         "material_id",
         "is_stable",
         "formula_pretty",
+        "nsites",
+        "energy_per_atom",
         "formation_energy_per_atom",
         "energy_above_hull",
         "symmetry",
@@ -69,7 +71,9 @@ def get_mp_intermetallics(
     json_fn = f"{chemsys}_mp_intermetallics.json"
     dumpfn(docs_simplified_list, json_fn)
 
-    print(f"Found {len(docs)} intermetallics for {chemsys}.")
+    print("\nNote: The energy in MP is not real DFT calculated energy?")
+
+    print(f"\nFound {len(docs)} intermetallics for {chemsys} and saved to {json_fn}.")
 
 
 if __name__ == "__main__":
