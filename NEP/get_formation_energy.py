@@ -13,19 +13,34 @@ from ase.io import read
 element_sequence_list = ["Al", "Ti", "Nb", "Mo", "Zr", "V"]
 # element_sequence_list = ["Ti", "Al", "Nb", "Mo", "Zr", "V"]
 
-# DFT 元素基态结构的平均原子能量
-element_energy_dict = {
-    "Ti": -7.83539,
-    "Al": -3.74433,
-    "Nb": -10.21808,
-    "Mo": -10.93079,
-    "Zr": -8.52201,
-    "V": -8.99063,
-}
+
+def get_element_energy_dict(element_energy_fn: str | None = None):
+    if element_energy_fn is None:
+        # DFT 元素基态结构的平均原子能量
+        element_energy_dict = {
+            "Ti": -7.83539,
+            "Al": -3.74433,
+            "Nb": -10.21808,
+            "Mo": -10.93079,
+            "Zr": -8.52201,
+            "V": -8.99063,
+        }
+    else:
+        # 从文件中读取元素基态结构的平均原子能量
+        df = pd.read_csv(element_energy_fn, sep=None, engine="python")
+        element_energy_dict = df.set_index("element")["energy"].to_dict()
+
+    return element_energy_dict
 
 
-def get_energy(structure_fn: str):
+def get_energy(
+    structure_fn: str,
+    add_element_data: bool = False,
+    element_energy_fn: str | None = None,
+):
     """获取给定构型的化学式和能量"""
+
+    element_energy_dict = get_element_energy_dict(element_energy_fn)
 
     input_fn_dirname = os.path.dirname(structure_fn)
     input_fn_basename = os.path.basename(structure_fn)
@@ -53,13 +68,32 @@ def get_energy(structure_fn: str):
 
             formula_energy_list.append((formula, energy))
 
+        # 是否添加元素对应的数据
+        if add_element_data:
+            composition = Formula(formula_energy_list[0][0]).count()
+            element_list = list(composition.keys())
+
+            # 实现 Ti1Al0 Ti1Al0Nb0 的化学式样式，便于后续的 0K 二元相图绘制
+            for element in element_list:
+                formula_partial = []
+                for e in element_list:
+                    count = 1 if e == element else 0
+                    formula_partial.append(f"{e}{count}")
+                formula = "".join(formula_partial)
+                formula_energy_list.append((formula, element_energy_dict[element]))
+
     return formula_energy_list
 
 
-def get_formation_energy(structure_fn: str):
+def get_formation_energy(
+    structure_fn: str,
+    add_element_data: bool = False,
+    element_energy_fn: str | None = None,
+):
     """获取给定构型的化学式和形成能"""
 
-    formula_energy_list = get_energy(structure_fn)
+    element_energy_dict = get_element_energy_dict(element_energy_fn)
+    formula_energy_list = get_energy(structure_fn, add_element_data, element_energy_fn)
 
     formula_formation_energy_list = []
     data1_list = []
@@ -113,7 +147,17 @@ if __name__ == "__main__":
     )
 
     parser.add_argument("structure_fn", help="structure filename; eg. POSCAR, *.xyz")
+    parser.add_argument(
+        "--add_element_data", action="store_true", help="whether to add element data"
+    )
+    parser.add_argument(
+        "--element_energy_fn",
+        metavar="FILE",
+        help="element energy filename",
+    )
 
     args = parser.parse_args()
 
-    get_formation_energy(args.structure_fn)
+    get_formation_energy(
+        args.structure_fn, args.add_element_data, args.element_energy_fn
+    )
