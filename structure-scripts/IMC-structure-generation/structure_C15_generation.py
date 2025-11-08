@@ -4,7 +4,7 @@
 生成 C15 (V2Zr, Mo2Zr) 结构
 该方式得到的构型与文献中的相同，而 struct_gen 生成的则不太一致
 
-reference:
+晶体学信息 reference:
 - Structural, elastic, and thermal properties of laves phase ZrV2 under pressure
 - Irradiation induced structural change in Mo2Zr intermetallic phase
 """
@@ -17,8 +17,8 @@ from ase.spacegroup import crystal
 from pymatgen.core.structure import Structure
 
 
-# 输出原子位点信息
 def get_structure_info(structure: Structure):
+    """输出原子位点信息"""
 
     print(f"natoms: {len(structure)}")
     print("\natoms site info:")
@@ -27,8 +27,8 @@ def get_structure_info(structure: Structure):
         print(site.species, site.frac_coords)
 
 
-# 输出原子位点信息
 def get_atoms_info(atoms: Atoms):
+    """输出原子位点信息"""
 
     print(f"\nnatoms: {len(atoms)}.")
     print("\natoms site info:")
@@ -38,6 +38,11 @@ def get_atoms_info(atoms: Atoms):
 
 
 def structure_C15_generation(lattice_constant: float, element_symbols: list):
+    """生成 C15 结构"""
+
+    if len(element_symbols) != 2:
+        raise ValueError("element_symbols must be a list of 2 strings!")
+
     a, b, c = lattice_constant, lattice_constant, lattice_constant
     spacegroup = 227
 
@@ -62,7 +67,10 @@ def structure_C15_generation(lattice_constant: float, element_symbols: list):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Generate C15 structure")
+    parser = argparse.ArgumentParser(
+        description="Generate C15 structure.", epilog="Author: SLY."
+    )
+
     parser.add_argument(
         "-e", "--element_symbols", nargs=2, metavar="STR", help="element symbols"
     )
@@ -73,6 +81,7 @@ if __name__ == "__main__":
         metavar="FLOAT",
         help="lattice constant",
     )
+
     args = parser.parse_args()
 
     structure_C15_generation(args.lattice_constant, args.element_symbols)
