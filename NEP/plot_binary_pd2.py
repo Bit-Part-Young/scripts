@@ -12,13 +12,16 @@ from matplotlib.ticker import MultipleLocator
 from spt.plot_params import set_plot_params
 
 
-def plot_binary_pd(data_fn: str, cols: list[int], figure_fn: str):
+def plot_binary_pd(data_fn: str, columns: list[int], figure_fn: str):
     """绘制 0K 二元相图（根据数据文件中的 concentration 和 formation energy 数据列绘制）"""
 
+    if len(columns) != 2:
+        raise ValueError("columns must be a list of 2 integers!")
+
     df = pd.read_csv(data_fn, sep=None, engine="python")
-    df_concentrations = df.iloc[:, cols[0]]
-    element = df.columns[cols[0]]
-    df_energies = df.iloc[:, cols[1]]
+    df_concentrations = df.iloc[:, columns[0]]
+    element = df.columns[columns[0]]
+    df_energies = df.iloc[:, columns[1]]
 
     convex_hull = ConvexHull(df_concentrations, df_energies)
 
@@ -49,14 +52,13 @@ if __name__ == "__main__":
         epilog="Author: SLY.",
     )
 
+    parser.add_argument("data_fn", help="data filename")
     parser.add_argument(
-        "data_fn",
-        help="data filename (must contain concentration and formation energy columns)",
-    )
-    parser.add_argument(
-        "cols",
+        "-c",
+        "--columns",
         type=int,
         nargs=2,
+        metavar="N",
         help="column numbers for concentration and formation energy (starting from 0)",
     )
     parser.add_argument(
@@ -69,4 +71,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    plot_binary_pd(args.data_fn, args.cols, args.fig_fn)
+    plot_binary_pd(args.data_fn, args.columns, args.fig_fn)
