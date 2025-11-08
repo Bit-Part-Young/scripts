@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-"""NEP 势函数结构优化（完全弛豫；可单个或批量计算）"""
+"""
+NEP 势函数结构优化，借助 calorine 包（完全弛豫；可单个或批量计算）
+注：部分结构用 relax_structure 进行弛豫速度很慢，建议使用 GPUMD，速度更快
+"""
 
 import argparse
 import os
@@ -33,7 +36,8 @@ def relax_nep_single(atoms: Atoms, potential_fn: str = "nep.txt", output: bool =
         print(f"Lattice constants: {np.round(atoms.cell.lengths(), 5)} angstrom.")
         print(f"Energy_pa: {round(energy_pa, 5)} eV/atom.")
 
-    relax_structure(atoms, minimizer="fire")
+    # fmax 选择 0.01 0.001 0.00001；默认值 0.001
+    relax_structure(atoms, fmax=0.001, minimizer="fire")
 
     energy = atoms.get_potential_energy()
     energy_pa = energy / natoms
@@ -107,7 +111,7 @@ def relax_nep(structure_fn: str = "POSCAR", potential_fn: str = "nep.txt"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Relaxation calculation using NEP potential (POSCAR for single calculation & check; xyz for batch calculation).",
+        description="Relaxation calculation using NEP potential with calorine package (POSCAR for single calculation & check; xyz for batch calculation).",
         epilog="Author: SLY.",
     )
 

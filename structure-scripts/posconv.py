@@ -27,6 +27,7 @@ def posconv(input_fn: str, output_fn: str, specorder: bool = False):
         atoms: list[Atoms] = read(input_fn, index=":")
         print(f"{input_fn} Frames: {len(atoms)}.")
     elif input_format in ["lmp", "data", "lammps-data"]:
+        # sort_by_id 为 True 时，原子的 id 不连续时，会出现报错；为 False，不会报错，建议设为 False
         atoms: Atoms = read(input_fn, format="lammps-data", sort_by_id=False)
     elif input_format in ["lammpstrj"]:
         atoms: Atoms = read(input_fn, format="lammps-dump-text")
@@ -40,6 +41,7 @@ def posconv(input_fn: str, output_fn: str, specorder: bool = False):
 
     output_fn_basename = os.path.basename(output_fn)
     output_format = output_fn_basename.split(".")[-1]
+
     if output_format in ["vasp", "POSCAR"]:
         write_param_dict = {"format": "vasp", "direct": True, "sort": True}
 
@@ -56,7 +58,10 @@ def posconv(input_fn: str, output_fn: str, specorder: bool = False):
         if specorder:
             # 按照给定元素顺序排序
             element_list = list(set(atoms.get_chemical_symbols()))
+            # 用于 Ti-Al-Nb-Mo-Zr-V 多主元体系
             element_sequence_list = ["Ti", "Al", "Nb", "Mo", "Zr", "V"]
+            # 用于 TaNbVMoW 相关势函数
+            # element_sequence_list = ["Ta", "Nb", "V", "Mo", "W"]
             if all(element in element_sequence_list for element in element_list):
                 write_param_dict["specorder"] = element_sequence_list
 
@@ -99,4 +104,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    posconv(input_fn=args.input_fn, output_fn=args.output_fn, specorder=args.specorder)
+    posconv(args.input_fn, args.output_fn, args.specorder)
