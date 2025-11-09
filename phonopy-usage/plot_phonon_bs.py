@@ -202,7 +202,6 @@ if __name__ == "__main__":
         "-i",
         "--input_fn",
         nargs="+",
-        type=str,
         help="1 or 2 phonopy input files",
     )
 
