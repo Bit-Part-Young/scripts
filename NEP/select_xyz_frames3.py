@@ -89,7 +89,7 @@ def filter_frames(frames: list) -> tuple[list, list, list]:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Select/Filter frames of atoms with zero force from extxyz file.",
+        description="Select/Filter configuration frames with zero force from extxyz file.",
     )
 
     parser.add_argument(

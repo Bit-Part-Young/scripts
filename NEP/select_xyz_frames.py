@@ -92,7 +92,7 @@ def filter_frames(frames: list, force_threshold: float) -> tuple[list, list, lis
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Select/Filter frames from extxyz file according to the force threshold.",
+        description="Select/Filter configuration frames by force threshold from extxyz file.",
     )
 
     parser.add_argument(
