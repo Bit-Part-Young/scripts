@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-筛选原子受力均为 0.0 的构型（个人用于对 二元置换固溶体 类型进行筛选）
+根据索引列表筛选构型
 
 reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/Analysis_and_Processing/select_xyz_frames/select_xyz_frames.py
 """
@@ -46,25 +46,8 @@ def write_xyz(frames: list, output_xyz_fn: str):
                 f.write(f"{atom_info.strip()}\n")
 
 
-def force_exceeds_threshold(atom_info: str):
-    """判断原子受力是否 0.0"""
-
-    atom_info_list = atom_info.split()
-    if len(atom_info_list) == 7:
-        force_list = atom_info_list[4:7]
-    elif len(atom_info_list) == 8:
-        force_list = atom_info_list[5:8]
-
-    # 力矢量
-    force_vector = np.array(list(map(float, force_list)))
-    # 合力
-    force_norm = np.linalg.norm(force_vector)
-
-    return np.isclose(force_norm, 0.0)
-
-
-def filter_frames(frames: list) -> tuple[list, list, list]:
-    """筛选构型"""
+def filter_frames(frames: list, selected_indices: list) -> tuple[list, list, list]:
+    """根据给定索引列表筛选构型"""
 
     filtered_frames = []
     removed_frames = []
@@ -72,10 +55,9 @@ def filter_frames(frames: list) -> tuple[list, list, list]:
 
     for i in range(len(frames)):
         current_frame = frames[i]
-        natoms, frame_info, energy, lattice, atoms_info = current_frame
 
-        # 如果原子受力均为 0.0，则删除该帧对应的构型
-        if all(force_exceeds_threshold(atom_info) for atom_info in atoms_info):
+        # 若索引不在 selected_indices 中，则删除该帧对应的构型
+        if i not in selected_indices:
             # 记录被删除的构型索引，从 1 开始
             removed_frames_indices.append(i + 1)
             removed_frames.append(current_frame)
@@ -89,7 +71,7 @@ def filter_frames(frames: list) -> tuple[list, list, list]:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Select/Filter configuration frames with zero force from extxyz file.",
+        description="Select/Filter configuration frames by selected indices from extxyz file.",
     )
 
     parser.add_argument(
@@ -102,14 +84,25 @@ if __name__ == "__main__":
         default="train_filtered.xyz",
         help="output xyz filename (default: train_filtered.xyz)",
     )
+    parser.add_argument(
+        "-si",
+        "--selected_indices",
+        type=int,
+        nargs="+",
+        metavar="N",
+        help="selected indices",
+    )
 
     args = parser.parse_args()
 
     input_xyz_fn = args.input_xyz_fn
     output_xyz_fn = args.output_xyz_fn
+    selected_indices = args.selected_indices
 
     frames = parse_xyz(input_xyz_fn)
-    filtered_frames, removed_frames, removed_frames_indices = filter_frames(frames)
+    filtered_frames, removed_frames, removed_frames_indices = filter_frames(
+        frames, selected_indices
+    )
     write_xyz(filtered_frames, output_xyz_fn)
     write_xyz(removed_frames, "removed.xyz")
 
