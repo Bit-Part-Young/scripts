@@ -15,7 +15,9 @@ from matplotlib.axes import Axes
 from phonopy import load
 from phonopy.api_phonopy import Phonopy
 from phonopy.phonon.band_structure import get_band_qpoints, get_band_qpoints_by_seekpath
+from phonopy.structure.atoms import PhonopyAtoms
 from phonopy.units import VaspToTHz
+from pymatgen.core.structure import Structure
 from pymatgen.io.phonopy import get_pmg_structure
 from pymatgen.symmetry.kpath import KPathSeek
 
@@ -23,59 +25,58 @@ from spt.plot_params import set_plot_params
 
 
 def load_phonopy(
-    phonopy_yaml_filename: str,
+    phonopy_yaml_fn: str,
     symprec: float = 1e-4,
     is_nac: bool = False,
-    force_sets_filename: str | None = None,
-    force_constants_filename: str | None = None,
+    force_sets_fn: str | None = None,
+    force_constants_fn: str | None = None,
 ) -> Phonopy:
 
-    if force_sets_filename is not None:
+    if force_sets_fn is not None:
         phonon = load(
-            phonopy_yaml=phonopy_yaml_filename,
+            phonopy_yaml=phonopy_yaml_fn,
             factor=VaspToTHz,
             is_nac=is_nac,
             symprec=symprec,
-            force_sets_filename=force_sets_filename,
+            force_sets_filename=force_sets_fn,
         )
-    elif force_constants_filename is not None:
+    elif force_constants_fn is not None:
         phonon = load(
-            phonopy_yaml=phonopy_yaml_filename,
+            phonopy_yaml=phonopy_yaml_fn,
             factor=VaspToTHz,
             is_nac=is_nac,
             symprec=symprec,
-            force_constants_filename=force_constants_filename,
+            force_constants_filename=force_constants_fn,
         )
     else:
         phonon = load(
-            phonopy_yaml=phonopy_yaml_filename,
+            phonopy_yaml=phonopy_yaml_fn,
             factor=VaspToTHz,
             is_nac=is_nac,
             symprec=symprec,
-            force_sets_filename=phonopy_yaml_filename,
+            force_sets_filename=phonopy_yaml_fn,
         )
 
     return phonon
 
 
-def get_kpath(primitive) -> list:
-    structure_pmg = get_pmg_structure(primitive)
+def get_kpath(primitive: PhonopyAtoms) -> list:
+    structure: Structure = get_pmg_structure(primitive)
 
-    highsymmkpath = KPathSeek(structure=structure_pmg, symprec=1e-4)
-    kpath = highsymmkpath.kpath
+    kpath_high_symmetry = KPathSeek(structure=structure, symprec=1e-4)
+    kpath = kpath_high_symmetry.kpath
     # print(kpath)
 
     path = copy.deepcopy(kpath["path"])
     for idx, labelset in enumerate(kpath["path"]):
         for i, label in enumerate(labelset):
             path[idx][i] = kpath["kpoints"][label]
-
     # print(path)
 
     return path
 
 
-def get_label_and_connection(primitive, npoints: int = 101) -> tuple:
+def get_label_and_connection(primitive: PhonopyAtoms, npoints: int = 101) -> tuple:
     bands, labels_for_plot, connections = get_band_qpoints_by_seekpath(
         primitive=primitive,
         npoints=npoints,
@@ -85,7 +86,9 @@ def get_label_and_connection(primitive, npoints: int = 101) -> tuple:
     return labels_for_plot, connections
 
 
-def run_bands_structure_dict(phonon: Phonopy, path, labels, npoints: int = 101) -> dict:
+def run_bands_structure_dict(
+    phonon: Phonopy, path, labels: list, npoints: int = 101
+) -> dict:
     band_qpoints = get_band_qpoints(band_paths=path, npoints=npoints)
 
     phonon.run_band_structure(
@@ -153,9 +156,9 @@ def create_xtick_labels(x_labels: list[str], connections: list[bool]) -> list[st
     return xtick_labels
 
 
-def plot_phonon_bs(phonon_distance, phonon_frequencies, xtick_labels):
+def plot_phonon_bandstructure(phonon_distance, phonon_frequencies, xtick_labels):
 
-    set_plot_params()
+    set_plot_params(roman_params=True, sci_params=True)
 
     fig, ax = plt.subplots(figsize=(10, 8))
     num_paths, num_kpoints, num_bands = np.array(phonon_frequencies).shape
@@ -183,14 +186,13 @@ def plot_phonon_bs(phonon_distance, phonon_frequencies, xtick_labels):
     ax.set_xticks(xticks)
     ax.set_xticklabels(xtick_labels)
 
-    # additional plot settings
     ax.axhline(0, color="gray", linestyle="--", linewidth=0.5)
     ax.set_ylabel("Frequency [THz]")
-    ax.set_xlabel("Wave vector")
+    # ax.set_xlabel("Wave vector")
     ax.set_xlim(0, np.array(phonon_distance)[-1, -1])
     # ax.legend(loc="lower right")
 
-    fig.savefig("phonon_bands.png")
+    fig.savefig("phonon_bandstructure.png")
 
 
 if __name__ == "__main__":
@@ -202,25 +204,26 @@ if __name__ == "__main__":
         "-i",
         "--input_fn",
         nargs="+",
-        help="1 or 2 phonopy input files",
+        metavar="FILE",
+        help="1 or 2 files, eg. phonopy*.yaml, FORCE_SETS, FORCE_CONSTANTS",
     )
 
     args = parser.parse_args()
     input_fn = args.input_fn
 
-    phonon_yaml_filename = input_fn[0]
+    phonon_yaml_fn = input_fn[0]
     if len(input_fn) == 1:
-        phonon = load_phonopy(phonon_yaml_filename)
+        phonon = load_phonopy(phonon_yaml_fn)
     elif len(input_fn) == 2:
         if input_fn[1] == "FORCE_SETS":
             phonon = load_phonopy(
-                phonopy_yaml_filename=phonon_yaml_filename,
-                force_sets_filename=input_fn[1],
+                phonopy_yaml_fn=phonon_yaml_fn,
+                force_sets_fn=input_fn[1],
             )
         elif input_fn[1] == "FORCE_CONSTANTS":
             phonon = load_phonopy(
-                phonopy_yaml_filename=phonon_yaml_filename,
-                force_constants_filename=input_fn[1],
+                phonopy_yaml_fn=phonon_yaml_fn,
+                force_constants_fn=input_fn[1],
             )
 
     path = get_kpath(phonon.primitive)
@@ -237,4 +240,4 @@ if __name__ == "__main__":
     xtick_labels = create_xtick_labels(labels_for_plot, connections)
     # print(xtick_labels)
 
-    plot_phonon_bs(phonon_distance, phonon_frequencies, xtick_labels)
+    plot_phonon_bandstructure(phonon_distance, phonon_frequencies, xtick_labels)

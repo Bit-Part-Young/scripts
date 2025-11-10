@@ -24,13 +24,13 @@ from spt.plot_params import set_plot_params
 def get_kpoints(atoms: Atoms):
     """生成 K 点路径"""
 
-    structure_tuple = (atoms.cell, atoms.get_scaled_positions(), atoms.numbers)
-    path = seekpath.get_explicit_k_path(structure_tuple)
+    structure = (atoms.cell, atoms.get_scaled_positions(), atoms.numbers)
+    kpath = seekpath.get_explicit_k_path(structure)
 
     kpoints_rel, kpoints_lincoord, labels = (
-        path["explicit_kpoints_rel"],
-        path["explicit_kpoints_linearcoord"],
-        path["explicit_kpoints_labels"],
+        kpath["explicit_kpoints_rel"],
+        kpath["explicit_kpoints_linearcoord"],
+        kpath["explicit_kpoints_labels"],
     )
     labels = ["$\Gamma$" if label == "GAMMA" else label for label in labels]
     labels = [
@@ -40,7 +40,7 @@ def get_kpoints(atoms: Atoms):
     return kpoints_rel, kpoints_lincoord, labels
 
 
-def get_manual_kpoints(high_symmetry_points, num=30):
+def get_manual_kpoints(high_symmetry_points, nqpoint=101):
     """
     基于手动定义的高对称点生成 K 点路径
     high_symmetry_points: 包含点坐标和标签的列表
@@ -61,16 +61,18 @@ def get_manual_kpoints(high_symmetry_points, num=30):
         start, end = np.array(point["coords"]), np.array(
             high_symmetry_points[i + 1]["coords"]
         )
-        kpoint_segment = np.linspace(start, end, num=num)
+        kpoint_segment = np.linspace(start, end, num=nqpoint)
         kpoints_rel.extend(kpoint_segment)
 
         segment_length = np.linalg.norm(end - start)
         kpoints_lincoord.extend(
-            np.linspace(current_distance, current_distance + segment_length, num=num)
+            np.linspace(
+                current_distance, current_distance + segment_length, num=nqpoint
+            )
         )
 
         current_distance += segment_length
-        labels.extend([point["label"]] + [""] * (num - 1))
+        labels.extend([point["label"]] + [""] * (nqpoint - 1))
         if i == len(high_symmetry_points) - 2:
             labels[-1] = high_symmetry_points[i + 1]["label"]
         labels = ["$\Gamma$" if label == "GAMMA" else label for label in labels]
@@ -137,7 +139,7 @@ def plot_phonon_dispersion(
     ax.axhline(y=0.0, c="black", lw=0.5)
 
     ax.set(
-        xlabel="KPATH",
+        # xlabel="KPATH",
         ylabel="Frequency (THz)",
         xlim=(df.index.min(), df.index.max()),
         xticks=df_path.positions,
@@ -164,6 +166,26 @@ def get_primitive(atoms: Atoms):
 """
 if __name__ == "__main__":
 
+    # FCC（无法正确处理 U|K，而不是 U, K）
+    high_symmetry_points = [
+        {"label": "$\Gamma$", "coords": [0.0, 0.0, 0.0]},
+        {"label": "X", "coords": [0.5, 0.0, 0.5]},
+        {"label": "U", "coords": [0.625, 0.25, 0.625]},
+        {"label": "K", "coords": [0.375, 0.375, 0.75]},
+        {"label": "$\Gamma$", "coords": [0.0, 0.0, 0.0]},
+        {"label": "L", "coords": [0.5, 0.5, 0.5]},
+    ]
+
+    # HCP
+    # high_symmetry_points = [
+    #     {"label": "$\Gamma$", "coords": [0.0, 0.0, 0.0]},
+    #     {"label": "K", "coords": [0.333333, 0.333333, 0.0]},
+    #     {"label": "M", "coords": [0.5, 0.0, 0.0]},
+    #     {"label": "$\Gamma$", "coords": [0.0, 0.0, 0.0]},
+    #     {"label": "A", "coords": [0.0, 0.0, 0.5]},
+    # ]
+
+    # BCC
     high_symmetry_points = [
         {"label": "$\Gamma$", "coords": [0.0, 0.0, 0.0]},
         {"label": "H", "coords": [0.5, -0.5, 0.5]},
