@@ -79,7 +79,7 @@ def get_manual_kpoints(high_symmetry_points, num=30):
 
 
 def create_phonon_dataframe(phonon: Phonopy, kpoints_rel, kpoints_lincoord):
-    """生成声子数据的DataFrame"""
+    """生成声子谱数据的 DataFrame"""
 
     phonon.run_band_structure(
         paths=[kpoints_rel], with_eigenvectors=True, with_group_velocities=True

@@ -28,10 +28,10 @@ def plot_phonon_bandstructure(band_yaml_fn: str, fig_fn: str = "band.png"):
     # K-PATH labels
     labels = []
     for i, j in data["labels"]:
-        # print(i, j)
         labels.append(i)
         if len(labels) == len(data["labels"]):
             labels.append(j)
+    labels = [r"$\Gamma$" if label == "G" else label for label in labels]
 
     # K-PATH label 对应的 x 轴坐标值
     label_positions = []
@@ -40,9 +40,14 @@ def plot_phonon_bandstructure(band_yaml_fn: str, fig_fn: str = "band.png"):
         label_positions.append(distances[0][i])
 
     set_plot_params(roman_params=True, sci_params=True)
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(10, 8))
 
     ax.plot(distances[0], eigenvalues, color="#1f77b4")
+
+    ax.set_xticks(label_positions, labels, minor=False)
+    ax.set_xlim(0, label_positions[-1])
+
+    ax.set_ylabel("Frequency (THz)")
 
     ax.axhline(linewidth=2, color="black", linestyle="--")
     for label_positions in label_positions:
