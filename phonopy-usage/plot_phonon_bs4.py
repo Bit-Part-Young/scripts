@@ -6,12 +6,16 @@ reference: https://github.com/warda-rahim/phononplotter/blob/master/phonon.py
 """
 
 import argparse
-import yaml
+
 import matplotlib.pyplot as plt
+import yaml
+
 from spt.plot_params import set_plot_params
 
 
-def plot_phonon_bandstructure(band_yaml_fn: str, fig_fn: str = "band.png"):
+def plot_phonon_bandstructure(
+    band_yaml_fn: str = "band.yaml", fig_fn: str = "band.png"
+):
 
     with open(band_yaml_fn, "r") as f:
         data = yaml.safe_load(f)
@@ -33,11 +37,13 @@ def plot_phonon_bandstructure(band_yaml_fn: str, fig_fn: str = "band.png"):
             labels.append(j)
     labels = [r"$\Gamma$" if label == "G" else label for label in labels]
 
-    # K-PATH label 对应的 x 轴坐标值
-    label_positions = []
-    step = data["segment_nqpoint"][0]
-    for i in range(0, len(distances[0]), step - 1):
-        label_positions.append(distances[0][i])
+    # K-PATH label 对应的 x 轴坐标值；reference: phonopy/scripts/phonopy_bandplot.py 第 785 行附近
+    end_points = [0]
+    for nq in data["segment_nqpoint"]:
+        end_points.append(nq + end_points[-1])
+    # end_points 中的最后一个元素需要减 1
+    end_points[-1] -= 1
+    label_positions = [distances[0][i] for i in end_points]
 
     set_plot_params(roman_params=True, sci_params=True)
     fig, ax = plt.subplots(figsize=(10, 8))
