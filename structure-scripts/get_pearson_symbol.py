@@ -55,8 +55,7 @@ def get_pearson_symbol(structure_fn: str = "POSCAR"):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Get Pearson symbol of a structure",
-        epilog="Author: SLY.",
+        description="Get Pearson symbol of a structure.", epilog="Author: SLY."
     )
 
     parser.add_argument(

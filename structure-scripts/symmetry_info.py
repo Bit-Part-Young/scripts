@@ -13,10 +13,50 @@ import argparse
 import os
 from collections import Counter
 
+import spglib
+from ase.atoms import Atoms
 from ase.io import read
 from pymatgen.core import Structure
 from pymatgen.core.sites import PeriodicSite
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
+
+
+def get_pearson_symbol(atoms: Atoms):
+    """获取结构的 Pearson 符号"""
+
+    natoms = len(atoms)
+
+    lattice = atoms.cell
+    positions = atoms.get_scaled_positions()
+    numbers = atoms.get_atomic_numbers()
+    cell = (lattice, positions, numbers)
+
+    sym_data = spglib.get_symmetry_dataset(cell)
+
+    spg_type = spglib.get_spacegroup_type(sym_data.hall_number)
+
+    # 晶系
+    if spg_type.number <= 2:
+        crystal_system = "a"
+    elif spg_type.number <= 15:
+        crystal_system = "m"
+    elif spg_type.number <= 74:
+        crystal_system = "o"
+    elif spg_type.number <= 142:
+        crystal_system = "t"
+    elif spg_type.number <= 194:
+        crystal_system = "h"
+    else:
+        crystal_system = "c"
+
+    # 布拉维点阵类型；若为 A/B 面的有心化，转为 C 面
+    latticetype = spg_type.international[0]
+    if latticetype in ["A", "B"]:
+        latticetype = "C"
+
+    pearson_symbol = crystal_system + latticetype + str(natoms)
+
+    return pearson_symbol
 
 
 def symmetry_info(
@@ -32,6 +72,7 @@ def symmetry_info(
 
     if input_format in ["POSCAR", "CONTCAR", "vasp"]:
         structure = Structure.from_file(structure_fn)
+        atoms = structure.to_ase_atoms()
     elif input_format in ["xyz", "extxyz"]:
         atoms = read(structure_fn, format="extxyz")
         structure = Structure.from_ase_atoms(atoms)
@@ -39,6 +80,8 @@ def symmetry_info(
         # sort_by_id 为 True 时，原子的 id 不连续时，会出现报错；为 False，不会报错，建议设为 False
         atoms = read(structure_fn, format="lammps-data", sort_by_id=False)
         structure = Structure.from_ase_atoms(atoms)
+
+    pearson_symbol = get_pearson_symbol(atoms)
 
     sga = SpacegroupAnalyzer(
         structure=structure, symprec=symprec, angle_tolerance=angle_tolerance
@@ -51,6 +94,7 @@ def symmetry_info(
 
     print(f"Space Group Symbol: {space_group_symbol}")
     print(f"Space Group Number: {space_group_number}")
+    print(f"Pearson Symbol: {pearson_symbol}")
 
     # 统计每种元素的 Wyckoff positions
     wyckoff_count = {}

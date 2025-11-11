@@ -78,6 +78,7 @@ function phonon_finite_displacement() {
     local ediffg="${ediffg:--1E-02}"
     local kspacing="${kspacing:-0.15}"
     local ismear="${ismear:-1}"
+    local platform="${platform:-master}"
 
     if ! command -v phonopy &> /dev/null; then
         echo
@@ -118,7 +119,7 @@ function phonon_finite_displacement() {
 
         generate_incar ${encut} ${ediff} ${ediffg} ${kspacing} ${ismear}
         get_psp2.py
-        slurm_generation.py master -nc ${ncpus}
+        slurm_generation.py ${platform} -nc ${ncpus}
 
         cd ..
     done
@@ -132,7 +133,7 @@ function phonon_finite_displacement() {
 get_help() {
   script_name=$(basename "$0")
 
-  echo -e "\nUsage: ${script_name} [-d N N N] [-encut INT] [-ediff FLOAT] [-ediffg FLOAT] [-kspacing FLOAT] [-ismear INT]"
+  echo -e "\nUsage: ${script_name} [-d N N N] [-encut INT] [-ediff FLOAT] [-ediffg FLOAT] [-kspacing FLOAT] [-ismear INT] [-platform STR]"
 
   echo -e "\nGenerate finite displacement phonon calculation input files (VASP + phonopy)."
 
@@ -145,6 +146,7 @@ get_help() {
   echo "    -kspacing FLOAT            KSPACING (default: 0.15)"
   echo "    -ismear INT                ISMEAR (default: 1)"
   echo "    -symprec FLOAT             symmetry precision to identify space group (default: 0.00001)"
+  echo "    -platform STR              platform (default: master; master or sy)"
 
   echo -e "\nExamples:"
   echo "    Default settings: ${script_name}"
@@ -183,6 +185,10 @@ while [[ $# -gt 0 ]]; do
       ;;
     -symprec)
       symprec="$2"
+      shift 2
+      ;;
+    -platform)
+      platform="$2"
       shift 2
       ;;
     -h | --help)
