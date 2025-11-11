@@ -79,6 +79,11 @@ function phonon_dftp() {
     local kspacing="${kspacing:-0.15}"
     local ismear="${ismear:-0}"
 
+    if ! command -v phonopy &> /dev/null; then
+        echo
+        echo "Error: phonopy could not be found, please check if phonopy is installed!"
+        exit 1
+    fi
 
     if [[ -f "CONTCAR" ]] && [[ ! -f "POSCAR" ]]; then
         mv CONTCAR POSCAR

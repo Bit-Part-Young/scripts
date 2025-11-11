@@ -9,7 +9,6 @@ for cij in $(ls -F | grep /$ | grep ^C); do
   cd ${root_path}/$cij
   for s in strain_*; do
     cd ${root_path}/$cij/$s
-    # echo $(pwd)
 
     # 删除 KPOINTS 符号链接
     if [[ -L "KPOINTS" ]]; then

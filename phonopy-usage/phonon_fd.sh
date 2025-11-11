@@ -79,6 +79,11 @@ function phonon_finite_displacement() {
     local kspacing="${kspacing:-0.15}"
     local ismear="${ismear:-1}"
 
+    if ! command -v phonopy &> /dev/null; then
+        echo
+        echo "Error: phonopy could not be found, please check if phonopy is installed!"
+        exit 1
+    fi
 
     if [[ -f "CONTCAR" ]] && [[ ! -f "POSCAR" ]]; then
         mv CONTCAR POSCAR

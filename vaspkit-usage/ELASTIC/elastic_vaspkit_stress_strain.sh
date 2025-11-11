@@ -76,6 +76,12 @@ function elastic_vaspkit_stress_strain() {
     local ismear="${ismear:-1}"
     local spacegroup="${spacegroup:-}"
 
+    if ! command -v vaspkit &> /dev/null; then
+        echo
+        echo "Error: vaspkit could not be found, please check if vaspkit is installed!"
+        exit 1
+    fi
+
     if [[ -f "CONTCAR" ]] && [[ ! -f "POSCAR" ]]; then
         mv CONTCAR POSCAR
     fi
