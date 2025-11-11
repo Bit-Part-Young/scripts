@@ -21,6 +21,16 @@ from pymatgen.core.structure import Structure
 from spt.plot_params import set_plot_params
 
 
+def get_primitive(atoms: Atoms):
+    """获取原胞"""
+
+    structures = Structure.from_ase_atoms(atoms)
+
+    primitive = structures.to_primitive()
+
+    return primitive.to_ase_atoms()
+
+
 def get_kpoints(atoms: Atoms):
     """生成 K 点路径"""
 
@@ -42,8 +52,10 @@ def get_kpoints(atoms: Atoms):
 
 def get_manual_kpoints(high_symmetry_points, nqpoint=101):
     """
-    基于手动定义的高对称点生成 K 点路径
-    high_symmetry_points: 包含点坐标和标签的列表
+    基于手动定义的高对称 K 点生成 K 点路径
+
+    high_symmetry_points: 包含 K 点标签和坐标的列表
+
     示例: BCC K-path
     high_symmetry_points = [
         {"label": "$\Gamma$", "coords": [0.0, 0.0, 0.0]},
@@ -83,11 +95,12 @@ def get_manual_kpoints(high_symmetry_points, nqpoint=101):
 def create_phonon_dataframe(phonon: Phonopy, kpoints_rel, kpoints_lincoord):
     """生成声子谱数据的 DataFrame"""
 
-    phonon.run_band_structure(
-        paths=[kpoints_rel], with_eigenvectors=True, with_group_velocities=True
-    )
+    phonon.run_band_structure(paths=[kpoints_rel], with_eigenvectors=True)
 
     bandstructure_dict = phonon.get_band_structure_dict()
+
+    # 生成的 yaml 文件无 label 信息
+    # phonon.write_yaml_band_structure("band.yaml")
 
     df = pd.DataFrame(bandstructure_dict["frequencies"][0], index=kpoints_lincoord)
 
@@ -153,16 +166,6 @@ def plot_phonon_dispersion(
     fig.savefig(fig_fn)
 
 
-def get_primitive(atoms: Atoms):
-    """获取原胞"""
-
-    structures = Structure.from_ase_atoms(atoms)
-
-    primitive = structures.to_primitive()
-
-    return primitive.to_ase_atoms()
-
-
 """
 if __name__ == "__main__":
 
@@ -194,7 +197,13 @@ if __name__ == "__main__":
         {"label": "N", "coords": [0.0, 0.0, 0.5]},
     ]
 
+    # 手动生成 K 点路径
     kpoints_rel, kpoints_lincoord, labels = get_manual_kpoints(high_symmetry_points)
+
+    # 自动生成 K 点路径；能正确处理 FCC 的问题
+    atoms = read("POSCAR")
+    primitive = get_primitive(atoms)
+    kpoints_rel, kpoints_lincoord, labels = get_kpoints(primitive)
 
     # print(kpoints_rel)
     # print(kpoints_lincoord)

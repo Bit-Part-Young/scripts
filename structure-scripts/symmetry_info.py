@@ -30,7 +30,7 @@ def symmetry_info(
     input_fn_basename = os.path.basename(structure_fn)
     input_format = input_fn_basename.split(".")[-1]
 
-    if input_format in ["POSCAR", "vasp"]:
+    if input_format in ["POSCAR", "CONTCAR", "vasp"]:
         structure = Structure.from_file(structure_fn)
     elif input_format in ["xyz", "extxyz"]:
         atoms = read(structure_fn, format="extxyz")
@@ -92,10 +92,16 @@ if __name__ == "__main__":
         "structure_fn", nargs="?", default="POSCAR", help="structure filename"
     )
 
+    poscar_fn = parser.add_argument(
+        "--symprec", type=float, default=0.01, help="symmetry precision"
+    )
+
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="show equivalent site group info"
     )
 
     args = parser.parse_args()
 
-    symmetry_info(args.structure_fn, args.verbose)
+    symmetry_info(
+        structure_fn=args.structure_fn, symprec=args.symprec, verbose=args.verbose
+    )

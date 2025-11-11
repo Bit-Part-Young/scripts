@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
-"""根据 material_id 检查、获取 MP phonon 数据并绘制band structure"""
+"""
+根据 material_id 检查、获取 MP phonon 数据并绘制band structure
+经简要测试，只有 mp-149 (Si) 有 MP phonon 数据，mp-46 mp-129 等没有
+"""
 
 import argparse
 import os
@@ -14,8 +17,7 @@ API_KEY = os.getenv("PMG_MAPI_KEY")
 def check(material_id: str) -> bool:
     with MPRester(API_KEY) as mpr:
         docs = mpr.materials.summary.search(
-            material_ids=material_id,
-            has_props=["phonon"],
+            material_ids=material_id, has_props=["phonon"]
         )
 
     return len(docs) > 0
@@ -31,12 +33,10 @@ def get_phonon_data(material_id):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Check, get and plot MP phonon data.",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        epilog="Author: SLY.",
+        description="Check, get and plot MP phonon data.", epilog="Author: SLY."
     )
 
-    parser.add_argument("material_id", type=str, help="MP material id")
+    parser.add_argument("material_id", help="MP material id")
 
     args = parser.parse_args()
 

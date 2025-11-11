@@ -2,6 +2,7 @@
 
 """
 通过 band.yaml 和 band.dat 文件绘制声子谱
+band.yaml 文件由 phonopy -p band.conf -s 生成
 band.dat 文件由 phonopy-bandplot --gnuplot > band.dat 生成
 """
 

@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 from ase.io import read
 
+np.set_printoptions(precision=5, suppress=True)
+
 
 def pos_diff(
     structure1_fn: str,

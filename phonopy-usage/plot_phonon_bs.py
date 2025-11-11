@@ -83,6 +83,9 @@ def get_label_and_connection(primitive: PhonopyAtoms, npoints: int = 101) -> tup
         is_const_interval=True,
     )
 
+    # print(labels_for_plot)
+    # print(connections)
+
     return labels_for_plot, connections
 
 
@@ -99,6 +102,9 @@ def run_bands_structure_dict(
 
     bandstructure_dict = phonon.get_band_structure_dict()
     # print(bandstructure_dict)
+
+    # 生成的 yaml 文件无 label 信息
+    # phonon.write_yaml_band_structure("band.yaml")
 
     return bandstructure_dict
 
@@ -118,6 +124,9 @@ def add_vertical_lines_and_commensurate_points(
         if comm_points is not None and len(comm_points) > 0:
             for point in comm_points[path]:
                 ax.plot(distances[path][point], 0, color="red", marker="D")
+
+    # print(xticks)
+    # print(sorted(set(xticks)))
 
     return sorted(set(xticks))
 
@@ -152,6 +161,8 @@ def create_xtick_labels(x_labels: list[str], connections: list[bool]) -> list[st
             else:
                 xtick_labels.append(str(x_labels[count]) + " | " + x_labels[count + 1])
                 count += 2
+
+    # print(xtick_labels)
 
     return xtick_labels
 
