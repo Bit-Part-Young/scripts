@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 """
-生成 D019 (AlZr3) 结构
-Date: 2025-11-05
+生成 Ga2Hf (r-Al2Zr) 结构
+Date: 2025-11-10
 
 晶体学信息 reference:
 - First-principles calculation of structural energetics of Al-TM (TM=Ti, Zr, Hf) intermetallics
@@ -17,7 +17,7 @@ from pymatgen.core.structure import Structure
 def get_structure_info(structure: Structure):
     """输出原子位点信息"""
 
-    print(f"natoms: {len(structure)}")
+    print(f"\nnatoms: {len(structure)}.")
     print("\natoms site info:")
 
     for site in structure:
@@ -34,28 +34,23 @@ def get_atoms_info(atoms: Atoms):
         print(atom.symbol, atom.scaled_position)
 
 
-def structure_D023_generation():
-    """生成 D019 结构"""
+def structure_r_Al2Ti_generation():
+    """生成 C14 结构"""
 
-    # AlZr3
-    # a, b, c = 6.160, 6.160, 5.045
-    # Ti3Al
-    a, b, c = 5.754, 5.754, 4.650
-    spacegroup = 194
+    a, b, c = 3.97, 3.97, 24.32
+    spacegroup = 141
 
     wyckoff_positions = [
-        # ("Al", [0.3333, 0.6667, 0.25]),
-        # ("Zr", [0.1667, 0.3333, 0.75]),
-        ("Al", [0.3333, 0.6667, 0.25]),
-        ("Ti", [0.8304, 0.6608, 0.25]),
-        # ("Ti", [0.1667, 0.3333, 0.75]),
+        ("Al", [0.0, 0.0, 0.25]),
+        ("Al", [0.00, 0.00, 0.4100]),
+        ("Ti", [0.00, 0.00, 0.0770]),
     ]
 
     atoms = crystal(
         symbols=[wyckoff_position[0] for wyckoff_position in wyckoff_positions],
         basis=[wyckoff_position[1] for wyckoff_position in wyckoff_positions],
         spacegroup=spacegroup,
-        cellpar=[a, b, c, 90, 90, 120],
+        cellpar=[a, b, c, 90, 90, 90],
         symprec=0.01,
     )
 
@@ -63,8 +58,8 @@ def structure_D023_generation():
 
     write("POSCAR", atoms, format="vasp", direct=True, sort=True)
 
-    print("\nD019 structure generated.")
+    print("\nr-Al2Ti structure generated.")
 
 
 if __name__ == "__main__":
-    structure_D023_generation()
+    structure_r_Al2Ti_generation()
