@@ -11,6 +11,7 @@ function generate_incar() {
     local ediff="${ediff:-1E-06}"
     local ediffg="${ediffg:--1E-02}"
     local kspacing="${kspacing:-0.15}"
+    local ismear="${ismear:-1}"
 
     cat > INCAR << EOF
 Global Parameters
@@ -29,7 +30,7 @@ KGAMMA   = .TRUE.
 
 Electronic Relaxation
 ALGO     = Normal
-ISMEAR   = 1
+ISMEAR   = ${ismear}
 SIGMA    = 0.05
 EDIFF    = ${ediff}
 NELM     = 300
@@ -76,6 +77,7 @@ function phonon_finite_displacement() {
     local ediff="${ediff:-1E-06}"
     local ediffg="${ediffg:--1E-02}"
     local kspacing="${kspacing:-0.15}"
+    local ismear="${ismear:-1}"
 
 
     if [[ -f "CONTCAR" ]] && [[ ! -f "POSCAR" ]]; then
@@ -109,7 +111,7 @@ function phonon_finite_displacement() {
 
         cd ${folder}
 
-        generate_incar ${encut} ${ediff} ${ediffg} ${kspacing}
+        generate_incar ${encut} ${ediff} ${ediffg} ${kspacing} ${ismear}
         get_psp2.py
         slurm_generation.py master -nc ${ncpus}
 
@@ -125,22 +127,23 @@ function phonon_finite_displacement() {
 get_help() {
   script_name=$(basename "$0")
 
-  echo -e "\nUsage: ${script_name} [-d N N N] [-encut INT] [-ediff FLOAT] [-ediffg FLOAT] [-kspacing FLOAT]"
+  echo -e "\nUsage: ${script_name} [-d N N N] [-encut INT] [-ediff FLOAT] [-ediffg FLOAT] [-kspacing FLOAT] [-ismear INT]"
 
   echo -e "\nGenerate finite displacement phonon calculation input files (VASP + phonopy)."
 
   echo -e "\nOptions:"
   echo "    -h, --help                 show this help message and exit"
   echo "    -d N N N                   duplicate (default: 2 2 2)"
-  echo "    -symprec FLOAT             symmetry precision to identify space group (default: 0.00001)"
   echo "    -encut INT                 ENCUT (default: 500)"
   echo "    -ediff FLOAT               EDIFF (default: 1E-06)"
   echo "    -ediffg FLOAT              EDIFFG (default: -1E-02)"
   echo "    -kspacing FLOAT            KSPACING (default: 0.15)"
+  echo "    -ismear INT                ISMEAR (default: 1)"
+  echo "    -symprec FLOAT             symmetry precision to identify space group (default: 0.00001)"
 
   echo -e "\nExamples:"
   echo "    Default settings: ${script_name}"
-  echo "    For higher accuracy: ${script_name} -d 2 2 2 -encut 600 -ediff 1E-08 -ediffg -1E-02 -kspacing 0.10"
+  echo "    For higher accuracy: ${script_name} -d 2 2 2 -encut 600 -ediff 1E-08 -kspacing 0.10"
 }
 
 
@@ -152,10 +155,6 @@ while [[ $# -gt 0 ]]; do
       dup_y="$3"
       dup_z="$4"
       shift 4
-      ;;
-    -symprec)
-      symprec="$2"
-      shift 2
       ;;
     -encut)
       encut="$2"
@@ -171,6 +170,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     -kspacing)
       kspacing="$2"
+      shift 2
+      ;;
+    -ismear)
+      ismear="$2"
+      shift 2
+      ;;
+    -symprec)
+      symprec="$2"
       shift 2
       ;;
     -h | --help)

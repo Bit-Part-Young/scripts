@@ -11,6 +11,7 @@ function generate_incar() {
     local ediff="${ediff:-1E-06}"
     local ediffg="${ediffg:--1E-02}"
     local kspacing="${kspacing:-0.15}"
+    local ismear="${ismear:-1}"
 
     cat > INCAR << EOF
 Global Parameters
@@ -29,7 +30,7 @@ KGAMMA   = .TRUE.
 
 Electronic Relaxation
 ALGO     = Normal
-ISMEAR   = 1
+ISMEAR   = ${ismear}
 SIGMA    = 0.05
 EDIFF    = ${ediff}
 NELM     = 300
@@ -72,13 +73,15 @@ function elastic_vaspkit_energy_strain() {
     local ediff="${ediff:-1E-06}"
     local ediffg="${ediffg:--1E-02}"
     local kspacing="${kspacing:-0.15}"
+    local ismear="${ismear:-1}"
+    local spacegroup="${spacegroup:-}"
 
     if [[ -f "CONTCAR" ]] && [[ ! -f "POSCAR" ]]; then
         mv CONTCAR POSCAR
     fi
 
     # 生成 INCAR 文件，ISIF=2
-    generate_incar ${encut} ${ediff} ${ediffg} ${kspacing}
+    generate_incar ${encut} ${ediff} ${ediffg} ${kspacing} ${ismear}
     # 生成空的 KPOINTS 文件（不用，而是用 INCAR 中的 KSPACING 和 KGAMMA 参数）
     touch KPOINTS
     # 生成 POTCAR 文件
@@ -101,6 +104,14 @@ EOF
 201
 EOF
 
+    # 是否写入具体的空间群至 SYMMETRY.in 文件
+    if [[ ! -z "${spacegroup}" ]]; then
+        cat > SYMMETRY.in << EOF
+# Read Space Group Number from the SYMMETRY.in file if it exists.
+    ${spacegroup}          #Space group number of the input structure
+EOF
+    fi
+
     # 拷贝 批量检查、提交由 vaspkit 生成的 能量-应变法 弹性常数计算任务的脚本
     fn="/home/yangsl/scripts/cms-scripts/vaspkit-usage/ELASTIC/submit_batch_vasp_jobs.sh"
     cp ${fn} .
@@ -116,7 +127,7 @@ EOF
 get_help() {
   script_name=$(basename "$0")
 
-  echo -e "\nUsage: ${script_name} [-encut INT] [-ediff FLOAT] [-ediffg FLOAT] [-kspacing FLOAT]"
+  echo -e "\nUsage: ${script_name} [-encut INT] [-ediff FLOAT] [-ediffg FLOAT] [-kspacing FLOAT] [-ismear INT] [-sg INT]"
 
   echo -e "\nGenerate elastic constant calculation input files (energy-strain method; VASP + vaspkit)."
 
@@ -126,10 +137,12 @@ get_help() {
   echo "    -ediff FLOAT               EDIFF (default: 1E-06)"
   echo "    -ediffg FLOAT              EDIFFG (default: -1E-02)"
   echo "    -kspacing FLOAT            KSPACING (default: 0.15)"
+  echo "    -ismear INT                ISMEAR (default: 1)"
+  echo "    -sg INT                    add specific space group number (default: empty)"
 
   echo -e "\nExamples:"
   echo "    Default settings: ${script_name}"
-  echo "    For higher accuracy: ${script_name} -encut 600 -ediff 1E-08 -ediffg -1E-02 -kspacing 0.10"
+  echo "    For higher accuracy: ${script_name} -encut 600 -ediff 1E-08 -kspacing 0.10"
 }
 
 
@@ -150,6 +163,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     -kspacing)
       kspacing="$2"
+      shift 2
+      ;;
+    -ismear)
+      ismear="$2"
+      shift 2
+      ;;
+    -sg)
+      spacegroup="$2"
       shift 2
       ;;
     -h | --help)
