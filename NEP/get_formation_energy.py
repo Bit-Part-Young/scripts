@@ -137,7 +137,12 @@ def get_formation_energy(
     df1.to_csv("formula_formation_energy.dat", sep=" ", index=False)
     df2.to_csv("composition_formation_energy.dat", sep=" ", index=False)
 
-    print("\n2 data files generated, please look and check!")
+    print("\nFormation energy related data info:\n")
+    print(df1)
+    print()
+    print(df2)
+
+    print("\n2 formation energy related data files generated, please look and check!")
 
 
 if __name__ == "__main__":
@@ -146,7 +151,9 @@ if __name__ == "__main__":
         epilog="Author: SLY.",
     )
 
-    parser.add_argument("structure_fn", help="structure filename; eg. POSCAR, *.xyz")
+    parser.add_argument(
+        "structure_fn", help="structure filename; eg. POSCAR, CONTCAR, *.xyz"
+    )
     parser.add_argument(
         "--add_element_data", action="store_true", help="whether to add element data"
     )

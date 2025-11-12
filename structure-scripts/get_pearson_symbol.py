@@ -13,7 +13,7 @@ from ase.atoms import Atoms
 from ase.io import read
 
 
-def get_pearson_symbol(structure_fn: str = "POSCAR"):
+def get_pearson_symbol(structure_fn: str = "POSCAR", symprec: float = 0.01):
     """获取结构的 Pearson 符号"""
 
     atoms: Atoms = read(structure_fn)
@@ -24,7 +24,7 @@ def get_pearson_symbol(structure_fn: str = "POSCAR"):
     numbers = atoms.get_atomic_numbers()
     cell = (lattice, positions, numbers)
 
-    sym_data = spglib.get_symmetry_dataset(cell)
+    sym_data = spglib.get_symmetry_dataset(cell=cell, symprec=symprec)
 
     spg_type = spglib.get_spacegroup_type(sym_data.hall_number)
 
@@ -55,14 +55,20 @@ def get_pearson_symbol(structure_fn: str = "POSCAR"):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Get Pearson symbol of a structure.", epilog="Author: SLY."
+        description="Get Pearson symbol of a structure.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(
         "structure_fn", nargs="?", default="POSCAR", help="structure filename"
     )
+    parser.add_argument(
+        "--symprec", type=float, default=0.01, help="symmetry precision"
+    )
 
     args = parser.parse_args()
 
-    pearson_symbol = get_pearson_symbol(structure_fn=args.structure_fn)
+    pearson_symbol = get_pearson_symbol(args.structure_fn, args.symprec)
+
     print(f"Pearson Symbol: {pearson_symbol}")

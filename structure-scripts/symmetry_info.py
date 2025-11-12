@@ -13,6 +13,7 @@ import argparse
 import os
 from collections import Counter
 
+import numpy as np
 import spglib
 from ase.atoms import Atoms
 from ase.io import read
@@ -20,8 +21,10 @@ from pymatgen.core import Structure
 from pymatgen.core.sites import PeriodicSite
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
+np.set_printoptions(precision=5, suppress=True)
 
-def get_pearson_symbol(atoms: Atoms):
+
+def get_pearson_symbol(atoms: Atoms, symprec: float = 0.01):
     """获取结构的 Pearson 符号"""
 
     natoms = len(atoms)
@@ -31,9 +34,11 @@ def get_pearson_symbol(atoms: Atoms):
     numbers = atoms.get_atomic_numbers()
     cell = (lattice, positions, numbers)
 
-    sym_data = spglib.get_symmetry_dataset(cell)
+    sym_data = spglib.get_symmetry_dataset(cell=cell, symprec=symprec)
 
     spg_type = spglib.get_spacegroup_type(sym_data.hall_number)
+
+    print(spg_type.number)
 
     # 晶系
     if spg_type.number <= 2:
@@ -81,7 +86,7 @@ def symmetry_info(
         atoms = read(structure_fn, format="lammps-data", sort_by_id=False)
         structure = Structure.from_ase_atoms(atoms)
 
-    pearson_symbol = get_pearson_symbol(atoms)
+    pearson_symbol = get_pearson_symbol(atoms=atoms, symprec=symprec)
 
     sga = SpacegroupAnalyzer(
         structure=structure, symprec=symprec, angle_tolerance=angle_tolerance
@@ -121,7 +126,7 @@ def symmetry_info(
         for i, sites in enumerate(equivalent_sites):
             print(f"\nEquivalent Site Group {i + 1}:")
             for site in sites:
-                print(f"  - {site.species_string} at {site.frac_coords.round(5)}")
+                print(f"  - {site.species_string} at {site.frac_coords}")
     else:
         print("\nWyckoff info maybe incorrect.", end=" ")
         print("Use -v/--verbose option to check Equivalent Site Group info.")
@@ -129,7 +134,9 @@ def symmetry_info(
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Get crystal symmetry info of a structure.", epilog="Author: SLY."
+        description="Get crystal symmetry info of a structure.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY.",
     )
 
     parser.add_argument(
