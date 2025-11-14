@@ -4,14 +4,14 @@
 
 
 # 检查 INCAR 文件中的 KSPACING 参数和 KPOINTS 文件
-incar_kpoints_check(){
+function incar_kpoints_check(){
   if [[ ! -f KPOINTS ]] && ! grep -q -E '^KSPACING' INCAR; then
     echo "KPOINTS and INCAR KSPACING param are not found!"
     echo
 
     return 1
   elif [[ -f KPOINTS ]] && grep -q -E '^KSPACING' INCAR; then
-    echo "KPOINTS and INCAR KSPACING param are found! Just keep one of both!"
+    echo "Both KPOINTS and INCAR KSPACING param are found! Just keep one of both!"
     echo
 
     return 1
@@ -22,11 +22,12 @@ incar_kpoints_check(){
 
 
 # 检查 POSCAR 文件中第 7 行的原子数和实际原子数是否一致
-poscar_check(){
+function poscar_check(){
   natoms1=$(sed -n '7p' POSCAR | awk '{ for(i=1; i<=NF; i++) a+=$i; print a} ')
-  natoms2=$(awk 'NR>=9 {if(NF>=3) count++} END {print count}' POSCAR)
+  # 当原子位置信息行后面出现空行时，停止统计
+  natoms2=$(awk 'NR>=9 {if(NF==0) exit; if(NF>=3) count++} END {print count+0}' POSCAR)
 
-  if [[ $natoms1 -ne $natoms2 ]]; then
+  if [[ ${natoms1} -ne ${natoms2} ]]; then
     echo "natoms of 7th line($natoms1) and number of atoms coordinates in POSCAR($natoms2) are not consistent!"
     echo
 
@@ -38,7 +39,7 @@ poscar_check(){
 
 
 # 检查 POSCAR 中的元素和 POTCAR 中的赝势是否一致
-psp_check(){
+function psp_check(){
   element_array=($(awk 'NR==6 {for(i=1; i<=NF; i++) printf "%s ", $i}' POSCAR))
   psp_array=($(grep 'TIT' POTCAR | awk '{print $4}'))
 
@@ -46,7 +47,7 @@ psp_check(){
       element=${element_array[${i}]}
       psp=${psp_array[${i}]%_*}
 
-      if [[ $element != $psp ]]; then
+      if [[ ${element} != ${psp} ]]; then
         echo "Element in POSCAR($element) and psp in POTCAR($psp) do not match!"
         echo
 
@@ -56,22 +57,25 @@ psp_check(){
   return 0
 }
 
-# 检查 job.slurm 中队列对应的平台是否正确
-slurm_check(){
+# 检查 job.slurm 中队列对应的平台、用户是否正确
+function slurm_check(){
   if [[ -f job.slurm ]]; then
     platform=$(hostname)
 
     partition=$(grep ' -p ' job.slurm | awk '{print $3}')
+
     additional_info=$(grep '^module load ' job.slurm)
 
-    if [[ $platform =~ "sylogin" && $partition == "64c512g" ]]; then
+    if [[ ${platform} =~ "sjtu" && ${partition} == "64c512g" && ${additional_info} != "" ]]; then
       return 0
-    elif [[ $platform =~ "pilogin" && $partition == "cpu" && $additional_info != "" ]]; then
+    elif [[ ${platform} =~ "sjtu" && ${partition} == "cpu" && ${additional_info} != "" ]]; then
       return 0
-    elif [[ $platform =~ "master" && $partition == "cpu" && $additional_info == "" ]]; then
+    elif [[ ${platform} =~ "master" && ${partition} == "cpu" && ${additional_info} == "" ]]; then
+      return 0
+    elif [[ ${platform} =~ "node" && ${partition} == "cpu" && ${additional_info} == ""]]; then
       return 0
     else
-      echo "Platform($platform), partition($partition) and additional info of job.slurm do not match!"
+      echo "Platform(${platform}), partition(${partition}) and additional info of job.slurm do not match! Please check carefully!"
       echo
 
       return 1
@@ -81,6 +85,7 @@ slurm_check(){
     echo
 
     return 1
+
   fi
 }
 
@@ -101,17 +106,18 @@ get_help() {
 
 
 #-------------------------------- 主函数 --------------------------------
-if [[ $1 = "-h" || $1 = "--help" ]]; then
-  get_help
-else
+if [[ $# -eq 0 ]]; then
   incar_kpoints_check; value1=$?
   poscar_check; value2=$?
   psp_check; value3=$?
   slurm_check; value4=$?
 
-  if [[ $value1 -eq 0 && $value2 -eq 0 && $value3 -eq 0 && $value4 -eq 0 ]]; then
+  if [[ ${value1} -eq 0 && ${value2} -eq 0 && ${value3} -eq 0 && ${value4} -eq 0 ]]; then
     echo "VASP input files are OK. Happy to run!"
   else
     echo "VASP input files are not OK. Please check carefully!"
   fi
+
+elif [[ $1 = "-h" || $1 = "--help" ]]; then
+  get_help
 fi
