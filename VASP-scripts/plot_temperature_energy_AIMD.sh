@@ -12,6 +12,46 @@ grep 'T=' OSZICAR | awk '{print $3}' > temperature.dat
 # 步数
 nsteps=$(grep 'T=' OSZICAR | wc -l)
 
+echo -e "\nCurrent nsteps: ${nsteps}.\n"
+echo "Statistic(last half of data):"
+
+# 统计 energy.dat 和 temperature.dat 两个文件后一半行数的数据的平均值和标准差
+awk '
+{ x[NR]=$1 }                                  # 读入所有行
+END {
+    start = int(NR/2) + 1                      # 后半部分起始行
+    n = NR - start + 1
+
+    # 平均值
+    for(i=start;i<=NR;i++){ sum += x[i] }
+    mean = sum / n
+
+    # 标准差
+    for(i=start;i<=NR;i++){ ss += (x[i]-mean)^2 }
+    std = sqrt(ss / n)
+
+    mean = sprintf("%.2f", mean)
+    std = sprintf("%.3f", std)
+    print "Energy mean:", mean, "std:", std
+}' energy.dat
+
+awk '
+{ x[NR]=$1 }
+END {
+    start = int(NR/2) + 1
+    n = NR - start + 1
+
+    for(i=start;i<=NR;i++){ sum += x[i] }
+    mean = sum / n
+
+    for(i=start;i<=NR;i++){ ss += (x[i]-mean)^2 }
+    std = sqrt(ss / n)
+
+    mean = sprintf("%.1f", mean)
+    std = sprintf("%.1f", std)
+    print "Temperature mean:", mean, "std:", std
+}' temperature.dat
+
 
 if hostname | grep -q sjtu; then
   config_path="~/yangsl/scripts/cms-scripts/plots"
