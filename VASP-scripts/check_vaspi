@@ -72,7 +72,7 @@ function slurm_check(){
       return 0
     elif [[ ${platform} =~ "master" && ${partition} == "cpu" && ${additional_info} == "" ]]; then
       return 0
-    elif [[ ${platform} =~ "node" && ${partition} == "cpu" && ${additional_info} == ""]]; then
+    elif [[ ${platform} =~ "node" && ${partition} == "cpu" && ${additional_info} == "" ]]; then
       return 0
     else
       echo "Platform(${platform}), partition(${partition}) and additional info of job.slurm do not match! Please check carefully!"

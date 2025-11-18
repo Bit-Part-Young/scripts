@@ -13,7 +13,12 @@ def get_mpid_data(material_id: str):
     """根据 Material Project material id 获取其数据"""
 
     PMG_API_KEY = SETTINGS.get("PMG_MAPI_KEY")
+    if PMG_API_KEY is None:
+        raise ValueError(
+            "\nThe PMG_MAPI_KEY key in .pmgrc.yaml config file is not set. Please check!\n"
+        )
 
+    # 注: energy_per_atom 的数值非 VASP 计算值
     fields = [
         "material_id",
         "structure",
@@ -54,8 +59,7 @@ def get_mpid_data(material_id: str):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="Get data by Material Project material id.",
-        epilog="Author: SLY.",
+        description="Get data by Material Project material id.", epilog="Author: SLY."
     )
 
     parser.add_argument("mpid", help="Material Project material id (e.g. mp-149)")

@@ -3,7 +3,7 @@
 """
 生成应变结构
 
-reference: http://link.aps.org/ supplemental/10.1103/PhysRevMaterials.7.103602
+reference: http://link.aps.org/supplemental/10.1103/PhysRevMaterials.7.103602
 """
 
 
@@ -102,7 +102,7 @@ def strained_structure_generation(
     deformations = get_deformations(order, strain_limit)
 
     strained_structure_list = [
-        defo.apply_to_structure(structure) for defo in deformations
+        deformation.apply_to_structure(structure) for deformation in deformations
     ]
 
     for strained_structure in strained_structure_list:
@@ -127,21 +127,21 @@ if __name__ == "__main__":
         const=2,
         default=2,
         choices=[2, 3, 4],
-        help="strain order (default: 2)",
+        help="strain order",
     )
     parser.add_argument(
         "input_fn",
         nargs="?",
         const="POSCAR",
         default="POSCAR",
-        help="input structure filename (default: POSCAR)",
+        help="input structure filename",
     )
     parser.add_argument(
         "output_fn",
         nargs="?",
         const="strained.xyz",
         default="strained.xyz",
-        help="output xyz filename (default: strained.xyz)",
+        help="output xyz filename",
     )
     parser.add_argument(
         "-sl",

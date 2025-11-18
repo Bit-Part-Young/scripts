@@ -9,6 +9,8 @@ from monty.serialization import dumpfn
 from mp_api.client import MPRester
 
 API_KEY = os.getenv("PMG_MAPI_KEY")
+if API_KEY is None:
+    raise ValueError("\nPMG_MAPI_KEY environment variable is not set. Please check!\n")
 
 
 def get_surface_properties(mp_id: str, system: str):

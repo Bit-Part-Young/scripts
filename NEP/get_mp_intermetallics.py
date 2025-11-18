@@ -9,6 +9,8 @@ from monty.serialization import dumpfn
 from mp_api.client import MPRester
 
 API_KEY = os.getenv("PMG_MAPI_KEY")
+if API_KEY is None:
+    raise ValueError("\nPMG_MAPI_KEY environment variable is not set. Please check!\n")
 
 
 def get_mp_intermetallics(
@@ -25,6 +27,7 @@ def get_mp_intermetallics(
 
     chemsys = "-".join(elements)
 
+    # 注: energy_per_atom 的数值非 VASP 计算值
     fields = [
         "material_id",
         "is_stable",
@@ -43,8 +46,8 @@ def get_mp_intermetallics(
         formation_energy = (None, 0)
         kwargs["formation_energy"] = formation_energy
 
-    # energy above hull 上限取 0.04 eV/atom reference:
-    # Efficient small-cell sampling for machine-learning potentials of multi-principal element alloys
+    # energy above hull 上限取 0.04 eV/atom
+    # reference: Efficient small-cell sampling for machine-learning potentials of multi-principal element alloys
     # http://arxiv.org/abs/2510.16697
     if energy_above_hull:
         energy_above_hull = (None, 0.04)

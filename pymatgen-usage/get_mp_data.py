@@ -9,6 +9,7 @@ import pandas as pd
 from mp_api.client import MPRester
 from pymatgen.core.structure import Structure
 
+# 注: energy_per_atom 的数值非 VASP 计算值
 fields = [
     "material_id",
     "structure",
@@ -24,6 +25,8 @@ fields = [
 ]
 
 API_KEY = os.getenv("PMG_MAPI_KEY")
+if API_KEY is None:
+    raise ValueError("\nPMG_MAPI_KEY environment variable is not set. Please check!\n")
 
 # 优先以元素 Al 作为 0K 二元相图的 x 轴变量
 element_sequence_list = ["Al", "Ti", "Nb", "Mo", "Zr", "V"]
