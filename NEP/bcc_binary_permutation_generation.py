@@ -1,9 +1,10 @@
 """
-生成 BCC 2x2x2 超胞的二元固溶体的不同浓度（1~15/16）的对称性非等同的置换构型
-每种二元固溶体共 329 个置换构型
-核心工具：bsym Python 包
-reference: https://www.nature.com/articles/s41524-024-01330-6
+生成 BCC 2x2x2 超胞的二元固溶体的不同浓度（1~15/16 共 15 个浓度）的对称性非等同的置换构型
+每种 BCC 二元固溶体中每种浓度的所有构型均保留，共 329 个置换构型
 
+核心工具：bsym Python 包（也可借助 pymatgen 和 enumlib 实现）
+
+reference: https://www.nature.com/articles/s41524-024-01330-6
 """
 
 import os
@@ -13,15 +14,6 @@ from ase.build import bulk
 from ase.io import write
 from bsym.interface.pymatgen import unique_structure_substitutions
 from pymatgen.core.structure import Structure
-
-element_lc_dict = {
-    "Ti": 3.252,
-    "Al": 3.232,
-    "Nb": 3.307,
-    "Mo": 3.164,
-    "Zr": 3.572,
-    "V": 2.996,
-}
 
 
 def get_binary_lc(natoms_list: list, element_list: list):
@@ -39,8 +31,9 @@ def permutation_generation(natoms_list: list, element_list: list):
     """生成置换对称性非等同的构型"""
 
     lc = get_binary_lc(natoms_list, element_list)
-    atoms_initial = bulk("Mo", "bcc", a=lc, cubic=True) * (2, 2, 2)
+    # 个人最初开始的做法，晶格常数不变，为 6 种 BCC 结构元素的平均晶格常数
     # atoms_initial = bulk("Mo", "bcc", a=3.254, cubic=True) * (2, 2, 2)
+    atoms_initial = bulk("Mo", "bcc", a=lc, cubic=True) * (2, 2, 2)
     structure_initial = Structure.from_ase_atoms(atoms_initial)
 
     subs_structures = unique_structure_substitutions(
@@ -59,6 +52,16 @@ def permutation_generation(natoms_list: list, element_list: list):
 
 if __name__ == "__main__":
 
+    # BCC 结构元素的晶格常数
+    element_lc_dict = {
+        "Ti": 3.252,
+        "Al": 3.232,
+        "Nb": 3.307,
+        "Mo": 3.164,
+        "Zr": 3.572,
+        "V": 2.996,
+    }
+
     elements = ["Ti", "Al", "Nb", "Mo", "Zr", "V"]
 
     xyz_total_fn = "bcc_binary_permutation_binary.xyz"
@@ -67,6 +70,7 @@ if __name__ == "__main__":
 
     flag = 0
     for element1, element2 in combinations(elements, 2):
+        flag += 1
 
         chemsys = "-".join([str(flag)] + [element1, element2])
         element_list = [element1, element2]
