@@ -1,8 +1,8 @@
 #!/bin/bash
 
-set -eu
+# 获取 NEP xyz 文件中的能量、力、位力、构型原子数数据，并分别保存至对应的 *.dat 文件
 
-# 获取 NEP xyz 文件中的能量、力、位力、构型原子数数据
+set -eu
 
 
 #-------------------------------- 获取能量、应力、力数据 --------------------------------
@@ -28,7 +28,7 @@ get_xyz_efs() {
   grep -v "pbc" force_${suffix}_tmp.dat > force_${suffix}_tmp2.dat
   awk '{for(i=NF-2; i<=NF; i++) printf "%.10f ", $i; print ""}' force_${suffix}_tmp2.dat > force_${suffix}.dat
 
-  rm -f *_tmp.dat
+  rm -f *_tmp*.dat
 
   echo -e "Energy, Force, (Virial), Natoms data saved to *_${suffix}.dat.\n"
 
@@ -60,6 +60,7 @@ get_help() {
   echo "    ${script_name}"
   echo "    ${script_name} train.xyz dft"
 }
+
 
 #-------------------------------- 主函数 --------------------------------
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then

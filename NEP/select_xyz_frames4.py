@@ -72,6 +72,7 @@ def filter_frames(frames: list, selected_indices: list) -> tuple[list, list, lis
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Select/Filter configuration frames by selected indices from extxyz file.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
 
     parser.add_argument(
@@ -90,7 +91,7 @@ if __name__ == "__main__":
         type=int,
         nargs="+",
         metavar="N",
-        help="selected indices",
+        help="selected indices (starting from 1)",
     )
 
     args = parser.parse_args()

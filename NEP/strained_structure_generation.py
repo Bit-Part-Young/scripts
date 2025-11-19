@@ -120,6 +120,7 @@ if __name__ == "__main__":
         description="Generate strained structures.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
+
     parser.add_argument(
         "order",
         type=int,
