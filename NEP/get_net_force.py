@@ -62,7 +62,7 @@ def get_net_force(forces: list[list[float]]):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Net force calculation of configuration/trajectory."
+        description="Net force calculation of configuration/trajectory.",
         epilog="Author: SLY.",
     )
 

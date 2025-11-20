@@ -34,7 +34,6 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "structure_fn",
-        type=str,
         default="POSCAR",
         help="primitive structure filename",
     )
