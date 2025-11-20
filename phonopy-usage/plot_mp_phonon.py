@@ -13,7 +13,7 @@ from pymatgen.phonon.plotter import PhononBSPlotter
 
 API_KEY = os.getenv("PMG_MAPI_KEY")
 if API_KEY is None:
-    raise ValueError("\nPMG_MAPI_KEY environment variable is not set. Please check!\n")
+    raise OSError("PMG_MAPI_KEY environment variable is not set. Please check!")
 
 
 def check(material_id: str) -> bool:

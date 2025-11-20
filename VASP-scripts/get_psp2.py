@@ -110,8 +110,19 @@ def get_psp(
         os.remove("POTCAR")
 
     psp_path_root = os.getenv("VASP_PSP_PATH")
+    if psp_path_root is None:
+        raise OSError(
+            "VASP_PSP_PATH environment variable is not set. "
+            "Please check your environment variables."
+        )
+
     functional_subdir = "PAW_PBE"
     psp_path = os.path.join(psp_path_root, functional_subdir)
+    if not os.path.exists(psp_path):
+        raise FileNotFoundError(
+            f"The PBE functional subdir in this script is {functional_subdir}, "
+            f"you can link your own PBE functional subdir to {functional_subdir}."
+        )
 
     element_symbols = parse_poscar_file(structure_fn)
 

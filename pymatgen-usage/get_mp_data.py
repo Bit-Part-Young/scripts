@@ -26,7 +26,7 @@ fields = [
 
 API_KEY = os.getenv("PMG_MAPI_KEY")
 if API_KEY is None:
-    raise ValueError("\nPMG_MAPI_KEY environment variable is not set. Please check!\n")
+    raise OSError("PMG_MAPI_KEY environment variable is not set. Please check!")
 
 # 优先以元素 Al 作为 0K 二元相图的 x 轴变量
 element_sequence_list = ["Al", "Ti", "Nb", "Mo", "Zr", "V"]
