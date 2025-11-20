@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 
-"""绘制 0K 二元相图（根据数据文件中的 concentration, structure label, formation energy 数据列绘制）"""
+"""
+绘制 0K 二元相图（根据数据文件中的 concentration, structure label, formation energy 数据列绘制）
+添加 结构 label 文本到每个数据点上（文本可能会与数据点有重叠）
+
+用于绘制 无 IMC 形成的二元不同 BCC 衍生结构的 0K 相图
+"""
 
 import argparse
 
@@ -13,17 +18,17 @@ from spt.plot_params import set_plot_params
 
 
 def plot_binary_pd(data_fn: str, columns: list[int], figure_fn: str):
-    """绘制 0K 二元相图（根据数据文件中的 concentration, structure label, formation energy 数据列绘制）"""
+    """绘制 0K 二元相图"""
 
     if len(columns) != 3:
         raise ValueError("columns must be a list of 3 integers!")
 
     df = pd.read_csv(data_fn, sep=None, engine="python")
-    df_concentrations = df.iloc[:, columns[0]]
     element = df.columns[columns[0]]
+    df_concentrations = df.iloc[:, columns[0]]
+    df_energies = df.iloc[:, columns[2]]
     # 添加 structure 标签 如 D03 B32 B2 GS 等
     df_structure_labels = df.iloc[:, columns[1]]
-    df_energies = df.iloc[:, columns[2]]
 
     convex_hull = ConvexHull(df_concentrations, df_energies)
 
@@ -36,13 +41,13 @@ def plot_binary_pd(data_fn: str, columns: list[int], figure_fn: str):
 
     ax.scatter(df_concentrations, df_energies, marker="s")
 
-    # [ ] y 轴范围设置待优化
     ax.set_ylim(ymin=-0.2, ymax=0.2)
 
     # 在每个点上添加 structure label
     # 计算合适的垂直偏移量（基于 y 轴范围）
     y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
-    text_offset = y_range * 0.02  # 偏移量为y轴范围的2%
+    # 偏移量为y轴范围的 2%
+    text_offset = y_range * 0.02
     for i in range(len(df_concentrations)):
         # 若 concentration 接近于 0 或 1，则不添加 label
         if df_concentrations[i] < 0.01 or df_concentrations[i] > 0.99:
@@ -73,6 +78,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Plot binary 0K phase diagram from concentration, structure label and formation energy data.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )
 

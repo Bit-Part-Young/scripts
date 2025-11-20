@@ -21,8 +21,9 @@ from spt.plot_params import set_plot_params
 def plot_binary_pd(
     ax: Axes, data_fn: str, columns: list[int], linecolor: str, label: str
 ):
-    """绘制 0K 二元相图（根据数据文件中的 concentration 和 formation energy 数据列绘制）"""
+    """绘制 0K 二元相图"""
 
+    # 不添加 structure label，效果不好
     if len(columns) != 2:
         raise ValueError("columns must be a list of 2 integers!")
 
@@ -60,28 +61,6 @@ def plot_binary_pd(
             linewidths=2.0,
         )
 
-    """
-    # 不添加 structure label，效果不好
-    # 在每个点上添加 structure label
-    # 计算合适的垂直偏移量（基于 y 轴范围）
-    y_range = ax.get_ylim()[1] - ax.get_ylim()[0]
-    text_offset = y_range * 0.02  # 偏移量为y轴范围的2%
-    for i in range(len(df_concentrations)):
-        # 若 concentration 接近于 0 或 1，则不添加 label
-        if df_concentrations[i] < 0.01 or df_concentrations[i] > 0.99:
-            continue
-
-        ax.text(
-            df_concentrations[i],
-            df_energies[i] + text_offset,
-            df_structure_labels[i],
-            fontsize=14,
-            color=linecolor,
-            # ha="center",  # 水平居中对齐
-            va="bottom",  # 垂直底部对齐，配合偏移量使文字在点上方
-        )
-    """
-
     ax.set_ylim(ymin=-0.2, ymax=0.2)
     ax.set_xticks([0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
     ax.xaxis.set_minor_locator(MultipleLocator(0.1))
@@ -95,7 +74,6 @@ def plot_binary_pd(
 def plot_multiple(data_fn_list: list[str], label_list: list[str], figure_fn: str):
     """绘制多条 0K 二元相图"""
 
-    # [ ] 优化 marker 样式和线条颜色
     linecolor_list = [
         "#1f77b4",  # 蓝色 DFT
         "#d62728",  # 红色 NEP
@@ -123,7 +101,7 @@ def plot_multiple(data_fn_list: list[str], label_list: list[str], figure_fn: str
             label=label,
         )
 
-    ax.legend()
+    ax.legend(loc="upper right")
 
     plt.savefig(figure_fn)
 
@@ -134,6 +112,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Plot multiple 0K binary phase diagrams from concentration and formation energy data.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )
 
