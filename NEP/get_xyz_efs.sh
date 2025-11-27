@@ -49,12 +49,12 @@ get_help() {
 
   echo -e "\nUsage: ${script_name} [xyz_fn] [suffix]"
 
-  echo -e "\nGet the energy, force, (virial) and natoms data from NEP xyz configuration file."
+  echo -e "\nGet the energy, force, (virial) and natoms data from extxyz file."
 
   echo -e "\nOptions:"
   echo "    -h, --help                 show this help message and exit"
   echo "    xyz_fn                     xyz filename (default: train.xyz)"
-  echo "    suffix                     suffix (default: dft)"
+  echo "    suffix                     suffix of output data file (*_suffix.dat, default: dft)"
 
   echo -e "\nExamples:"
   echo "    ${script_name}"

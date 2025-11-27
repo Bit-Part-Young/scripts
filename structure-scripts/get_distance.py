@@ -17,13 +17,10 @@ def get_distance(atoms: Atoms, mic=False):
     min_dist = np.min(distances[distances > 0.0])
     max_dist = np.max(distances)
 
-    return min_dist, max_dist
+    return round(float(min_dist), 3), round(float(max_dist), 3)
 
 
-def main(
-    structure_fn: str = "POSCAR",
-    mic: bool = False,
-):
+def main(structure_fn: str = "POSCAR", mic: bool = False):
 
     format_dict = {
         "xyz": "extxyz",
@@ -34,6 +31,9 @@ def main(
     fn_suffix = structure_fn.split(".")[-1]
     if fn_suffix in format_dict.keys():
         atoms_list = read(structure_fn, index=":", format=format_dict[fn_suffix])
+
+        nframes = len(atoms_list)
+        print(f"\nNumber of frames: {nframes}.\n")
 
         min_dist_list, max_dist_list = [], []
         for atoms in atoms_list:
@@ -48,6 +48,10 @@ def main(
         min_dist_global = np.min(min_dist_list)
         max_dist_global = np.max(max_dist_list)
 
+        print(f"Minimum distance list (Å):")
+        print(min_dist_list)
+        print(f"Maximum distance list (Å):")
+        print(max_dist_list)
         print(f"Global Minimum distance: {min_dist_global} Å.")
         print(f"Global Maximum distance: {max_dist_global} Å.")
 
@@ -72,30 +76,18 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         description="Get the minimum and maximum distance of atomic pair in a configuration.",
-        epilog="Author: SLY",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY",
     )
 
     parser.add_argument(
-        "structure_fn",
-        type=str,
-        nargs="?",
-        default="POSCAR",
-        help="Structure filename",
+        "structure_fn", nargs="?", default="POSCAR", help="Structure filename"
     )
 
     parser.add_argument(
-        "-mic",
-        action="store_true",
-        help="Use minimum image convention",
+        "-mic", action="store_true", help="Use minimum image convention"
     )
 
     args = parser.parse_args()
 
-    structure_fn = args.structure_fn
-    mic = args.mic
-
-    main(
-        structure_fn=args.structure_fn,
-        mic=args.mic,
-    )
+    main(structure_fn=args.structure_fn, mic=args.mic)

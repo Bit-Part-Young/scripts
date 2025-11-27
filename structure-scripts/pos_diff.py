@@ -80,6 +80,11 @@ def pos_diff(
     print("\nMax absolute change value:")
     print(df_selected.abs().max().to_frame().T)
 
+    # 构型原子数很多时，建议保存成文件查看
+    if df_selected.shape[0] > 100:
+        df_selected.to_csv("pos_diff.dat", index=False)
+        print("\npos diff info save to pos_diff.dat.")
+
 
 if __name__ == "__main__":
 

@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 
-"""计算 NEP 势函数预测与 DFT 计算的能量、力、应力/位力指标的 RMSE"""
+"""计算 NEP 势函数预测与 DFT 计算的能量、力、应力/位力指标的 RMSE MAE R2"""
 
+import argparse
 import os
 
 import numpy as np
 
 
-def calculate_rmse(data_fn):
-    """计算 RMSE"""
+def statistics_calc(data_fn, statistic_type: str = "rmse"):
+    """计算 RMSE MAE R2"""
 
     data = np.loadtxt(data_fn, ndmin=2)
     if "energy" in data_fn:
@@ -18,10 +19,15 @@ def calculate_rmse(data_fn):
     elif "stress" in data_fn or "virial" in data_fn:
         pred, dft = data[:, :6], data[:, 6:]
 
-    return np.sqrt(np.mean((pred - dft) ** 2))
+    if statistic_type == "rmse":
+        return np.sqrt(np.mean((pred - dft) ** 2))
+    elif statistic_type == "mae":
+        return np.mean(np.abs(pred - dft))
+    elif statistic_type == "r2":
+        return 1 - np.sum((pred - dft) ** 2) / np.sum((dft - np.mean(dft)) ** 2)
 
 
-def main():
+def statistics_info(statistic_type: str = "rmse"):
     label_list = ["Energy", "Force", "Virial", "Stress"]
     unit_list = ["eV/atom", "eV/Å", "eV/atom", "GPa"]
 
@@ -30,19 +36,29 @@ def main():
 
     data_fn_list_list = [train_data_fn_list, test_data_fn_list]
 
-    print("")
+    print()
     for data_fn_list in data_fn_list_list:
         if os.path.exists(data_fn_list[0]):
             for data_fn, label, unit in zip(data_fn_list, label_list, unit_list):
                 if os.path.exists(data_fn):
-                    rmse = calculate_rmse(data_fn)
-
+                    result = statistics_calc(data_fn, statistic_type)
                     tag = "train"
                     if "test" in data_fn:
                         tag = "test"
-                    print(f"{label} {tag} RMSE: {rmse:.5f} {unit}.")
-            print("")
+                    print(
+                        f"{label} {tag} {statistic_type.upper()}: {result:.5f} {unit}."
+                    )
 
 
 if __name__ == "__main__":
-    main()
+
+    parser = argparse.ArgumentParser(
+        description="Calculate RMSE MAE R2 of NEP prediction and DFT values for energy, force, stress/virial.",
+        epilog="Author: SLY.",
+    )
+
+    args = parser.parse_args()
+
+    statistics_info(statistic_type="rmse")
+    statistics_info(statistic_type="mae")
+    statistics_info(statistic_type="r2")
