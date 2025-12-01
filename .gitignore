@@ -46,3 +46,5 @@ nep*.txt
 *.npy
 *.out
 *.cfg
+
+lammps.log

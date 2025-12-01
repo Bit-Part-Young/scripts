@@ -58,8 +58,7 @@ def filter_frames(frames: list, selected_indices: list) -> tuple[list, list, lis
 
         # 若索引不在 selected_indices 中，则删除该帧对应的构型
         if i not in selected_indices:
-            # 记录被删除的构型索引，从 1 开始
-            removed_frames_indices.append(i + 1)
+            removed_frames_indices.append(i)
             removed_frames.append(current_frame)
 
             continue
@@ -107,7 +106,7 @@ if __name__ == "__main__":
     write_xyz(filtered_frames, output_xyz_fn)
     write_xyz(removed_frames, "removed.xyz")
 
-    print(f"\nRemoved frame indices (starting from 1):\n")
+    print(f"\nRemoved frame indices:\n")
     print(f"{removed_frames_indices}.")
 
     print(

@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 
-"""获取 BCC/FCC/Diamond 立方晶体结构的最近邻距离"""
+"""
+获取 BCC/FCC/Diamond 立方晶体结构的最近邻距离
+
+FCC 最近邻: third 24, 7th 48, 13th 72
+
+reference: https://www.ifmpan.poznan.pl/~urbaniak/fcc%20and%20its%20neigbours01.pdf
+"""
 
 import argparse
 

@@ -14,7 +14,6 @@ import pandas as pd
 from convex_hull import ConvexHull
 from matplotlib.axes import Axes
 from matplotlib.ticker import MultipleLocator
-
 from spt.plot_params import set_plot_params
 
 
@@ -31,7 +30,7 @@ def plot_binary_pd(
     element = df.columns[columns[0]]
     # df 按照 element 的值从小到大排序；排序后 B32 都排在 B2 后面，故不再继续调整
     df = df.sort_values(by=element)
-    # print(df)
+    print(df)
 
     df_concentrations = df.iloc[:, columns[0]]
     df_energies = df.iloc[:, columns[-1]]

@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 """
-筛选原子受力均为 0.0 的构型（个人用于对 二元置换固溶体 类型进行筛选）
-
-reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/Analysis_and_Processing/select_xyz_frames/select_xyz_frames.py
+筛选原子受力均为 0.0 的构型（个人用于对 二元置换固溶体类型的 静态、弛豫构型进行筛选）
 """
 
 import argparse
