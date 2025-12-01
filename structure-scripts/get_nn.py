@@ -1,42 +1,57 @@
 #!/usr/bin/env python3
 
-"""获取 BCC/FCC/Diamond/HCP 晶体结构的最近邻距离"""
+"""获取 BCC/FCC/Diamond 立方晶体结构的最近邻距离"""
 
 import argparse
 
 import numpy as np
-from ase.atoms import Atoms
+import pandas as pd
 from ase.build import bulk
+from ase.geometry.geometry import get_distances
 
 
-def get_nn(crystalstructure: str) -> np.ndarray:
-    """获取 BCC/FCC/Diamond/HCP 晶体结构的最近邻距离"""
+def get_nn(crystalstructure: str):
+    """获取 BCC/FCC/Diamond 立方晶体结构的最近邻距离"""
 
-    if crystalstructure in ["bcc", "fcc", "diamond"]:
-        atoms = bulk("Mo", crystalstructure, a=1.0, cubic=True)
-    elif crystalstructure == "hcp":
-        atoms = bulk("Mo", crystalstructure, a=1.0)
-    atoms_supercell: Atoms = atoms * (5, 5, 5)
+    atoms = bulk("Mo", crystalstructure, a=1.0, cubic=True)
+    atoms *= 10
 
-    distances = atoms_supercell.get_all_distances(mic=True).round(5)
-    nn_distances = np.unique(distances)
-    nn_distances = nn_distances[nn_distances > 0.0]
+    D, D_len = get_distances(
+        np.diag(atoms.cell) / 2, atoms.positions, atoms.cell, atoms.pbc
+    )
 
-    print("  No.     R/a0        (R/a0)^2")
-    for index, distance in enumerate(nn_distances[:15], start=1):
-        print(f"{index:>5}     {distance:<7}     {round(distance**2, 4):<7}")
+    center_index = D_len.argmin()
+    center_position = atoms.positions[center_index]
+
+    D, D_len = get_distances(center_position, atoms.positions, atoms.cell, atoms.pbc)
+    D = D[0, :]
+    D_len = D_len[0, :]
+
+    decimals = 5
+    D_len_rounded = np.round(D_len, decimals=decimals)
+    unique_values, counts = np.unique(D_len_rounded, return_counts=True)
+
+    df = pd.DataFrame(
+        {
+            "NNL": counts,
+            "R/a0": unique_values,
+            "(R/a0)^2": np.round(unique_values**2, 4),
+        }
+    ).round(5)
+    df.index.name = "No."
+    print(df.iloc[1:21, :])
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Get the nearest neighbour distances for BCC/FCC/Diamond/HCP crystal structure.",
+        description="Get the nearest neighbour distances for BCC/FCC/Diamond cubic crystal structure.",
         epilog="Author: SLY.",
     )
 
     parser.add_argument(
         "crystalstructure",
-        choices=["bcc", "fcc", "diamond", "hcp"],
-        help="crystal structure",
+        choices=["bcc", "fcc", "diamond"],
+        help="cubic crystal structure",
     )
     args = parser.parse_args()
 
