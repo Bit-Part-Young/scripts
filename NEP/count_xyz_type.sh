@@ -3,6 +3,7 @@
 set -eu
 
 # 统计 xyz 文件中的 element & group 字段类别及其数量
+# 适用于由 outcar2xyz_singleframe.sh outcar2xyz_multipleframes.sh 脚本得到的 xyz 文件
 # reference: https://github.com/Kick-H/For_gpumd/blob/master/NEP_related/Count/count_xyz.sh
 
 

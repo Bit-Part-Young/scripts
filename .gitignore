@@ -48,3 +48,5 @@ nep*.txt
 *.cfg
 
 lammps.log
+
+z-temporary-scripts/

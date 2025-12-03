@@ -19,7 +19,7 @@ def sg_info(structure_fn: str = "POSCAR"):
     input_fn_basename = os.path.basename(structure_fn)
     input_format = input_fn_basename.split(".")[-1]
 
-    if input_format in ["POSCAR", "CONTCAR", "vasp"]:
+    if input_format in ["POSCAR", "CONTCAR", "vasp", "PPOSCAR"]:
         atoms = read(structure_fn, format="vasp")
     elif input_format in ["xyz", "extxyz"]:
         atoms = read(structure_fn, format="extxyz")

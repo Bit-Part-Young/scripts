@@ -42,7 +42,7 @@ def count_xyz_type(filename: str) -> dict:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Count element type in xyz file.",
+        description="Count element type in xyz file (eg. Ti Ti-Al Ti-Al-Nb).",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY",
     )

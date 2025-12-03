@@ -46,14 +46,17 @@ def main(structure_fn: str = "POSCAR", mic: bool = False):
             max_dist_list.append(max_dist)
 
         min_dist_global = np.min(min_dist_list)
+        min_dist_average = np.mean(min_dist_list)
         max_dist_global = np.max(max_dist_list)
 
         print(f"Minimum distance list (Å):")
         print(min_dist_list)
         print(f"Maximum distance list (Å):")
         print(max_dist_list)
-        print(f"Global Minimum distance: {min_dist_global} Å.")
-        print(f"Global Maximum distance: {max_dist_global} Å.")
+        print(
+            f"Global Minimum distance: {min_dist_global:.3f} Å. Average: {min_dist_average:.3f} Å."
+        )
+        print(f"Global Maximum distance: {max_dist_global:.3f} Å.")
 
     else:
         atoms = read(structure_fn)
