@@ -85,6 +85,9 @@ def symmetry_info(
         # sort_by_id 为 True 时，原子的 id 不连续时，会出现报错；为 False，不会报错，建议设为 False
         atoms = read(structure_fn, format="lammps-data", sort_by_id=False)
         structure = Structure.from_ase_atoms(atoms)
+    elif "poscar" in structure_fn.lower():
+        atoms = read(structure_fn, format="vasp")
+        structure = Structure.from_ase_atoms(atoms)
 
     pearson_symbol = get_pearson_symbol(atoms=atoms, symprec=symprec)
 

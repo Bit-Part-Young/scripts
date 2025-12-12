@@ -26,6 +26,8 @@ def sg_info(structure_fn: str = "POSCAR"):
     elif input_format in ["lmp", "data", "lammps-data"]:
         # sort_by_id 为 True 时，原子的 id 不连续时，会出现报错；为 False，不会报错，建议设为 False
         atoms = read(structure_fn, format="lammps-data", sort_by_id=False)
+    elif "poscar" in structure_fn.lower():
+        atoms = read(structure_fn, format="vasp")
 
     cell = (atoms.cell.array, atoms.get_scaled_positions(), atoms.numbers)
 

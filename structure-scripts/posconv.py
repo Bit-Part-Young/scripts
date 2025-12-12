@@ -36,6 +36,8 @@ def posconv(input_fn: str, output_fn: str, specorder: bool = False):
         # 对单个构型进行元素排序
         atoms = [sort(a) for a in atoms]
         print(f"{input_fn} Frames: {len(atoms)}.")
+    elif "poscar" in input_fn.lower():
+        atoms: Atoms = read(input_fn, format="vasp")
     else:
         atoms: Atoms = read(input_fn)
 

@@ -169,7 +169,7 @@ def plot_training_results(stress: bool = False, hist: bool = False):
         # ylim=(5e-4, 2e0),
         xlabel="Generation",
         ylabel="Loss",
-        title="(a) Loss Curve",
+        title="Loss Curve",
     )
 
     ax.legend(loc="lower left", ncol=3, labelspacing=0, columnspacing=0.5)
@@ -203,7 +203,7 @@ def plot_training_results(stress: bool = False, hist: bool = False):
         ylim=[xmin, xmax],
         xlabel="DFT energy (eV/atom)",
         ylabel="NEP energy (eV/atom)",
-        title="(b) Energy",
+        title="Energy",
     )
 
     ax.legend(loc="upper left")
@@ -240,7 +240,7 @@ def plot_training_results(stress: bool = False, hist: bool = False):
         ylim=[xmin, xmax],
         xlabel=r"DFT force (eV/$\rm{\AA}$)",
         ylabel=r"NEP force (eV/$\rm{\AA}$)",
-        title="(c) Force",
+        title="Force",
     )
 
     ax.legend(loc="upper left")
@@ -291,7 +291,7 @@ def plot_training_results(stress: bool = False, hist: bool = False):
         ylim=[xmin, xmax],
         xlabel=f"DFT {axes_label}",
         ylabel=f"NEP {axes_label}",
-        title=f"(d) {title_label}",
+        title=f"{title_label}",
     )
 
     ax.legend(loc="upper left")
