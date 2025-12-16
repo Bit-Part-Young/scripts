@@ -34,7 +34,7 @@ get_scf_data() {
 
         if grep -q 'DAV' "${oszicar_fn}"; then
           natoms=$(grep 'NIONS' "${outcar_fn}" | tail -n 1 | awk '{print $12}')
-          nsteps=$(grep 'DAV' "${oszicar_fn}" | tail -n 1 | awk '{print $2}')
+          nsteps=$(grep 'DAV\|RMM' "${oszicar_fn}" | tail -n 1 | awk '{print $2}')
 
           time=$(grep 'Total CPU time used' "${outcar_fn}" | awk '{print $6}')
           time=${time%.*}
@@ -52,9 +52,9 @@ get_scf_data() {
             time=$(grep 'LOOP:' "${outcar_fn}" | awk '{sum+=$7} END {print sum}')
             time=${time%.*}
 
-            dE=$(grep 'DAV' "${oszicar_fn}" | tail -n 1 | awk '{print $4}')
+            dE=$(grep 'DAV\|RMM' "${oszicar_fn}" | tail -n 1 | awk '{print $4}')
 
-            energy=$(grep 'DAV' "${oszicar_fn}" | tail -n 1 | awk '{printf "%.6f", $3}')
+            energy=$(grep 'DAV\|RMM' "${oszicar_fn}" | tail -n 1 | awk '{printf "%.6f", $3}')
           fi
           energy_pa=$(awk "BEGIN { print ${energy} / ${natoms} }")
 
