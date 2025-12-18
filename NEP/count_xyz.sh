@@ -16,7 +16,7 @@ count_xyz() {
   fi
 
   nlines=$(wc -l ${xyz_fn} | cut -d ' ' -f1)
-  natoms=$(grep -i pbc ${xyz_fn} | wc -l)
+  natoms=$(grep -i 'Lattice' ${xyz_fn} | wc -l)
 
   echo -e "${xyz_fn}: \c"
   echo ${nlines} ${natoms} | awk '{print $2 " frames, " $1-$2*2 " atoms."}'

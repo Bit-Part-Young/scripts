@@ -29,7 +29,7 @@ def slurm_generation(
         f.write(f"#SBATCH -p {partition}\n")
 
         f.write("#SBATCH -N 1\n")
-        f.write(f"#SBATCH --ntasks-per-node={num_cpus}\n")
+        f.write(f"#SBATCH --ntasks={num_cpus}\n")
         f.write(f"#SBATCH -t {time}\n")
 
         f.write("#SBATCH -o %j.out\n")

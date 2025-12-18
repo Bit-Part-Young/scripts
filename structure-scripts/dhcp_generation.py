@@ -9,7 +9,7 @@ from ase.atoms import Atoms
 from ase.io import write
 
 
-def dhcp_generation(symbol: str, a: float, c: float):
+def dhcp_generation(symbol: str, a: float, c: float) -> Atoms:
     """生成 DHCP 结构"""
 
     cell = ((a, 0, 0), (-0.5 * a, 0.5 * np.sqrt(3) * a, 0), (0, 0, 2 * c))
@@ -23,15 +23,22 @@ def dhcp_generation(symbol: str, a: float, c: float):
 
     write(f"POSCAR", atoms, format="vasp", direct=True)
 
+    print("\nDHCP structure generated!")
+
     return atoms
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser("Generate DHCP structure.")
 
-    parser.add_argument("-e", "--symbol", help="element symbol")
+    parser.add_argument("-e", "--symbol", metavar="STR", help="element symbol")
     parser.add_argument(
-        "-lc", "--lattice-constant", type=float, nargs=2, help="lattice constant"
+        "-lc",
+        "--lattice-constant",
+        type=float,
+        nargs=2,
+        metavar="FLOAT",
+        help="lattice constant",
     )
 
     args = parser.parse_args()
