@@ -24,8 +24,8 @@ function twin_10_11_generation() {
   rm *.xsf *.cfg
 
   mv POSCAR twin_10_11_${symbol}_original.vasp
-  if [[ ! -f "twin_10_11_${symbol}_bulk.vasp" ]]; then
-    cp twin_10_11_${symbol}_original.vasp twin_10_11_${symbol}_bulk.vasp
+  if [[ ! -f "twin_10_11_${symbol}_final.vasp" ]]; then
+    cp twin_10_11_${symbol}_original.vasp twin_10_11_${symbol}_final.vasp
   fi
 
 
