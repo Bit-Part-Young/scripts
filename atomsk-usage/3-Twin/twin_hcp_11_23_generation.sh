@@ -31,6 +31,7 @@ function twin_11_23_generation() {
 
 
   echo -e "\nHCP ${symbol} {11-23} twin model has been generated, saved as bulk_${symbol}.vasp and twin_11_23_${symbol}_original.vasp."
+  echo -e "\nThe min distance in twin model is smaller than 1.5 Å, atomic forces can be very large."
 }
 
 

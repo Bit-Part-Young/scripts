@@ -12,6 +12,7 @@ function twin_11_22_generation() {
   dup_z="${dup_z:-4}"
   dup_z2=$((dup_z * 2))
 
+  # 该取向的单胞 z 方向沿 y 方向的投影较长，扩胞后投影长度大于 100 Å
   atomsk --create hcp ${a} ${c} ${symbol} orient "[1-100]" "[11-23]" "[11-22]" -duplicate ${dup_x} ${dup_y} ${dup_z2} -sort z up -wrap -ow vasp
 
   mv POSCAR bulk_${symbol}.vasp
@@ -29,6 +30,7 @@ function twin_11_22_generation() {
 
 
   echo -e "\nHCP ${symbol} {11-22} twin model has been generated, saved as bulk_${symbol}.vasp and twin_11_22_${symbol}_original.vasp."
+  echo -e "\nThe y axis projection of z axis is relatively large in the bulk and twin model."
 }
 
 
@@ -44,11 +46,11 @@ get_help() {
   echo "    -h, --help                 show this help message and exit"
   echo "    -e STR                     element symbol (default: Mg)"
   echo "    -lc FLOAT FLOAT            lattice constant (default: 3.200 5.160)"
-  echo "    -d N N N                   duplicate structure in the three directions (default: 1 1 2)"
+  echo "    -d N N N                   duplicate structure in the three directions (default: 1 1 4)"
 
   echo -e "\nExamples:"
   echo "    Default settings: ${script_name}"
-  echo "    For HCP Mg system: ${script_name} -e Mg -lc 3.200 5.160 -d 1 1 2"
+  echo "    For HCP Mg system: ${script_name} -e Mg -lc 3.200 5.160 -d 1 1 4"
 }
 
 

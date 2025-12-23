@@ -16,6 +16,7 @@ function twin_11_21_generation() {
 
   mv POSCAR bulk_${symbol}.vasp
 
+  # 孪晶模型的最小原子间距在 1.5 Å 左右，需要设置一个更小的 POTIM 值进行 VASP 计算
   atomsk --create hcp ${a} ${c} ${symbol} orient "[1-100]" "[11-26]" "[11-21]" -duplicate ${dup_x} ${dup_y} ${dup_z} -ow ${symbol}_cell.xsf
   atomsk --create hcp ${a} ${c} ${symbol} orient "[1-100]" "[11-26]" "[-1-12-1]" -duplicate ${dup_x} ${dup_y} ${dup_z} -ow ${symbol}_mirror.xsf
   atomsk --merge Z 2 ${symbol}_mirror.xsf ${symbol}_cell.xsf -ow ${symbol}_final.cfg
@@ -29,6 +30,7 @@ function twin_11_21_generation() {
 
 
   echo -e "\nHCP ${symbol} {11-21} twin model has been generated, saved as bulk_${symbol}.vasp and twin_11_21_${symbol}_original.vasp."
+  echo -e "\nThe min distance in twin model is around 1.5 Å, you should set a smaller POTIM value in INCAR for VASP calculation."
 }
 
 
@@ -44,11 +46,11 @@ get_help() {
   echo "    -h, --help                 show this help message and exit"
   echo "    -e STR                     element symbol (default: Mg)"
   echo "    -lc FLOAT FLOAT            lattice constant (default: 3.200 5.160)"
-  echo "    -d N N N                   duplicate structure in the three directions (default: 1 1 2)"
+  echo "    -d N N N                   duplicate structure in the three directions (default: 1 1 1)"
 
   echo -e "\nExamples:"
   echo "    Default settings: ${script_name}"
-  echo "    For HCP Mg system: ${script_name} -e Mg -lc 3.200 5.160 -d 1 1 2"
+  echo "    For HCP Mg system: ${script_name} -e Mg -lc 3.200 5.160 -d 1 1 1"
 }
 
 
