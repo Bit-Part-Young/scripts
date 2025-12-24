@@ -9,6 +9,9 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 
+# 设置 pandas 显示格式
+pd.set_option("display.float_format", "{:.2f}".format)
+
 
 def forces_histogram(data_fn: str, property_name: str, bins: int = 30):
     """绘制 force 直方图"""
@@ -17,20 +20,35 @@ def forces_histogram(data_fn: str, property_name: str, bins: int = 30):
     label_list = ["fx", "fy", "fz"]
 
     df = pd.DataFrame(array, columns=label_list)
-    pd.set_option("display.float_format", "{:.2f}".format)
     print()
     print(df.describe())
 
-    force_max_row = df.max(axis=1).abs()
-    count1 = ((force_max_row >= 0.0) & (force_max_row <= 5.0)).sum()
-    count2 = (force_max_row > 5.0).sum()
-    count3 = (force_max_row > 10.0).sum()
-    count4 = (force_max_row > 15.0).sum()
-    count5 = (force_max_row > 20.0).sum()
+    # 原子受力的任一分量
+    force_component = np.abs(np.max(array, axis=1))
+    count1 = np.sum((force_component >= 0.0) & (force_component <= 5.0))
+    count2 = np.sum(force_component > 5.0)
+    count3 = np.sum(force_component > 10.0)
+    count4 = np.sum(force_component > 15.0)
+    count5 = np.sum(force_component > 20.0)
+
+    print()
+    print(f"force component (abs) in 0.0~5.0: {count1}")
+    print(f"force component (abs) >  5.0: {count2}")
+    print(f"force component (abs) > 10.0: {count3}")
+    print(f"force component (abs) > 15.0: {count4}")
+    print(f"force component (abs) > 20.0: {count5}")
+
+    # 原子受力的合力
+    force = np.linalg.norm(array, axis=1)
+    count1 = np.sum((force >= 0.0) & (force <= 5.0))
+    count2 = np.sum(force > 5.0)
+    count3 = np.sum(force > 10.0)
+    count4 = np.sum(force > 15.0)
+    count5 = np.sum(force > 20.0)
 
     print()
     print(f"force (abs) in 0.0~5.0: {count1}")
-    print(f"force (abs) > 5.0: {count2}")
+    print(f"force (abs) >  5.0: {count2}")
     print(f"force (abs) > 10.0: {count3}")
     print(f"force (abs) > 15.0: {count4}")
     print(f"force (abs) > 20.0: {count5}")
@@ -60,7 +78,6 @@ def virial_histogram(data_fn: str, property_name: str, bins: int = 30):
     label_list = ["xx", "yy", "zz", "xy", "xz", "yz"]
 
     df = pd.DataFrame(array, columns=label_list)
-    pd.set_option("display.float_format", "{:.2f}".format)
     print()
     print(df.describe())
     fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(15, 12), dpi=500)
@@ -87,7 +104,6 @@ def energy_histogram(data_fn: str, property_name: str, bins: int = 30):
     array = np.loadtxt(data_fn)
 
     df = pd.DataFrame(array, columns=[property_name])
-    pd.set_option("display.float_format", "{:.2f}".format)
     print()
     print(df.describe())
 

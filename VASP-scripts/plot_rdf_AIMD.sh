@@ -4,8 +4,10 @@
 
 set -eu
 
+
 mode="${1:-vaspkit}"
 
+#----------------------- 获取 RDF 数据 -------------------------
 if [[ ${mode} == "vaspkit" ]]; then
   rdf_fn="PCF.dat"
 
@@ -22,13 +24,13 @@ elif [[ ${mode} == "ovito" ]]; then
 fi
 
 
+#----------------------- 绘制 RDF -------------------------
 if hostname | grep -q sjtu; then
   config_path="~/yangsl/scripts/cms-scripts/plots"
 else
   config_path="~/scripts/cms-scripts/plots"
 fi
 
-# 绘制 RDF
 cat > .plot.gnu << EOF
 set loadpath "${config_path}"
 load "config.gnu"
