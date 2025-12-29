@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-根据原子受力阈值筛选 extxyz 文件中的构型
+根据原子受力（合力）阈值筛选 extxyz 文件中的构型
 
 reference: https://github.com/brucefan1983/GPUMD/blob/master/tools/Analysis_and_Processing/select_xyz_frames/select_xyz_frames.py
 """
@@ -55,9 +55,9 @@ def force_exceeds_threshold(atom_info: str, force_threshold: float):
     elif len(atom_info_list) == 8:
         force_list = atom_info_list[5:8]
 
-    # 力矢量
+    # 原子受力 矢量
     force_vector = np.array(list(map(float, force_list)))
-    # 合力
+    # 原子受力 合力
     force_norm = np.linalg.norm(force_vector)
 
     return force_norm > force_threshold

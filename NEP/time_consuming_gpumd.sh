@@ -1,10 +1,9 @@
 #!/bin/bash
 
-set -eu
-
 # reference: https://github.com/zhyan0603/GPUMDkit/blob/main/Scripts/analyzer/time_consuming_gpumd.sh
 
-#!/bin/bash
+set -eu
+
 
 # Check if the first argument ($1) exists and is not empty
 log_file="${1:-log}"  # If $1 is not provided, default to "log"
