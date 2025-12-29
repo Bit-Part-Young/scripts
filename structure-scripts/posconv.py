@@ -14,6 +14,8 @@ import os
 from ase.atoms import Atoms
 from ase.build.tools import sort
 from ase.io import read, write
+from pymatgen.core.structure import Structure
+from pymatgen.io.atat import Mcsqs
 
 
 def posconv(input_fn: str, output_fn: str, specorder: bool = False):
@@ -38,6 +40,11 @@ def posconv(input_fn: str, output_fn: str, specorder: bool = False):
         print(f"{input_fn} Frames: {len(atoms)}.")
     elif "poscar" in input_fn.lower():
         atoms: Atoms = read(input_fn, format="vasp")
+    elif input_format == "out":
+        with open(input_fn, "r") as f:
+            atat_str = f.read()
+        structure = Mcsqs.structure_from_str(atat_str)
+        atoms = structure.to_ase_atoms()
     else:
         atoms: Atoms = read(input_fn)
 
@@ -46,10 +53,8 @@ def posconv(input_fn: str, output_fn: str, specorder: bool = False):
 
     if output_format in ["vasp", "POSCAR"]:
         write_param_dict = {"format": "vasp", "direct": True, "sort": True}
-
     elif output_format in ["XDATCAR"]:
         write_param_dict = {"format": "vasp-xdatcar", "append": True}
-
     elif output_format in ["lmp", "lammps-data"]:
         write_param_dict = {
             "format": "lammps-data",
@@ -66,16 +71,22 @@ def posconv(input_fn: str, output_fn: str, specorder: bool = False):
             # element_sequence_list = ["Ta", "Nb", "V", "Mo", "W"]
             if all(element in element_sequence_list for element in element_list):
                 write_param_dict["specorder"] = element_sequence_list
-
     elif output_format in ["xyz", "extxyz"]:
         write_param_dict = {"format": "extxyz"}
         if isinstance(atoms, list):
             write_param_dict["append"] = True
-
+    elif output_format in ["out"]:
+        pass
     else:
         raise ValueError(f"Unsupported output format: {output_format}.")
 
-    write(output_fn, images=atoms, **write_param_dict)
+    if output_format == "out":
+        structure = Structure.from_ase_atoms(atoms)
+        atat = Mcsqs(structure)
+        with open(output_fn, "w") as f:
+            f.write(atat.to_str())
+    else:
+        write(output_fn, images=atoms, **write_param_dict)
 
     print(f"\nConvert {input_fn} to {output_fn}!")
 
