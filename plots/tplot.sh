@@ -25,6 +25,10 @@ Options:
     -xl, --xlabel STR         x axis label (optional)
     -yl, --ylabel STR         y axis label (optional)
     -xlog, --xlog             set x logscale (optional)
+    -xtics, --xtics N         x axis major tic interval (optional)
+    -ytics, --ytics N         y axis major tic interval (optional)
+    -xmtics, --xmtics N       x axis minor tic interval (optional)
+    -ymtics, --ymtics N       y axis minor tic interval (optional)
     -h, --help                show this help message and exit
 
 Examples:
@@ -49,6 +53,10 @@ YRANGE=""
 XLABEL=""
 YLABEL=""
 XLOG=false
+XTICS=""
+YTICS=""
+XMTICS=""
+YMTICS=""
 
 
 #------------------------- Parse command line arguments ------------------------
@@ -109,6 +117,22 @@ while [[ $# -gt 0 ]]; do
         -xlog|--xlog)
             XLOG=true
             shift
+            ;;
+        -xtics|--xtics)
+            XTICS="$2"
+            shift 2
+            ;;
+        -ytics|--ytics)
+            YTICS="$2"
+            shift 2
+            ;;
+        -xmtics|--xmtics)
+            XMTICS="$2"
+            shift 2
+            ;;
+        -ymtics|--ymtics)
+            YMTICS="$2"
+            shift 2
             ;;
         -h|--help)
             usage
@@ -202,6 +226,22 @@ fi
 
 if [[ -n "${YRANGE}" ]]; then
     echo -e "\nset yrange [${YMIN}:${YMAX}]" >> ${gnuplot_fn}
+fi
+
+if [[ -n "${XTICS}" ]]; then
+    echo -e "\nset xtics ${XTICS}" >> ${gnuplot_fn}
+fi
+
+if [[ -n "${YTICS}" ]]; then
+    echo -e "\nset ytics ${YTICS}" >> ${gnuplot_fn}
+fi
+
+if [[ -n "${XMTICS}" ]]; then
+    echo -e "\nset mxtics ${XMTICS}" >> ${gnuplot_fn}
+fi
+
+if [[ -n "${YMTICS}" ]]; then
+    echo -e "\nset mytics ${YMTICS}" >> ${gnuplot_fn}
 fi
 
 
