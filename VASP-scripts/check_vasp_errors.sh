@@ -40,7 +40,7 @@ get_help() {
   echo -e "\nCheck errors in VASP calculation dirs."
 
   echo -e "\nOptions:"
-  echo "  -h, --help      Show this help message and exit"
+  echo "  -h, --help      show this help message and exit"
   echo "  dirs            VASP calculation dirs"
 
   echo -e "\nExamples:"

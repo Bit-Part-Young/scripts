@@ -98,11 +98,11 @@ get_help(){
   echo -e "\nConvert opt OUTCAR multiple frames to xyz file for NEP training."
 
   echo -e "\nOptions:"
-  echo "    -h, --help          show this help message and exit"
-  echo "    outcar_fn           OUTCAR filename, default OUTCAR"
-  echo "    xyz_fn              xyz filename, default NEP-dataset.xyz"
-  echo "    config_type         config type tag, default 'outcar2xyz'"
-  echo "    addtional_labels    additional labels, default element group description tag"
+  echo "  -h, --help          show this help message and exit"
+  echo "  outcar_fn           OUTCAR filename, default OUTCAR"
+  echo "  xyz_fn              xyz filename, default NEP-dataset.xyz"
+  echo "  config_type         config type tag, default 'outcar2xyz'"
+  echo "  addtional_labels    additional labels, default element group description tag"
 
   echo -e "\nExamples:"
   echo "    $script_name"

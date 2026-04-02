@@ -94,7 +94,7 @@ get_help() {
   echo -e "\nGet ion steps, energy and time cost data in VASP relaxation calculation dirs with table format."
 
   echo -e "\nOptions:"
-  echo "  -h, --help      Show this help message and exit"
+  echo "  -h, --help      show this help message and exit"
   echo "  dirs            VASP calculation dirs"
 
   echo -e "\nExamples:"

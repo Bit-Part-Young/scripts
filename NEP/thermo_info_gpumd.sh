@@ -54,8 +54,8 @@ get_help() {
   echo -e "\nPrint thermo info from gpumd thermo.out file."
 
   echo -e "\nOptions:"
-  echo "    -h, --help    show this help message and exit"
-  echo "    info_type     info type, temp, press, lattice"
+  echo "  -h, --help    show this help message and exit"
+  echo "  info_type     info type, temp, press, lattice"
 
   echo -e "\nExamples:"
   echo "    ${script_name}           # 输出所有信息"

@@ -80,23 +80,23 @@ outcar2xyz_singleframe(){
 get_help(){
   script_name=$(basename $0)
 
-  echo -e "\nUsage: $script_name [outcar_fn] [xyz_fn] [config_type] [addtional_labels]"
+  echo -e "\nUsage: ${script_name} [outcar_fn] [xyz_fn] [config_type] [addtional_labels]"
 
   echo -e "\nConvert scf OUTCAR to xyz file for NEP training."
 
   echo -e "\nOptions:"
-  echo "    -h, --help          show this help message and exit"
-  echo "    outcar_fn           OUTCAR filename, default OUTCAR"
-  echo "    xyz_fn              xyz filename, default NEP-dataset.xyz"
-  echo "    config_type         config type tag, default 'outcar2xyz'"
-  echo "    addtional_labels    additional labels, default element group description tag"
+  echo "  -h, --help          show this help message and exit"
+  echo "  outcar_fn           OUTCAR filename, default OUTCAR"
+  echo "  xyz_fn              xyz filename, default NEP-dataset.xyz"
+  echo "  config_type         config type tag, default 'outcar2xyz'"
+  echo "  addtional_labels    additional labels, default element group description tag"
 
   echo -e "\nExamples:"
-  echo "    $script_name"
-  echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz'"
-  echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb'"
-  echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb' 'perturbation' 'configuration 1' 'train'"
-  echo "    $script_name OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb' 'NVT-AIMD' 'snapshot 1' 'train'"
+  echo "    ${script_name}"
+  echo "    ${script_name} OUTCAR NEP-dataset.xyz 'outcar2xyz'"
+  echo "    ${script_name} OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb'"
+  echo "    ${script_name} OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb' 'perturbation' 'configuration 1' 'train'"
+  echo "    ${script_name} OUTCAR NEP-dataset.xyz 'outcar2xyz' 'Nb' 'NVT-AIMD' 'snapshot 1' 'train'"
   exit 0
 }
 

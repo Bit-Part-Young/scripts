@@ -26,14 +26,14 @@ count_xyz() {
 
 #-------------------------------- 获取帮助 --------------------------------
 get_help() {
-  script_name=$(basename "$0")
+  script_name=$(basename $0)
 
-  echo -e "\nUsage: $script_name [xyz_fn...]"
+  echo -e "\nUsage: ${script_name} [xyz_fn...]"
 
   echo -e "\nCount frames and atoms in xyz files."
 
   echo -e "\nOptions:"
-  echo "  -h, --help      Show this help message and exit"
+  echo "  -h, --help      show this help message and exit"
   echo "  xyz_fn          xyz filename"
 
   echo -e "\nExamples:"

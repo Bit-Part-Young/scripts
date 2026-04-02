@@ -7,13 +7,13 @@ set -eu
 
 #-------------------------------- 生成 INCAR 文件 --------------------------------
 function generate_incar() {
-    local encut="${encut:-500}"
-    local ediff="${ediff:-1E-06}"
-    local ediffg="${ediffg:--1E-02}"
-    local kspacing="${kspacing:-0.15}"
-    local ismear="${ismear:-0}"
+  local encut="${encut:-500}"
+  local ediff="${ediff:-1E-06}"
+  local ediffg="${ediffg:--1E-02}"
+  local kspacing="${kspacing:-0.15}"
+  local ismear="${ismear:-0}"
 
-    cat > INCAR << EOF
+  cat > INCAR << EOF
 Global Parameters
 SYSTEM   = Phonon
 ISTART   = 0
@@ -49,80 +49,78 @@ EOF
 
 #-------------------------------- 根据构型文件设置合适的计算所需的核数 --------------------------------
 function get_ncpus() {
-    local ncpus=20
+  local ncpus=20
 
-    natoms=$(sed -n '7p' SPOSCAR | awk '{ for(i=1; i<=NF; i++) a+=$i; print a}')
+  natoms=$(sed -n '7p' SPOSCAR | awk '{ for(i=1; i<=NF; i++) a+=$i; print a}')
 
-    if [[ ${natoms} -lt 10 ]]; then
-        ncpus=8
-    elif [[ ${natoms} -lt 20 ]]; then
-        ncpus=20
-    elif [[ ${natoms} -lt 40 ]]; then
-        ncpus=40
-    else
-        ncpus=60
-    fi
-    echo ${ncpus}
+  if [[ ${natoms} -lt 10 ]]; then
+    ncpus=8
+  elif [[ ${natoms} -lt 20 ]]; then
+    ncpus=20
+  elif [[ ${natoms} -lt 40 ]]; then
+    ncpus=40
+  else
+    ncpus=60
+  fi
+  echo ${ncpus}
 }
 
 
 #-------------------------------- 生成 DFTP 计算声子谱的输入文件（VASP + phonopy --------------------------------
 function phonon_dftp() {
+  local dup_x="${dup_x:-2}"
+  local dup_y="${dup_y:-2}"
+  local dup_z="${dup_z:-2}"
+  local symprec="${symprec:-0.00001}"
+  local encut="${encut:-500}"
+  local ediff="${ediff:-1E-06}"
+  local ediffg="${ediffg:--1E-02}"
+  local kspacing="${kspacing:-0.15}"
+  local ismear="${ismear:-0}"
+  local platform="${platform:-master}"
 
-    local dup_x="${dup_x:-2}"
-    local dup_y="${dup_y:-2}"
-    local dup_z="${dup_z:-2}"
-    local symprec="${symprec:-0.00001}"
-    local encut="${encut:-500}"
-    local ediff="${ediff:-1E-06}"
-    local ediffg="${ediffg:--1E-02}"
-    local kspacing="${kspacing:-0.15}"
-    local ismear="${ismear:-0}"
-    local platform="${platform:-master}"
+  if ! command -v phonopy &> /dev/null; then
+    echo -e "\nError: phonopy could not be found, please check if phonopy is installed!"
+    exit 1
+  fi
 
-    if ! command -v phonopy &> /dev/null; then
-        echo
-        echo "Error: phonopy could not be found, please check if phonopy is installed!"
-        exit 1
-    fi
+  if [[ -f "CONTCAR" ]] && [[ ! -f "POSCAR" ]]; then
+    mv CONTCAR POSCAR
+  fi
 
-    if [[ -f "CONTCAR" ]] && [[ ! -f "POSCAR" ]]; then
-        mv CONTCAR POSCAR
-    fi
+  # 根据对称性获取原胞
+  phonopy --symmetry --pa auto --tolerance ${symprec}
 
-    # 根据对称性获取原胞
-    phonopy --symmetry --pa auto --tolerance ${symprec}
+  # 备份 POSCAR
+  if [[ ! -f "POSCAR.orig" ]]; then
+    cp POSCAR POSCAR.orig
+  fi
 
-    # 备份 POSCAR
-    if [[ ! -f "POSCAR.orig" ]]; then
-        cp POSCAR POSCAR.orig
-    fi
+  # 将原胞 PPOSCAR 拷贝为 POSCAR
+  cp PPOSCAR POSCAR
 
-    # 将原胞 PPOSCAR 拷贝为 POSCAR
-    cp PPOSCAR POSCAR
+  # 扩胞，有限位移
+  phonopy -d --dim ${dup_x} ${dup_y} ${dup_z} --pa auto
 
-    # 扩胞，有限位移
-    phonopy -d --dim ${dup_x} ${dup_y} ${dup_z} --pa auto
+  ncpus=$(get_ncpus)
 
-    ncpus=$(get_ncpus)
+  folder="DFTP"
+  if [[ ! -d ${folder} ]]; then
+    mkdir ${folder}
+  fi
 
-    folder="DFTP"
-    if [[ ! -d ${folder} ]]; then
-        mkdir ${folder}
-    fi
+  cp SPOSCAR ${folder}/POSCAR
 
-    cp SPOSCAR ${folder}/POSCAR
+  cd ${folder}
 
-    cd ${folder}
+  generate_incar ${encut} ${ediff} ${ediffg} ${kspacing} ${ismear}
+  get_psp2.py
+  slurm_generation.py ${platform} -nc ${ncpus}
 
-    generate_incar ${encut} ${ediff} ${ediffg} ${kspacing} ${ismear}
-    get_psp2.py
-    slurm_generation.py ${platform} -nc ${ncpus}
+  echo
+  check_vaspi
 
-    echo
-    check_vaspi
-
-    cd ..
+  cd ..
 
 }
 
@@ -136,15 +134,15 @@ get_help() {
   echo -e "\nGenerate DFTP phonon calculation input files (VASP + phonopy)."
 
   echo -e "\nOptions:"
-  echo "    -h, --help                 show this help message and exit"
-  echo "    -d N N N                   duplicate (default: 2 2 2)"
-  echo "    -encut INT                 ENCUT (default: 500)"
-  echo "    -ediff FLOAT               EDIFF (default: 1E-06)"
-  echo "    -ediffg FLOAT              EDIFFG (default: -1E-02)"
-  echo "    -kspacing FLOAT            KSPACING (default: 0.15)"
-  echo "    -ismear INT                ISMEAR (default: 0)"
-  echo "    -symprec FLOAT             symmetry precision to identify space group (default: 0.00001)"
-  echo "    -platform STR              platform (default: master; master or sy)"
+  echo "  -h, --help                 show this help message and exit"
+  echo "  -d N N N                   duplicate (default: 2 2 2)"
+  echo "  -encut INT                 ENCUT (default: 500)"
+  echo "  -ediff FLOAT               EDIFF (default: 1E-06)"
+  echo "  -ediffg FLOAT              EDIFFG (default: -1E-02)"
+  echo "  -kspacing FLOAT            KSPACING (default: 0.15)"
+  echo "  -ismear INT                ISMEAR (default: 0)"
+  echo "  -symprec FLOAT             symmetry precision to identify space group (default: 0.00001)"
+  echo "  -platform STR              platform (default: master; master or sy)"
 
   echo -e "\nExamples:"
   echo "    Default settings: ${script_name}"

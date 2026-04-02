@@ -53,7 +53,7 @@ get_help() {
   echo -e "\nCount element & group type in extxyz file."
 
   echo -e "\nOptions:"
-  echo "  -h, --help      Show this help message and exit"
+  echo "  -h, --help      show this help message and exit"
   echo "  xyz_fn          xyz filename"
 
   echo -e "\nExamples:"

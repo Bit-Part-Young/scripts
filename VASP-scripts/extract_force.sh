@@ -27,7 +27,7 @@ get_help() {
   echo -e "\nExtract forces and atoms positions from VASP OUTCAR File."
 
   echo -e "\nOptions:"
-  echo "  -h, --help      Show this help message and exit"
+  echo "  -h, --help      show this help message and exit"
   echo "  -outcar OUTCAR  Sets the outcar file name"
   echo "  -atom=ATOM      Sets the Atom number default value : all atoms"
   echo "  -iter=ITER      Sets the Iterations number default value : all iterations"

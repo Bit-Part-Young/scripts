@@ -26,7 +26,7 @@ get_help() {
   echo -e "\nCount frames and atoms in cfg files."
 
   echo -e "\nOptions:"
-  echo "  -h, --help      Show this help message and exit"
+  echo "  -h, --help      show this help message and exit"
   echo "  cfg_fn          cfg filename"
 
   echo -e "\nExamples:"
