@@ -5,11 +5,13 @@
 import argparse
 from typing import Literal
 
-platform_partition = {
+platform_partition_dict = {
     "sy": "64c512g",
     "pi": "cpu",
     "master": "cpu",
 }
+
+master_node_list = ["master", "node1", "node2", "node3", "node4"]
 
 
 def slurm_generation(
@@ -17,6 +19,7 @@ def slurm_generation(
     calculation_type: Literal["vasp", "lammps", "misc"] = "vasp",
     num_cpus: int = 1,
     time: str = "72:00:00",
+    nodes: str = "node2",
 ):
     """生成不同平台的 VASP/LAMMPS/Python/Bash 任务 Slurm 提交脚本"""
 
@@ -25,7 +28,7 @@ def slurm_generation(
 
         f.write(f"#SBATCH -J {calculation_type.upper()}\n")
 
-        partition = platform_partition[platform]
+        partition = platform_partition_dict[platform]
         f.write(f"#SBATCH -p {partition}\n")
 
         f.write("#SBATCH -N 1\n")
@@ -43,7 +46,14 @@ def slurm_generation(
         f.write("#SBATCH -e %j.err\n\n")
 
         if platform == "master":
-            f.write("#SBATCH -x master\n\n")
+
+            selected_nodes = [node.strip() for node in nodes.split(",") if node.strip()]
+            exclude_nodes = [_ for _ in master_node_list if _ not in selected_nodes]
+            if selected_nodes:
+                f.write(f"#SBATCH -w {','.join(selected_nodes)}\n")
+            if exclude_nodes:
+                f.write(f"#SBATCH -x {','.join(exclude_nodes)}\n")
+            f.write("\n")
             f.write("#SBATCH --no-requeue\n\n")
 
         if calculation_type == "vasp":
@@ -73,7 +83,7 @@ def slurm_generation(
                 f.write("module load intel-oneapi-mkl/2021.4.0\n")
                 f.write("module load intel-oneapi-tbb/2021.4.0\n\n")
 
-            f.write(f"mpirun {lammps_cmd} -i in.lmp\n")
+            f.write(f"mpirun {lammps_cmd} -i in.lmp -sf opt -nocite\n")
 
         elif calculation_type == "misc":
             f.write(f"# Please add your command here.\n\n")
@@ -99,7 +109,6 @@ if __name__ == "__main__":
     parser.add_argument(
         "-ct",
         "--calculation_type",
-        nargs="?",
         default="vasp",
         metavar="STR",
         choices=["vasp", "lammps", "misc"],
@@ -109,11 +118,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "-nc",
         "--num_cpus",
-        nargs="?",
         type=int,
         default=1,
         metavar="N",
         help="number of cpus",
+    )
+
+    parser.add_argument(
+        "--nodes",
+        default="node2",
+        metavar="STR",
+        choices=master_node_list,
+        help="specify node for master platform, eg. node2, node1,node2",
     )
 
     args = parser.parse_args()
@@ -126,4 +142,5 @@ if __name__ == "__main__":
         platform=platform,
         calculation_type=calculation_type.lower(),
         num_cpus=num_cpus,
+        nodes=args.nodes,
     )
