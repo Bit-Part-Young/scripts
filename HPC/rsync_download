@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# 从远程服务器下载文件/目录
+
+set -eu
+
+
+function rsync_download() {
+  local SERVER_ALIAS=$1
+  local REMOTE_PATH=$2
+  local LOCAL_PATH=$3
+
+  rsyncy -avuP --human-readable "${SERVER_ALIAS}:${REMOTE_PATH}" "${LOCAL_PATH}"
+
+  echo -e "\nDownload completed."
+}
+
+
+#-------------------------------- Help --------------------------------
+get_help() {
+  local script_name=$(basename "$0")
+
+  echo -e "\nUsage: ${script_name} SERVER_ALIAS REMOTE_PATH LOCAL_PATH"
+
+  echo -e "\nDownload files/directories from remote server using rsync."
+
+  echo -e "\nOptions:"
+  echo "  -h, --help       show this help message and exit"
+  echo "  SERVER_ALIAS     remote server alias"
+  echo "  REMOTE_PATH      remote path"
+  echo "  LOCAL_PATH       local path"
+}
+
+
+if [[ $# -ge 1 && ( $1 == "-h" || $1 == "--help" ) ]]; then
+  get_help
+  exit 0
+fi
+
+rsync_download "$@"

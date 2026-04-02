@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# 列出远程目录内容
+
+set -eu
+
+
+function rsync_look() {
+  local SERVER_ALIAS=$1
+  local REMOTE_PATH=$2
+  local recursive=0
+
+  if [[ $# -eq 3 ]]; then
+    case "$3" in
+      -r | --recursive)
+        recursive=1
+        ;;
+      *)
+        break
+        ;;
+    esac
+  fi
+
+  if [[ "${recursive}" -eq 1 ]]; then
+    rsync -rvh --list-only "${SERVER_ALIAS}:${REMOTE_PATH}"
+  else
+    rsync -vh --list-only "${SERVER_ALIAS}:${REMOTE_PATH}"
+  fi
+}
+
+
+#-------------------------------- Help --------------------------------
+get_help() {
+  local script_name=$(basename $0)
+
+  echo -e "\nUsage: ${script_name} SERVER_ALIAS REMOTE_PATH [-r|--recursive]"
+
+  echo -e "\nList remote path contents using rsync (read-only, no transfer)."
+
+  echo -e "\nOptions:"
+  echo "  -h, --help       show this help message and exit"
+  echo "  SERVER_ALIAS     remote server alias"
+  echo "  REMOTE_PATH      remote path"
+  echo "  -r, --recursive  list recursively"
+}
+
+
+if [[ $# -ge 1 && ( $1 == "-h" || $1 == "--help" ) ]]; then
+  get_help
+  exit 0
+fi
+
+rsync_look "$@"
