@@ -1,7 +1,7 @@
 #!/bin/bash
 
 module purge
-module load OpenMPI/5.0.10
+module load mpi/2021.6.0
 
 # 不构建动态库
 cmake -C ../cmake/presets/all_on.cmake -C ../cmake/presets/nolib.cmake \
