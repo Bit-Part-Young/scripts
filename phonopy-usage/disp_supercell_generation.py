@@ -1,81 +1,54 @@
 #!/usr/bin/env python3
 
-"""生成含位移的超胞，用于 phonopy 计算"""
+"""
+生成 phonopy 有限位移超胞（VASP 或 LAMMPS 格式），用于 DFT 计算或用 LAMMPS 校验势函数的声子谱
+
+原胞由 phonopy 自动识别（primitive_matrix = auto，spglib 标准设定，hcp 为 120°），与 band_*.conf 的 k 路径一致。
+输出：phonopy_disp.yaml；vasp：PPOSCAR、SPOSCAR、POSCAR-XXX；lammps：Punitcell、supercell、supercell-XXX
+
+LAMMPS 流程：对每个 supercell-XXX 做单点计算，按 phonopy 文档的格式 dump 力（dump_modify sort id），然后
+    phonopy-init --lammps -f lammps_forces_*.0
+    phonopy --config band_hcp.conf -s
+"""
 
 import argparse
 
 import phonopy
-from phonopy.interface.calculator import (
-    write_crystal_structure,
-    write_supercells_with_displacements,
-)
+from ase.io import read
+from phonopy.interface.calculator import write_crystal_structure, write_supercells_with_displacements
 from phonopy.structure.atoms import PhonopyAtoms
-from pymatgen.core.structure import Structure
-from pymatgen.io.phonopy import get_phonopy_structure
 
-structure_fn_dict = {
-    "vasp": ["PPOSCAR", "BPOSCAR", "SPOSCAR"],
-    "lammps": ["Punitcell", "Bunitcell", "supercell"],
-}
-
-
-def unit2primitive(
-    structure_fn: str = "POSCAR", interface_mode: str = "vasp"
-) -> PhonopyAtoms:
-    structure = Structure.from_file(structure_fn)
-
-    primitive_structure = structure.to_primitive()
-
-    write_crystal_structure(
-        filename=structure_fn_dict[interface_mode][1],
-        cell=get_phonopy_structure(structure),
-        interface_mode=interface_mode,
-    )
-
-    return get_phonopy_structure(primitive_structure)
+OUTPUT_NAMES = {"vasp": ("PPOSCAR", "SPOSCAR"), "lammps": ("Punitcell", "supercell")}
 
 
 def disp_supercell_generation(
-    structure_fn: str = "POSCAR", interface_mode: str = "vasp", cellsize: int = 4
+    structure_fn: str = "POSCAR",
+    interface_mode: str = "vasp",
+    dim: tuple[int, int, int] = (4, 4, 4),
+    distance: float = 0.01,
 ):
-    """生成含位移的超胞"""
-
-    unitcell = unit2primitive(structure_fn, interface_mode)
-
-    phonon = phonopy.load(
-        unitcell=unitcell,
-        primitive_matrix="auto",
-        supercell_matrix=[cellsize, cellsize, cellsize],
-        calculator=interface_mode,
+    atoms = read(structure_fn)
+    unitcell = PhonopyAtoms(
+        symbols=atoms.get_chemical_symbols(),
+        cell=atoms.cell[:],
+        scaled_positions=atoms.get_scaled_positions(),
     )
 
-    phonon.generate_displacements()
+    phonon = phonopy.Phonopy(
+        unitcell, supercell_matrix=dim, primitive_matrix="auto", calculator=interface_mode
+    )
+    phonon.generate_displacements(distance=distance)
     phonon.save("phonopy_disp.yaml")
 
-    write_crystal_structure(
-        filename=structure_fn_dict[interface_mode][0],
-        cell=phonon.primitive,
-        interface_mode=interface_mode,
-    )
-
-    write_crystal_structure(
-        filename=structure_fn_dict[interface_mode][2],
-        cell=phonon.supercell,
-        interface_mode=interface_mode,
-    )
-
+    primitive_fn, supercell_fn = OUTPUT_NAMES[interface_mode]
+    write_crystal_structure(primitive_fn, phonon.primitive, interface_mode=interface_mode)
+    write_crystal_structure(supercell_fn, phonon.supercell, interface_mode=interface_mode)
     write_supercells_with_displacements(
-        interface_mode=interface_mode,
-        supercell=phonon.supercell,
-        cells_with_disps=phonon.supercells_with_displacements,
+        interface_mode, phonon.supercell, phonon.supercells_with_displacements
     )
 
-    if interface_mode == "vasp":
-        print(f"\nPPOSCAR, BPOSCAR, SPOSCAR and POSCAR-XXX generated.")
-    elif interface_mode == "lammps":
-        print(f"\nPunitcell, Bunitcell, supercell and supercell-XXX generated.")
-
-    print(f"phonopy_disp.yaml generated.")
+    n = len(phonon.supercells_with_displacements)
+    print(f"phonopy_disp.yaml, {primitive_fn}, {supercell_fn} and {n} displaced supercells generated.")
 
 
 if __name__ == "__main__":
@@ -84,22 +57,10 @@ if __name__ == "__main__":
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog="Author: SLY.",
     )
-
-    parser.add_argument("structure_fn", default="POSCAR", help="structure filename")
-
-    parser.add_argument("--cellsize", type=int, default=4, metavar="N", help="cellsize")
-
-    parser.add_argument(
-        "--interface",
-        default="vasp",
-        choices=["vasp", "lammps"],
-        help="interface mode.",
-    )
-
+    parser.add_argument("structure_fn", nargs="?", default="POSCAR", help="structure file (any ASE format)")
+    parser.add_argument("-d", "--dim", nargs=3, type=int, default=[4, 4, 4], metavar="N", help="supercell size")
+    parser.add_argument("--distance", type=float, default=0.01, help="displacement distance (Å)")
+    parser.add_argument("--interface", default="vasp", choices=list(OUTPUT_NAMES), help="interface mode")
     args = parser.parse_args()
 
-    disp_supercell_generation(
-        structure_fn=args.structure_fn,
-        interface_mode=args.interface,
-        cellsize=args.cellsize,
-    )
+    disp_supercell_generation(args.structure_fn, args.interface, args.dim, args.distance)

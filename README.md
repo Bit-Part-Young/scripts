@@ -147,6 +147,12 @@ plot_dos_element_spd.py              # 使用 pymatgen 模块绘制元素分态�
 
 ---
 
+### phonopy 声子计算
+
+- `phonopy-usage/`: VASP / LAMMPS 声子计算输入生成与声子谱绘图，详见 [phonopy-usage/README.md](phonopy-usage/README.md)
+
+---
+
 ### 结构相关脚本
 
 - `structure-scripts/`: 结构相关脚本

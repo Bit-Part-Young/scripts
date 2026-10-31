@@ -1,60 +1,42 @@
 #!/usr/bin/env python3
 
 """
-根据 material_id 检查、获取 MP phonon 数据并绘制band structure
-经简要测试，只有 mp-149 (Si) 有 MP phonon 数据，mp-46 mp-129 等没有
+根据 material_id 获取 Materials Project 声子数据并绘制 band structure
+
+API key 取自环境变量 PMG_MAPI_KEY。MP 的声子方法有 dfpt、pheasy 两种，部分材料两者都有；
+未指定 --method 时用第一个可用的。没有声子数据的材料（如 mp-75 Nb）会报错退出。
 """
 
 import argparse
-import os
+import sys
 
 from mp_api.client import MPRester
+from mp_api.client.core.exceptions import MPRestError
 from pymatgen.phonon.plotter import PhononBSPlotter
-
-API_KEY = os.getenv("PMG_MAPI_KEY")
-if API_KEY is None:
-    raise OSError("PMG_MAPI_KEY environment variable is not set. Please check!")
-
-
-def check(material_id: str) -> bool:
-    with MPRester(API_KEY) as mpr:
-        docs = mpr.materials.summary.search(
-            material_ids=material_id, has_props=["phonon"]
-        )
-
-    return len(docs) > 0
-
-
-def get_phonon_data(material_id):
-
-    with MPRester(API_KEY) as mpr:
-        phonon_doc = mpr.materials.phonon.search(material_ids=material_id)
-
-    return phonon_doc
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Check, get and plot MP phonon data.", epilog="Author: SLY."
+        description="Get and plot MP phonon band structure.", epilog="Author: SLY."
     )
-
-    parser.add_argument("material_id", help="MP material id")
-
+    parser.add_argument("material_id", help="MP material id, e.g. mp-149")
+    parser.add_argument("-m", "--method", help="phonon method: dfpt or pheasy (default: first available)")
+    parser.add_argument("-o", "--output_fn", help="output figure (default: phonon_bs_<id>_<method>.png)")
     args = parser.parse_args()
 
-    if not check(args.material_id):
-        print(f"Material {args.material_id} not found")
-        exit(1)
+    with MPRester(mute_progress_bars=True) as mpr:
+        try:
+            docs = mpr.materials.phonon.search(material_ids=[args.material_id], fields=["phonon_method"])
+        except MPRestError as e:
+            sys.exit(str(e))
+        methods = [d.phonon_method.value for d in docs]
+        print(f"{args.material_id}: phonon methods {methods}")
 
-    phonon_doc = get_phonon_data(args.material_id)
+        method = args.method or methods[0]
+        if method not in methods:
+            sys.exit(f"no {method} phonon data for {args.material_id}")
+        bs = mpr.materials.phonon.get_bandstructure_from_material_id(args.material_id, phonon_method=method)
 
-    phonon_data = phonon_doc[0]
-    ph_bs = phonon_data.ph_bs
-    ph_dos = phonon_data.ph_dos
+    fig_fn = args.output_fn or f"phonon_bs_{args.material_id}_{method}.png"
+    PhononBSPlotter(bs=bs.to_pmg).save_plot(fig_fn)
 
-    phonon_bs_plotter = PhononBSPlotter(bs=ph_bs)
-
-    fig_fn = f"phonon_bs_{args.material_id}.png"
-    phonon_bs_plotter.save_plot(fig_fn)
-
-    print(f"\nPhonon band structure plot saved to {fig_fn}.")
+    print(f"Phonon band structure plot saved to {fig_fn}")

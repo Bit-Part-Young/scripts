@@ -3,7 +3,7 @@
 """
 由 phonopy 命令行输出的 band.yaml 绘制声子谱，可叠加多个文件对比
 
-band.yaml 由 `phonopy --config band.conf -s` 生成（phonopy < 4：`phonopy -p band.conf -s`）。
+band.yaml 由 `phonopy --config band.conf -s` 生成。
 k 路径取自 band.yaml 本身；需要预设 k 路径、实验散点或多子图时用 plot_phonon_bs.py。
 画图风格与 plot_phonon_bs.py 一致。
 
