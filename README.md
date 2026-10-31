@@ -220,7 +220,6 @@ nep_pca_plot.py                      # NEP 未归一化 & 归一化 描述符 PC
 relax_nep.py                         # NEP 势函数 结构优化
 elastic_nep.py                       # NEP 势函数 弹性常数计算
 eos_nep.py                           # NEP 势函数 EOS 计算
-phonon_nep.py                        # NEP 势函数 声子谱/色散计算
 
 fps_select.py                        # 基于最远点采样选择结构
 perturb_hiphive.py                   # 用 dpdata 生成随机 cell & position 扰动结构
