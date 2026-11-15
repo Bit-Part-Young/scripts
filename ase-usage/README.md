@@ -16,6 +16,6 @@ ase_eos.ipynb                        # 拟合 EOS 方程并绘制曲线
 ase_rdf.ipynb                        # 计算并绘制 RDF
 ase_outcar.ipynb                     # 获取 OUTCAR 文件中数据（离子步构型、能量及受力）
 ase_phase_diagram.ipynb              # 使用 ase phasediagram 模块绘制相图
-surface_fcc.sh                       # FCC (100), (110), (111) 表面模型构建
-surface_bcc.sh                       # BCC (100), (110), (111) 表面模型构建
+surface_fcc.py                       # FCC (100), (110), (111) 表面模型构建（ase.build；取向与 atomsk 一致的版本见 structure-scripts/build_surface.py）
+surface_bcc.py                       # BCC (100), (110), (111) 表面模型构建（ase.build）
 ```

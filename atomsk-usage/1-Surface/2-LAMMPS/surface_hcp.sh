@@ -2,10 +2,28 @@
 
 set -eu
 
-# HCP Basal / (0001), Prismatic / (-1100), Pyramidal II / (11-22) 表面模型构建
+# HCP Basal / (0001), Prismatic / (-1100), Pyramidal I / (01-11), Pyramidal II / (11-22) 表面模型构建
+# （atomsk，输出 LAMMPS data）
+#
+# - 取向均为右手系，与 structure-scripts/build_surface.py 的取向表一致（单胞基矢、原子数相同）
+# - -d 与 atomsk -dup 一致：nz 为第三基矢周期数，原子层数 = 每周期层数 × nz
+# - 真空层：-cell add 沿第三基矢（锥面为倾斜轴）伸长，使法向高度增加 vac（实际间隙约为 vac + 1 个层间距）
+# - 终止面为 atomsk 默认（柱面、锥面 I 在宽层间隙处切开）；需选择终止面请用 build_surface.py --term
+#
+#   表面          orient (x y z)                 每周期层数  每周期原子数  |a| x |b| (Å, Ti a=2.928 c=4.640)
+#   basal         [11-20]  [-1100] [0001]         2           4            2.928 x 5.071
+#   prismatic     [-1-120] [0001]  [-1100]        4           4            2.928 x 4.640
+#   pyramidalI    [-2110]  [1-213] [01-11]        6           6            2.928 x 5.487 (gamma=105.48)
+#   pyramidalII   [-1-123] [1-100] [11-22]        10          20           5.487 x 5.071
+#
+# 常用命令行示例见 ../1-VASP/surface_hcp.sh 头部注释（-d 含义相同）
+
+separator() {
+  printf '\n%*s\n\n' "${COLUMNS:-80}" '' | tr ' ' '#'
+}
 
 surface_hcp() {
-  # 设置默认值 元素符号 晶格常数 超胞尺寸 原子层层数 真空层厚度
+  # 设置默认值 表面类型 元素符号 晶格常数 超胞尺寸 真空层厚度
   surface_type="${surface_type:-basal}"
   symbol="${symbol:-Ti}"
   a="${a:-2.928}"
@@ -16,80 +34,30 @@ surface_hcp() {
   vacuum="${vacuum:-40.0}"
   vacuum_half=$(awk "BEGIN {print ${vacuum}/2}")
 
+  case "${surface_type}" in
+    basal) orient=("[11-20]" "[-1100]" "[0001]") ;;          # 单胞 4 个原子，2 个原子层
+    prismatic) orient=("[-1-120]" "[0001]" "[-1100]") ;;     # 单胞 4 个原子，4 个原子层
+    pyramidalI) orient=("[-2110]" "[1-213]" "[01-11]") ;;    # 单胞 6 个原子，6 个原子层
+    pyramidalII) orient=("[-1-123]" "[1-100]" "[11-22]") ;;  # 单胞 20 个原子，10 个原子层
+    *)
+      echo "Error: unsupported surface type '${surface_type}' (choose from basal, prismatic, pyramidalI, pyramidalII)" >&2
+      exit 1
+      ;;
+  esac
 
-  #------------------------- Basal / (0001) 表面 ---------------------------
-  if [[ ${surface_type} == "basal" ]]; then
-    atomsk --create hcp ${a} ${c} ${symbol} \
-      orient "[11-20]" "[-1100]" "[0001]" \
-      -dup ${dup_x} ${dup_y} ${dup_z} \
-      -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} data.lmp
+  # 锥面基矢非正交，atomsk 可能询问，echo n 自动回答
+  echo n | atomsk --create hcp "${a}" "${c}" "${symbol}" \
+    orient "${orient[@]}" \
+    -dup "${dup_x}" "${dup_y}" "${dup_z}" \
+    -cell add "${vacuum}" z -shift 0 0 "${vacuum_half}" data.lmp
 
-    echo -e "\n"
-    printf "%`tput cols`s" | tr ' ' '#'
-    echo -e "\n"
-
-    mv data.lmp basal.lmp
-
-
-  #------------------------- Prismatic / (-1100) 表面 ---------------------------
-  elif [[ ${surface_type} == "prismatic" ]]; then
-    atomsk --create hcp ${a} ${c} ${symbol} \
-      orient "[11-20]" "[0001]" "[-1100]" \
-      -dup ${dup_x} ${dup_y} ${dup_z} \
-      -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} data.lmp
-
-    echo -e "\n"
-    printf "%`tput cols`s" | tr ' ' '#'
-    echo -e "\n"
-
-    mv data.lmp prismatic.lmp
-
-
-  #------------------------- Pyramidal I / (01-11) 表面 ---------------------------
-  elif [[ ${surface_type} == "pyramidalI" ]]; then
-    echo n | atomsk --create hcp ${a} ${c} ${symbol} \
-      orient "[-2110]" "[1-213]" "[01-11]" \
-      -dup ${dup_x} ${dup_y} ${dup_z} \
-      -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} data.lmp
-
-    echo -e "\n"
-    printf "%`tput cols`s" | tr ' ' '#'
-    echo -e "\n"
-
-    mv data.lmp pyramidalI.lmp
-
-
-  #------------------------- Pyramidal II / (11-22) 表面 ---------------------------
-  elif [[ ${surface_type} == "pyramidalII" ]]; then
-    echo n | atomsk --create hcp ${a} ${c} ${symbol} \
-      orient "[-1-123]" "[-1100]" "[11-22]" \
-      -dup ${dup_x} ${dup_y} ${dup_z} \
-      -cell add ${vacuum} z \
-      -shift 0 0 ${vacuum_half} data.lmp
-
-    echo -e "\n"
-    printf "%`tput cols`s" | tr ' ' '#'
-    echo -e "\n"
-
-    mv data.lmp pyramidalII.lmp
-
-  fi
+  separator
 
   structure_folder="hcp-surfaces"
-  if [[ ! -d ${structure_folder} ]]; then
-    mkdir ${structure_folder}
-  fi
+  mkdir -p "${structure_folder}"
+  mv data.lmp "${structure_folder}/${surface_type}.lmp"
 
-  for file in *.lmp; do
-    if [[ ${file} != "in.lmp" ]]; then
-      mv ${file} ${structure_folder}
-    fi
-  done
-
-  echo "Total Basal / (0001), Prismatic / (-1100), Pyramidal I / (01-11), Pyramidal II / (11-22) surface models of HCP ${symbol} generated!"
+  echo "HCP ${symbol} ${surface_type} surface model generated: ${structure_folder}/${surface_type}.lmp"
 }
 
 
@@ -99,22 +67,21 @@ get_help() {
 
   echo -e "\nUsage: ${script_name} [-st STR] [-e STR] [-lc FLOAT FLOAT] [-d N N N] [-vac FLOAT]"
 
-  echo -e "\nGenerate HCP Basal / (0001), Prismatic / (-1100), Pyramidal I / (01-11), Pyramidal II / (11-22) surface models for LAMMPS calculation."
+  echo -e "\nGenerate HCP Basal / (0001), Prismatic / (-1100), Pyramidal I / (01-11), Pyramidal II / (11-22) surface model for LAMMPS calculation."
 
   echo -e "\nOptions:"
   echo "    -h, --help                 show this help message and exit"
-  echo "    -st STR                    surface type (default: basal)"
+  echo "    -st STR                    surface type: basal, prismatic, pyramidalI, pyramidalII (default: basal)"
   echo "    -e STR                     element symbol (default: Ti)"
-  echo "    -lc FLOAT FLOAT            lattice constant (default: 2.928 4.640)"
-  echo "    -d N N N                   x y z dimension (default: 6 6 10)"
+  echo "    -lc FLOAT FLOAT            lattice constant a c (default: 2.928 4.640)"
+  echo "    -d N N N                   x y z duplication, z in periods (default: 10 10 20)"
   echo "    -vac FLOAT                 vacuum thickness (default: 40.0)"
 
-  echo -e "\nExamples:"
-  echo "    ${script_name}"
-  echo "    ${script_name} -st basal -e Ti -lc 2.928 4.640 -d 6 6 10 -vac 40.0"
-  echo "    ${script_name} -st prismatic -e Ti -lc 2.928 4.640 -d 6 6 5 -vac 40.0"
-  echo "    ${script_name} -st pyramidalI -e Ti -lc 2.928 4.640 -d 6 6 4 -vac 40.0"
-  echo "    ${script_name} -st pyramidalII -e Ti -lc 2.928 4.640 -d 6 6 2 -vac 40.0"
+  echo -e "\nExamples (>= 24 layers):"
+  echo "    ${script_name} -st basal -e Ti -lc 2.928 4.640 -d 10 10 12 -vac 40.0"
+  echo "    ${script_name} -st prismatic -e Ti -lc 2.928 4.640 -d 10 10 6 -vac 40.0"
+  echo "    ${script_name} -st pyramidalI -e Ti -lc 2.928 4.640 -d 10 10 4 -vac 40.0"
+  echo "    ${script_name} -st pyramidalII -e Ti -lc 2.928 4.640 -d 10 10 4 -vac 40.0   # 40 layers"
 }
 
 
@@ -155,5 +122,4 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# 调用函数并传递参数
-surface_hcp "$@"
+surface_hcp

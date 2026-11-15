@@ -6,7 +6,8 @@ atomsk 程序使用
 
 ```bash
 # 1-Surface/ 目录
-surface_bcc.sh                       # BCC (100), (110), (111) 表面模型构建
+# 1-VASP/ 输出 POSCAR，2-LAMMPS/ 输出 data.lmp；取向与 structure-scripts/build_surface.py 一致（右手系）
+surface_bcc.sh                       # BCC (100), (110), (111), (112), (123) 表面模型构建
 surface_fcc.sh                       # FCC (100), (110), (111) 表面模型构建
 surface_hcp.sh                       # HCP Basal, Prismatic , Pyramidal I, Pyramidal II 表面模型构建
 surface_diamond.sh                   # Diamond (100), (110), (111) 表面模型构建

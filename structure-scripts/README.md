@@ -5,6 +5,7 @@
 ## 脚本列表
 
 ```bash
+build_surface.py                     # BCC (100/110/111/112/123)、FCC (100/110/111)、HCP (basal/prismatic/pyrI/pyrII) 表面模型（取向同 atomsk，可选终止面、真空方向、VASP/LAMMPS 输出）
 add_vacuum.py                        # 在指定轴（默认 z 轴）顶部、底部、顶部底部两端添加真空层（支持非正交胞，保持晶格角度不变）
 layers_count.py                      # 统计原子层数及每层原子数
 layers_identify.py                   # 识别原子层及其对应的原子
