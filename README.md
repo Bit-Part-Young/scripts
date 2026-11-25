@@ -106,10 +106,6 @@
 
 ---
 
-- `image-process/`: 图片处理，详见 [image-process/README.md](image-process/README.md)
-
----
-
 - `shell-scripts/`: Shell 脚本，详见 [shell-scripts/README.md](shell-scripts/README.md)
 
 ---
