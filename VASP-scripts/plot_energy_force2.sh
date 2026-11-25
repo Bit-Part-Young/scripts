@@ -54,7 +54,8 @@ else
 fi
 
 # 绘制演化图
-cat >> .plot.gnu << EOF
+# 使用 > 覆盖，避免上次异常退出残留的 .plot.gnu 被重复追加
+cat > .plot.gnu << EOF
 set loadpath "${config_path}"
 load "config.gnu"
 
@@ -88,8 +89,12 @@ unset multiplot
 unset output
 EOF
 
-gnuplot .plot.gnu
+# 只有 1 个离子步时 xrange [1:1] 会使 gnuplot 报错
+if [[ "${ion_steps}" -gt 1 ]]; then
+  gnuplot .plot.gnu
+  echo -e "\nEnergy and force evolution plot saved to energy_force_evolution.png."
+else
+  echo -e "\nOnly ${ion_steps} ion step, skip plotting (data in force_info.dat, energy_info.dat)."
+fi
 
 rm .plot.gnu
-
-echo -e "\nEnergy and force evolution plot saved to energy_force_evolution.png."

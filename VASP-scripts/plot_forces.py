@@ -23,7 +23,8 @@ def extract_forces(outcar_fn: str = "OUTCAR") -> pd.DataFrame:
     with open(outcar_fn, "r") as f:
         lines = f.readlines()
 
-    forces_pattern = re.compile(r"POSITION")
+    # 只匹配受力块表头，避免误匹配其他含 POSITION 的行
+    forces_pattern = re.compile(r"POSITION\s+TOTAL-FORCE")
     forces_step_list = []
     forces_atom_list = []
     for i, line in enumerate(lines):
@@ -31,10 +32,13 @@ def extract_forces(outcar_fn: str = "OUTCAR") -> pd.DataFrame:
             j = i + 1
             while True:
                 j += 1
-                if (
-                    lines[j].strip()
-                    == "-----------------------------------------------------------------------------------"
-                ):
+                # 文件截断（计算未结束）时丢弃不完整的受力块
+                if j >= len(lines):
+                    forces_atom_list = []
+                    break
+                # 不依赖分隔线的具体长度（不同 VASP 版本可能不同）
+                stripped = lines[j].strip()
+                if stripped and set(stripped) == {"-"}:
                     forces_step_list.append(forces_atom_list)
                     forces_atom_list = []
                     break
@@ -73,7 +77,7 @@ def plot_forces(forces_df: pd.DataFrame):
 
 
 def main():
-    outcar_fn = sys.argv[1]
+    outcar_fn = sys.argv[1] if len(sys.argv) > 1 else "OUTCAR"
     if not os.path.exists(outcar_fn):
         print("No OUTCAR file found.")
     else:

@@ -70,12 +70,38 @@ def repair_vasprun_xml(
 
 
 def max_force(force_matrix):
+    # 与 VASP 一致：取每个原子受力的模长（原代码取的是最大受力分量的绝对值，会偏小）
     max_force_of_one_atom = []
     for i in force_matrix:
-        f1 = abs(max(i))
-        f2 = abs(min(i))
-        max_force_of_one_atom.append(max([f1, f2]))
+        max_force_of_one_atom.append(sum(f * f for f in i) ** 0.5)
     return max(max_force_of_one_atom)
+
+
+def inverse_3x3(m):
+    """3x3 矩阵求逆（只用标准库）"""
+    (a, b, c), (d, e, f), (g, h, i) = m
+    det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
+    return [
+        [(e * i - f * h) / det, (c * h - b * i) / det, (b * f - c * e) / det],
+        [(f * g - d * i) / det, (a * i - c * g) / det, (c * d - a * f) / det],
+        [(d * h - e * g) / det, (b * g - a * h) / det, (a * e - b * d) / det],
+    ]
+
+
+def apply_selective(force_matrix, basis, selective):
+    """
+    将固定方向上的受力置 0（vasprun.xml 中的 forces 未做该处理）
+
+    Selective dynamics 的 T/F 对应晶格矢量 a、b、c 方向：将受力按晶格矢量分解
+    （F = c · A），把固定方向的分量置 0 后再转回笛卡尔坐标
+    """
+    inv = inverse_3x3(basis)
+    new_matrix = []
+    for force, flags in zip(force_matrix, selective):
+        comp = [sum(force[k] * inv[k][j] for k in range(3)) for j in range(3)]
+        comp = [comp[j] if flags[j] else 0.0 for j in range(3)]
+        new_matrix.append([sum(comp[j] * basis[j][k] for j in range(3)) for k in range(3)])
+    return new_matrix
 
 
 def read_force_matrix(file_name):
@@ -96,33 +122,49 @@ def read_force_matrix(file_name):
     """
     try:
         tree = ET.parse(file_name)
-    except:
+    except ET.ParseError:
         if DEBUG == True:
             print("vasprun.xml need repair")
         file_name = repair_vasprun_xml(
-            input_file_name="vasprun.xml",
-            output_file_name="vasprun_repaired.xml",
+            input_file_name=file_name,
+            output_file_name=os.path.join(
+                os.path.dirname(file_name), "vasprun_repaired.xml"
+            ),
         )
         tree = ET.parse(file_name)
 
     calculation_xml = tree.findall("calculation")
 
+    # Selective dynamics 标记（只在 initialpos 中给出；无 Selective dynamics 时为 None）
+    selective_xml = tree.find("structure[@name='initialpos']/varray[@name='selective']")
+    selective = None
+    if selective_xml is not None:
+        selective = [
+            [flag == "T" for flag in v.text.split()]
+            for v in selective_xml.findall("v")
+        ]
+
     force_matrix_full = {}
     for i in range(len(calculation_xml)):
         force_matrix_full[str(i + 1)] = {}
-        # force_matrix
-        force_xml = calculation_xml[i].findall("varray")[0]
+        # force_matrix（按 name 属性查找，不依赖 varray 的顺序）
+        force_xml = calculation_xml[i].find("varray[@name='forces']")
         force_matrix = []
         for force_v in force_xml.findall("v"):
             force_matrix.append(force_v.text.strip().split())
 
         force_matrix = [[float(j) for j in i] for i in force_matrix]
+        if selective is not None:
+            # 使用当前离子步的晶格（ISIF=3 时晶格会变化）
+            basis_xml = calculation_xml[i].find("structure/crystal/varray[@name='basis']")
+            basis = [[float(x) for x in v.text.split()] for v in basis_xml.findall("v")]
+            force_matrix = apply_selective(force_matrix, basis, selective)
         force_matrix_full[str(i + 1)]["force_matrix"] = force_matrix
         # free_energy
-        energy_xml_i = calculation_xml[i].findall("energy")[0]
-        free_energy = float(energy_xml_i.findall("i")[0].text.strip())
-        e_wo_entrp = float(energy_xml_i.findall("i")[1].text.strip())
-        force_matrix_full[str(i + 1)]["free_energy"] = e_wo_entrp
+        # 原代码按位置取 i[1]（e_wo_entrp）却记为 free_energy；改为按 name 取真正的自由能
+        energy_xml_i = calculation_xml[i].find("energy")
+        free_energy = float(energy_xml_i.find("i[@name='e_fr_energy']").text.strip())
+        force_matrix_full[str(i + 1)]["free_energy"] = free_energy
 
     return force_matrix_full
 
@@ -182,16 +224,15 @@ def main():
         output.writelines(time.asctime(time.localtime(time.time())))
         output.writelines("\n \n")
 
-    for dir_name in os.listdir():
+    for dir_name in sorted(os.listdir()):
         if os.path.isdir(dir_name) == True:
-            os.chdir(dir_name)
-            if os.path.exists("vasprun.xml") == False:
+            vasprun_fn = os.path.join(dir_name, "vasprun.xml")
+            if os.path.exists(vasprun_fn) == False:
                 print("# vasprun not in `{}`".format(dir_name))
-                os.chdir("..")
                 continue
             else:
-                force_matrix_full = read_force_matrix("vasprun.xml")
-                os.chdir("..")
+                # 不再 chdir，避免读取出错时停留在子目录中
+                force_matrix_full = read_force_matrix(vasprun_fn)
                 if len(force_matrix_full) == 0:
                     print(
                         "# vasprun in `{}` may not comprise a ion step".format(dir_name)

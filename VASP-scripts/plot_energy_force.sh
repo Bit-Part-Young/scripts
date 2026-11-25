@@ -4,7 +4,8 @@
 
 set -eu
 
-awk '{if($4=="F"||$4=="T") print $4,$5,$6}' POSCAR > temp.fixed
+# 只读取 Selective dynamics 行之后的坐标行，避免第 6 行元素行（如含 F 元素）被误识别
+awk 'NR >= 7 && /^[[:space:]]*[Ss]/ {sd = 1; next} sd && toupper($4) ~ /^[TF]$/ {print $4,$5,$6}' POSCAR > temp.fixed
 
 # 离子步数
 ion_steps=$(grep 'free  ene' OUTCAR | wc -l)
@@ -20,8 +21,10 @@ for i in $(seq 1 ${ion_steps}); do
 
   echo "${energy_pa}" >> energy_info.dat
 
-  # 获取原子受力信息
-  awk '/TOTAL-FORCE/ {flag++} flag==N {print} /total drift/ {if (flag==N) {exit}}' N=${i} OUTCAR \
+  # 获取原子受力信息；同时将该离子步的晶格（前 3 列正格矢、后 3 列倒格矢）写入 temp.latt
+  awk '/direct lattice vectors/ {getline l1; getline l2; getline l3}
+       /TOTAL-FORCE/ {flag++; if (flag==N) print l1 "\n" l2 "\n" l3 > "temp.latt"}
+       flag==N {print} /total drift/ {if (flag==N) {exit}}' N=${i} OUTCAR \
   | grep -viE 'total|---' | awk '{print $4,$5,$6}' > temp.force
 
  if [[ ! -s "temp.fixed" ]]; then
@@ -33,23 +36,39 @@ for i in $(seq 1 ${ion_steps}); do
       }
       END { print max }' temp.force >> force_info.dat
   else
-      awk ' BEGIN { max = 0 } FNR==NR { flag[FNR] = $0; next }
+      # 与 VASP 源码 dyna.F 中 SET_SELECTED_FORCES_ZERO 一致：
+      # Selective dynamics 的 T/F 对应晶格矢量 a、b、c 方向（而非笛卡尔 x、y、z 轴），
+      # 先用倒格矢 B 将受力转为分量 c_j = F·b_j（KARDIR），将固定方向分量置 0，
+      # 再用正格矢 A 转回笛卡尔坐标 F' = sum_j c_j·a_j（DIRKAR）；
+      # A、B 取自当前离子步（temp.latt），正交晶胞下等价于直接将对应的笛卡尔分量置 0
+      awk ' BEGIN { max = 0 }
+      FILENAME == ARGV[1] {
+          for (k = 1; k <= 3; k++) { A[FNR, k] = $k; B[FNR, k] = $(k + 3) }
+          next
+      }
+      FILENAME == ARGV[2] { flag[FNR] = $0; next }
       {
           split(flag[FNR], f, /[ \t]+/)
-          for (i = 1; i <= NF; i++) {
-              if (f[i] == "F") $i = 0
+          for (j = 1; j <= 3; j++) {
+              c[j] = 0
+              for (k = 1; k <= 3; k++) c[j] += $k * B[j, k]
+              if (toupper(f[j]) == "F") c[j] = 0
           }
           sum = 0
-          for (i = 1; i <= NF; i++) sum += $i * $i
+          for (k = 1; k <= 3; k++) {
+              g = 0
+              for (j = 1; j <= 3; j++) g += c[j] * A[j, k]
+              sum += g * g
+          }
           norm = sqrt(sum)
           if (norm > max) max = norm
       }
-      END { print max }' temp.fixed temp.force >> force_info.dat
+      END { print max }' temp.latt temp.fixed temp.force >> force_info.dat
   fi
 
 done
 
-rm temp.fixed temp.force
+rm -f temp.fixed temp.force temp.latt
 
 
 if hostname | grep -q sjtu; then
@@ -59,7 +78,8 @@ else
 fi
 
 # 绘制演化图
-cat >> .plot.gnu << EOF
+# 使用 > 覆盖，避免上次异常退出残留的 .plot.gnu 被重复追加
+cat > .plot.gnu << EOF
 set loadpath "${config_path}"
 load "config.gnu"
 
@@ -93,8 +113,9 @@ EOF
 
 if [[ "${ion_steps}" -gt 1 ]]; then
   gnuplot .plot.gnu
+  echo -e "\nEnergy and force evolution plot saved to energy_force_evolution.png."
+else
+  echo -e "\nOnly ${ion_steps} ion step, skip plotting (data in force_info.dat, energy_info.dat)."
 fi
 
 rm .plot.gnu
-
-echo -e "\nEnergy and force evolution plot saved to energy_force_evolution.png."

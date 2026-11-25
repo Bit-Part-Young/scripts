@@ -21,9 +21,12 @@ def grab_info(outcar_path: str) -> tuple[
     """获取原子数、每个离子步中每个原子的受力（向量）"""
 
     patten_natoms = re.compile(r"\s+\w+\s+NIONS =\s+(\d+)")
-    patten_ediffg = re.compile(r"\s+EDIFFG =(\s[-+]?\.\w+[-+]?\d+)")
+    # 兼容 -.1E-01、-0.01、-1E-2 等写法
+    patten_ediffg = re.compile(r"\s+EDIFFG\s*=\s*([-+]?(?:\d+\.?\d*|\.\d+)(?:[EeDd][-+]?\d+)?)")
     patten_force = re.compile(r"\s+total drift:\s+")
 
+    natoms = None
+    ediffg = None
     force_list = []
     line_list = []
 
@@ -36,11 +39,14 @@ def grab_info(outcar_path: str) -> tuple[
                 natoms = int(match.group(1))
 
             elif match := patten_ediffg.search(line):
-                ediffg = float(match.group(1))
+                ediffg = float(match.group(1).replace("D", "E").replace("d", "e"))
 
             elif patten_force.search(line):
                 # 获取一个离子步中的每个原子受力信息
                 force_list += line_list[-natoms - 2 : index - 1]
+
+    if natoms is None or not force_list:
+        raise SystemExit(f"Error: NIONS or TOTAL-FORCE block not found in {outcar_fn}")
 
     # 原子位置分量是前 3 列，原子受力分量是后 3 列
     # position_array = np.array(force_list, dtype=float).reshape(-1, natoms, 6)[:, :, :3]
@@ -49,7 +55,53 @@ def grab_info(outcar_path: str) -> tuple[
     return (natoms, ediffg, force_array)
 
 
-# [ ] 需忽略原子固定轴对应的受力，直接设置为 0
+def read_selective_dynamics(poscar_fn: str) -> tuple[np.ndarray, np.ndarray] | None:
+    """读取 POSCAR 中的晶格矢量及 Selective dynamics 标记；无 Selective dynamics 时返回 None"""
+
+    if not os.path.isfile(poscar_fn):
+        return None
+
+    with open(poscar_fn, "r") as f:
+        lines = [line.split() for line in f]
+
+    lattice = np.array([line[:3] for line in lines[2:5]], dtype=float)
+
+    # 第 6 行为元素符号（VASP 5 格式）时，原子数在第 7 行
+    index = 5 if re.fullmatch(r"\d+", lines[5][0]) else 6
+    natoms = sum(int(n) for n in lines[index])
+
+    if not lines[index + 1][0].lower().startswith("s"):
+        return None
+
+    # 跳过 Selective dynamics 行和 Direct/Cartesian 行
+    coords = lines[index + 3 : index + 3 + natoms]
+    mask = np.array([[flag.upper() == "T" for flag in line[3:6]] for line in coords])
+
+    return (lattice, mask)
+
+
+def apply_selective_dynamics(
+    force_array: np.ndarray,
+    lattice: np.ndarray,
+    mask: np.ndarray,
+) -> np.ndarray:
+    """将固定方向上的受力置 0
+
+    Selective dynamics 的 T/F 对应晶格矢量 a、b、c 方向（而非笛卡尔 x、y、z 轴）：
+    将受力按晶格矢量分解（F = c @ A），把固定方向的分量置 0 后再转回笛卡尔坐标；
+    正交晶胞下等价于直接将对应的笛卡尔分量置 0
+
+    与 VASP 5.4.4 源码 dyna.F 中 SET_SELECTED_FORCES_ZERO 的做法一致（KARDIR/DIRKAR）；
+    注意：VASP 使用当前离子步的晶格，这里使用 POSCAR 的晶格，
+    仅在 ISIF>=3 且晶胞形状改变时与 VASP 有微小偏差
+    """
+
+    components = force_array @ np.linalg.inv(lattice)
+    components *= mask
+
+    return components @ lattice
+
+
 def calculate_force(
     force_array: np.ndarray,
     force_criteria: float = 0.01,
@@ -58,6 +110,8 @@ def calculate_force(
 
     F = np.sqrt(np.power(force_array, 2).sum(axis=-1))
 
+    # 与 VASP 源码 main.F 一致：受力模长 > |EDIFFG| 视为未收敛
+    # 注意：ISIF>=3 时 VASP 还要求应力满足 EDIFFG，这里只检查受力
     boolen_array = F > np.abs(force_criteria)
 
     return boolen_array
@@ -95,8 +149,25 @@ def main():
 
     if ediffg is None:
         natoms, ediffg, force_array = grab_info(outcar_path=outcar_path)
+        # EDIFFG 缺失、为 0 或为正值（能量判据）时，不能作为力的收敛判据
+        if ediffg is None or ediffg >= 0:
+            print(
+                f"Warning: OUTCAR EDIFFG = {ediffg} is not a force criterion, use 0.01 eV/Å instead (or set --ediffg)."
+            )
+            ediffg = 0.01
     else:
         natoms, _, force_array = grab_info(outcar_path=outcar_path)
+
+    # 与 VASP 一致：判断收敛时不考虑固定方向上的受力（OUTCAR 中输出的是未处理的原始受力）
+    selective = read_selective_dynamics(os.path.join(outcar_path, "POSCAR"))
+    if selective is None:
+        print("No Selective dynamics in POSCAR, use raw forces.")
+    else:
+        lattice, mask = selective
+        if mask.shape[0] != natoms:
+            raise SystemExit("Error: atom number in POSCAR does not match OUTCAR")
+        force_array = apply_selective_dynamics(force_array, lattice, mask)
+        print(f"Selective dynamics in POSCAR applied ({(~mask).any(axis=1).sum()} atoms with fixed directions).")
 
     ion_steps = force_array.shape[0]
     print(

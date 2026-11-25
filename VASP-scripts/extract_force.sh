@@ -28,11 +28,10 @@ get_help() {
 
   echo -e "\nOptions:"
   echo "  -h, --help      show this help message and exit"
-  echo "  -outcar OUTCAR  Sets the outcar file name"
+  echo "  -outcar=OUTCAR  Sets the outcar file name"
   echo "  -atom=ATOM      Sets the Atom number default value : all atoms"
   echo "  -iter=ITER      Sets the Iterations number default value : all iterations"
-  echo "  -out=OUTPUT     Sets the output file"
-  echo "  -infos          Prints infos"
+  echo "  -out=OUTPUT     Sets the output file (default: print to screen only)"
 
   echo -e "\nExamples:"
   echo "    ${script_name} -atom=4 -iter=all -outcar=OUTCAR"
@@ -62,32 +61,31 @@ for i in "$@"; do
     Out="${i#*=}"
     shift
     ;;
-  -h)
+  -h | --help)
     get_help
     exit 0
     ;;
   esac
 done
 
-if [[ -z "${Atom}" ]]; then
-  Atom=all
-fi
+# set -u 下未定义变量会直接报错，需设置默认值
+Atom="${Atom:-all}"
+Iter="${Iter:-all}"
+Inp="${Inp:-OUTCAR}"
+Out="${Out:-}"
 
-if [[ -z "${Iter}" ]]; then
-  Iter=all
-fi
-
-if [[ -z "${Inp}" ]] || [[ ! -f "${Inp}" ]]; then
+if [[ ! -f "${Inp}" ]]; then
   echo -e "\n\t!!!..Error in OUTCAR File Name!\n\n"
   get_help
-  exit 0
+  exit 1
 else
-  N_ions=$(grep NIONS "${Inp}" | awk '{printf"%d",$NF}')
+  N_ions=$(grep -m 1 NIONS "${Inp}" | awk '{printf"%d",$NF}')
 fi
 
 
 #------------------     提取原子位置、受力信息     ------------------
 # 注意单双引号的使用
+extract() {
 awk '/TOTAL-FORCE \(eV\/Angst\)/{
     n++
     getline  # skip one line
@@ -115,4 +113,12 @@ awk '/TOTAL-FORCE \(eV\/Angst\)/{
         }
 
     }
-}' "${Inp}" | tee "${Out}"
+}' "${Inp}"
+}
+
+# 未指定 -out 时只输出到屏幕
+if [[ -n "${Out}" ]]; then
+  extract | tee "${Out}"
+else
+  extract
+fi
