@@ -6,6 +6,8 @@ NEP 相关脚本
 
 ```bash
 count_xyz.sh                         # 统计 xyz 文件构型帧数及总原子数
+count_xyz_type.sh                    # 统计 xyz 文件中 element / group 字段类别及帧数
+count_xyz_group.sh                   # 统计 xyz 文件中 group 字段类别及帧数
 get_xyz_efs.sh                       # 获取 NEP xyz 文件中的能量、力、位力数据
 thermo_info_gpumd.sh                 # 从 GPUMD 输出的 thermo.out 文件中格式化输出热力学信息
 

@@ -7,40 +7,47 @@ set -eu
 # reference: https://github.com/Kick-H/For_gpumd/blob/master/NEP_related/Count/count_xyz.sh
 
 
+# 统计 xyz 文件每帧注释行中某个字段 (key="value" 或 key=value) 的取值及帧数
+# 纯 awk 实现, 兼容 macOS (BSD) 与 Linux (GNU), 支持带空格的引号值 (如 group="volume scaling")
+count_key() {
+
+  key=$1
+  xyz_fn=$2
+
+  awk -v key="${key}" '
+    skip > 0 { skip--; next }
+    header { header = 0; skip = n
+             if (match($0, "(^|[[:space:]])" key "=\"[^\"]*\"")) {
+               v = substr($0, RSTART, RLENGTH); sub(/^[[:space:]]*[^=]*="/, "", v); sub(/"$/, "", v)
+             } else if (match($0, "(^|[[:space:]])" key "=[^[:space:]]+")) {
+               v = substr($0, RSTART, RLENGTH); sub(/^[[:space:]]*[^=]*=/, "", v)
+             } else { v = "(none)" }
+             if (!(v in cnt)) order[++nv] = v
+             cnt[v]++; total++; next }
+    /^[[:space:]]*$/ { next }
+    { n = $1 + 0; header = 1 }
+    END { for (i = 1; i <= nv; i++) printf "%s: %d\n", order[i], cnt[order[i]]
+          printf "Total: %d.\n", total }
+  ' "${xyz_fn}"
+}
+
+
 count_xyz_type() {
 
   xyz_fn=$1
 
-  if [ ! -f ${xyz_fn} ]; then
+  if [ ! -f "${xyz_fn}" ]; then
     echo "Error: ${xyz_fn} not found!"
     exit 1
   fi
 
   echo -e "\n${xyz_fn} info:"
 
-  # ----------------------------- 统计 element 类型 -----------------------------
   echo -e "\nElement type count:"
-  count_total=0
-  elements=$(grep -o 'element=[^ ]*' ${xyz_fn} | awk -F= '{print $2}' | sort | uniq)
-  for element in ${elements[@]}; do
-    echo -e "${element}: \c"
-    count=$(grep -E element=${element} ${xyz_fn} | wc -l)
-    echo ${count}
-    count_total=$((count_total + count))
-  done
-  echo "Total: ${count_total}."
+  count_key element "${xyz_fn}"
 
-  # ----------------------------- 统计 group 类型 -----------------------------
   echo -e "\nGroup type count:"
-  count_total=0
-  groups=$(grep -o 'group=[^ ]*' ${xyz_fn} | awk -F= '{print $2}' | sort | uniq)
-  for group in ${groups[@]}; do
-    echo -e "${group}: \c"
-    count=$(grep -E group=${group} ${xyz_fn} | wc -l)
-    echo ${count}
-    count_total=$((count_total + count))
-  done
-  echo "Total: ${count_total}."
+  count_key group "${xyz_fn}"
 }
 
 
@@ -66,19 +73,22 @@ get_help() {
 
 
 #-------------------------------- 主函数 --------------------------------
-if [ $# -eq 0 ]; then
-
-  for xyz_fn in $(ls *.xyz); do
-    count_xyz_type ${xyz_fn}
-  done
-
-elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
   get_help
-  exit 0
-
-else
-  for xyz_fn in "$@"; do
-    count_xyz_type ${xyz_fn}
-  done
-
 fi
+
+# 未指定文件时, 处理当前目录下的所有 xyz 文件
+if [ $# -eq 0 ]; then
+  shopt -s nullglob
+  xyz_files=(*.xyz)
+  shopt -u nullglob
+  if [ ${#xyz_files[@]} -eq 0 ]; then
+    echo "Error: no xyz file found in current directory!"
+    exit 1
+  fi
+  set -- "${xyz_files[@]}"
+fi
+
+for xyz_fn in "$@"; do
+  count_xyz_type "${xyz_fn}"
+done
