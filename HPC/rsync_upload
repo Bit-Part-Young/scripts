@@ -1,57 +1,36 @@
 #!/bin/bash
-
-# 将文件/目录上传到远程服务器
-
+# 将文件/目录上传到远程服务器。
 set -eu
 
+usage() {
+  cat <<HELP
+Usage: ${0##*/} SERVER_ALIAS [--exclude PATTERN]... FILES... TARGET_PATH
 
-function rsync_upload() {
-  local SERVER_ALIAS=$1
-  shift
-
-  local EXCLUDE_OPTS=()
-  while [ "$#" -gt 0 ]; do
-    case "$1" in
-      --exclude)
-        shift
-        EXCLUDE_OPTS+=(--exclude="$1")
-        shift
-        ;;
-      *)
-        break
-        ;;
-    esac
-  done
-
-  local TARGET_PATH="${@: -1}"
-  local FILES=("${@:1:$#-1}")
-
-  rsyncy -avuP --human-readable "${EXCLUDE_OPTS[@]}" "${FILES[@]}" "${SERVER_ALIAS}:${TARGET_PATH}"
-
-  echo -e "\nUpload completed."
+Upload files/directories to a remote server.
+  --exclude PATTERN  exclude matching files (repeatable)
+  -h, --help         show this help message
+HELP
 }
 
-
-#-------------------------------- Help --------------------------------
-get_help() {
-  local script_name=$(basename $0)
-
-  echo -e "\nUsage: ${script_name} SERVER_ALIAS [--exclude STR]... FILES... TARGET_PATH"
-
-  echo -e "\nUpload files/directories to remote server using rsync."
-
-  echo -e "\nOptions:"
-  echo "  -h, --help       show this help message and exit"
-  echo "  SERVER_ALIAS     remote server alias"
-  echo "  --exclude STR    exclude pattern"
-  echo "  FILES            files/directories to upload"
-  echo "  TARGET_PATH      target path on remote server"
-}
-
-
-if [[ $# -ge 1 && ( $1 == "-h" || $1 == "--help" ) ]]; then
-  get_help
+if [[ ${1:-} == -h || ${1:-} == --help ]]; then
+  usage
   exit 0
 fi
 
-rsync_upload "$@"
+server=${1:-}
+shift || true
+exclude_opts=()
+while [[ ${1:-} == --exclude ]]; do
+  [[ $# -ge 2 ]] || { echo "Error: --exclude requires a pattern." >&2; exit 1; }
+  exclude_opts+=(--exclude="$2")
+  shift 2
+done
+
+if [[ -z $server || $# -lt 2 ]]; then
+  usage >&2
+  exit 1
+fi
+
+target=${!#}
+rsync -avuP --human-readable ${exclude_opts[@]+"${exclude_opts[@]}"} "${@:1:$#-1}" "${server}:${target}"
+printf '\nUpload completed.\n'

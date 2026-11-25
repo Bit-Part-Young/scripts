@@ -1,0 +1,102 @@
+#!/bin/bash
+# 本地目录 <-> 服务器目录 同步。映射写在本地目录的 .hpcsync 文件中（一行 SERVER:REMOTE_DIR），
+# 子目录自动沿用最近祖先目录的映射，因此只需登记一次。
+set -eu
+
+PROG=${0##*/}
+SCRIPT_DIR=$(cd "$(dirname "$(readlink -f "$0")")" && pwd)
+MARKER=.hpcsync
+PULL_EXCLUDE=$SCRIPT_DIR/hpcsync.exclude   # pull 默认排除（VASP 大输出）
+
+usage() {
+  cat <<HELP
+Usage:
+  ${PROG} link SERVER:REMOTE_DIR [LOCAL_DIR]   登记 LOCAL_DIR（默认 .）对应的服务器目录
+  ${PROG} where [LOCAL_DIR]                    显示 LOCAL_DIR 对应的服务器目录
+  ${PROG} push [-n] [LOCAL_DIR]                上传 LOCAL_DIR 的内容
+  ${PROG} pull [-n] [--all] [LOCAL_DIR]        下载到 LOCAL_DIR
+
+  -n     只列出将传输的文件（预演）
+  --all  pull 时不使用默认排除清单 hpcsync.exclude
+
+LOCAL_DIR 没有 ${MARKER} 时，向上查找最近的祖先映射并拼接相对路径：
+  proj/.hpcsync = Master:work/proj  =>  proj/a/b <-> Master:work/proj/a/b
+REMOTE_DIR 相对服务器 HOME（或写绝对路径）。不使用 --delete，-u 不覆盖接收端更新的文件。
+HELP
+}
+
+die() { echo "Error: $*" >&2; exit 1; }
+
+# resolve LOCAL_DIR -> 设置 LDIR SERVER RDIR
+resolve() {
+  [[ -d $1 ]] || die "$1 不存在"
+  LDIR=$(cd "$1" && pwd -P)
+  local d=$LDIR rel=
+  while [[ ! -f $d/$MARKER ]]; do
+    [[ $d == / ]] && die "$LDIR 及其祖先目录都没有 ${MARKER}；先运行 ${PROG} link SERVER:REMOTE_DIR"
+    rel=/${d##*/}$rel
+    d=$(dirname "$d")
+  done
+  local spec
+  spec=$(head -1 "$d/$MARKER")
+  [[ $spec == ?*:?* ]] || die "$d/$MARKER 格式应为 SERVER:REMOTE_DIR"
+  SERVER=${spec%%:*}
+  RDIR=${spec#*:}$rel
+}
+
+# 解析 push/pull 参数 -> 设置 DIR DRY ALL
+parse_args() {
+  DIR=. DRY=() ALL=0
+  while (( $# )); do
+    case $1 in
+      -n|--dry-run) DRY=(--dry-run) ;;
+      --all) ALL=1 ;;
+      -*) die "未知选项 $1" ;;
+      *) DIR=$1 ;;
+    esac
+    shift
+  done
+}
+
+(( $# )) || { usage; exit 1; }
+sub=$1; shift
+case $sub in
+  link)
+    [[ ${1:-} == ?*:?* ]] || die "格式应为 ${PROG} link SERVER:REMOTE_DIR [LOCAL_DIR]"
+    dir=${2:-.}
+    [[ -d $dir ]] || die "$dir 不存在"
+    rdir=${1#*:}
+    rdir=${rdir#\~/}   # 去掉开头的 ~/，统一为相对 HOME 的路径
+    echo "${1%%:*}:${rdir%/}" > "$dir/$MARKER"
+    resolve "$dir"
+    echo "$LDIR -> $SERVER:$RDIR"
+    ;;
+  where)
+    resolve "${1:-.}"
+    echo "$LDIR -> $SERVER:$RDIR"
+    ;;
+  push)
+    parse_args "$@"
+    [[ -d $DIR ]] || die "$DIR 不存在"
+    resolve "$DIR"
+    echo "push $LDIR -> $SERVER:$RDIR"
+    rsync -avuP --human-readable ${DRY[@]+"${DRY[@]}"} \
+      --exclude="$MARKER" --exclude=__pycache__ --exclude=.DS_Store \
+      --rsync-path="mkdir -p '$RDIR' && rsync" \
+      "$LDIR/" "$SERVER:$RDIR/"
+    ;;
+  pull)
+    parse_args "$@"
+    mkdir -p "$DIR"
+    resolve "$DIR"
+    excludes=(--exclude="$MARKER")
+    if (( ! ALL )) && [[ -f $PULL_EXCLUDE ]]; then
+      excludes+=(--exclude-from="$PULL_EXCLUDE")
+    fi
+    echo "pull $SERVER:$RDIR -> $LDIR"
+    rsync -avuP --human-readable ${DRY[@]+"${DRY[@]}"} "${excludes[@]}" \
+      "$SERVER:$RDIR/" "$LDIR/"
+    ;;
+  -h|--help|help) usage ;;
+  *) die "未知子命令 ${sub}（${PROG} -h 查看用法）" ;;
+esac

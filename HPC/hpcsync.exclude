@@ -1,0 +1,16 @@
+# hpcsync pull 默认排除（rsync --exclude-from 格式）；hpcsync pull --all 取消
+# VASP：波函数/电荷密度/重复信息/输入副本
+WAVECAR
+CHG
+CHGCAR
+vasprun.xml
+EIGENVAL
+DOSCAR
+PROCAR
+LOCPOT
+ELFCAR
+IBZKPT
+PCDAT
+REPORT
+POTCAR
+vaspout.h5
