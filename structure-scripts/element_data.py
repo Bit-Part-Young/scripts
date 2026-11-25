@@ -3,22 +3,25 @@
 """
 元素周期表常见元素数据
 
-atomic_number: 原子序数
-atomic_mass: 相对原子质量
-atomic_radius: 原子半径（无统一定值，不一定准确）
-melting_point (K): 熔点
-density (g/cm^3): 密度
-a(Å): 晶格常数 a
-c(Å): 晶格常数 c
-energy_pa (eV/atom): 基态结构的平均原子能量
+Z: 原子序数
+mass: 相对原子质量
+r(Å): 原子半径（无统一定值，不一定准确，取自 pymatgen）
+T_m(K): 熔点
+ρ(g/cm^3): 密度
+E_pa(eV/atom): 基态结构弛豫后的平均原子能量
+structure: 基态结构
+a(Å), c(Å): 基态结构弛豫后的晶格常数
 mp-id: Materials Project ID
 """
 
 import argparse
+import sys
 
 import pandas as pd
 
-data = {
+COLUMNS = ["Z", "mass", "r(Å)", "T_m(K)", "ρ(g/cm^3)", "E_pa(eV/atom)", "structure", "a(Å)", "c(Å)", "mp-id"]
+
+DATA = {
     "Ti": (22, 47.867, 1.4, 1941.0, 4.51, -7.8, "hcp", 2.93, 4.65, "mp-46"),
     "Al": (13, 26.982, 1.25, 933.47, 2.70, -3.7, "fcc", 4.04, 4.04, "mp-134"),
     "Nb": (41, 92.906, 1.45, 2750.0, 8.57, -10.2, "bcc", 3.31, 3.31, "mp-75"),
@@ -42,72 +45,43 @@ data = {
     "Pt": (78, 195.084, 1.35, 2041.4, 21.09, -6.1, "fcc", 3.97, 3.97, "mp-126"),
 }
 
-df = pd.DataFrame.from_dict(
-    data,
-    orient="index",
-    columns=[
-        "atomic_number",
-        "atomic_mass",
-        "atomic_radius",
-        "T_m(K)",
-        "ρ(g/cm^3)",
-        "E_pa(eV/atom)",
-        "structure",
-        "a(Å)",
-        "c(Å)",
-        "mp-id",
-    ],
-).fillna("-")
+NOTE = """
+Note:
+1. r: atomic radius (no unified value, not necessarily accurate), from pymatgen.
+2. E_pa: average energy per atom of the relaxed ground-state structure.
+3. a, c: lattice constants of the relaxed ground-state structure.
+4. Calculation details: VASP.5.4.4 PBE recommended PSPs, ENCUT=400, KSPACING=0.15,
+   EDIFF=1E-6, EDIFFG=-1E-2.
+"""
 
 
-# 改成英文
-def note():
-    print("\nNote:")
-    print(
-        "1. atomic_radius: atomic radius (no unified value, not necessarily accurate), got from pymatgen"
+def element_data(elements: list[str] | None = None, sort: bool = False) -> pd.DataFrame:
+    """返回元素数据表；elements 为 None 时返回全部元素"""
+
+    df = pd.DataFrame.from_dict(DATA, orient="index", columns=COLUMNS)
+
+    if elements:
+        elements = [e.capitalize() for e in elements]
+        missing = [e for e in elements if e not in df.index]
+        if missing:
+            sys.exit(f"Element(s) {missing} not found. Available: {' '.join(df.index)}")
+        df = df.loc[elements]
+
+    return df.sort_values("Z") if sort else df
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Show data of common elements.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        epilog="Author: SLY.",
     )
-    print(
-        "2. energy_pa: average atomic energy of the element's ground state structure after relaxation"
+    parser.add_argument(
+        "-e", "--element", nargs="+", metavar="EL", help="element symbols (e.g. Ti Al); omit to show all"
     )
-    print(
-        "3. a, c: lattice constants a and c of the element's ground state structure after relaxation"
-    )
-    print(
-        "4. calculation details: psp=VASP.5.4.4 PBE recommended, ENCUT=400, KSPACING=0.15, EDIFF=1E-6, EDIFFG=-1E-2"
-    )
+    parser.add_argument("--sort", action="store_true", help="sort by atomic number")
+    args = parser.parse_args()
 
-
-parser = argparse.ArgumentParser(
-    description="Common elements data.", epilog="Author: SLY."
-)
-
-parser.add_argument(
-    "-e",
-    "--element",
-    nargs="+",
-    metavar="STR",
-    help="element symbol, e.g. Ti, Ti Al",
-)
-
-parser.add_argument(
-    "--sort",
-    action="store_true",
-    help="sort by atomic number",
-)
-
-args = parser.parse_args()
-
-if args.element:
-    try:
-        df = df.loc[args.element]
-    except KeyError:
-        print(f"\nElement {args.element} not found. Exit.")
-        exit()
-
-print()
-if args.sort:
-    print(df.sort_values(by="atomic_number"))
-else:
-    print(df)
-
-note()
+    print()
+    print(element_data(args.element, args.sort).to_string(na_rep="-"))
+    print(NOTE)

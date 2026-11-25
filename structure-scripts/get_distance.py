@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-"""获取构型中原子对的最小和最大距离"""
+"""获取构型（单帧或多帧轨迹）中原子对的最小和最大距离"""
 
 import argparse
 
@@ -9,88 +9,63 @@ from ase.atoms import Atoms
 from ase.io import read
 
 
-def get_distance(atoms: Atoms, mic=False):
-    """获取构型中原子对的最小和最大距离"""
+def read_frames(structure_fn: str) -> list[Atoms]:
+    """读取全部帧（LAMMPS data 需显式指定格式，其余由 ASE 自动识别）"""
 
-    distances = atoms.get_all_distances(mic=mic).round(5)
+    if structure_fn.rsplit(".", 1)[-1] in ("lmp", "data", "lammps-data"):
+        return [read(structure_fn, format="lammps-data", sort_by_id=False)]
+    return read(structure_fn, index=":")
 
-    min_dist = np.min(distances[distances > 0.0])
-    max_dist = np.max(distances)
 
-    return round(float(min_dist), 3), round(float(max_dist), 3)
+def get_distance(atoms: Atoms, mic: bool = False) -> tuple[float, float]:
+    """返回原子对 (i < j) 的最小和最大距离（重叠原子的距离 0 也会被计入）"""
+
+    distances = atoms.get_all_distances(mic=mic)[np.triu_indices(len(atoms), k=1)]
+
+    return float(distances.min()), float(distances.max())
 
 
 def main(structure_fn: str = "POSCAR", mic: bool = False):
+    frames = read_frames(structure_fn)
+    valid = [k for k, atoms in enumerate(frames) if len(atoms) > 1]
 
-    format_dict = {
-        "xyz": "extxyz",
-        "XDATCAR": "vasp-xdatcar",
-        "OUTCAR": "vasp-out",
-    }
+    if not valid:
+        print("No frame with more than one atom, no atomic pair.")
+        return
 
-    fn_suffix = structure_fn.split(".")[-1]
-    if fn_suffix in format_dict.keys():
-        atoms_list = read(structure_fn, index=":", format=format_dict[fn_suffix])
+    if len(frames) == 1:
+        min_dist, max_dist = get_distance(frames[0], mic=mic)
+        print(f"Minimum distance: {min_dist:.3f} Å.")
+        print(f"Maximum distance: {max_dist:.3f} Å.")
+        return
 
-        nframes = len(atoms_list)
-        print(f"\nNumber of frames: {nframes}.\n")
-
-        min_dist_list, max_dist_list = [], []
-        for atoms in atoms_list:
-            if len(atoms) == 1:
-                print("Number of atom is 1, pass.")
-            else:
-                min_dist, max_dist = get_distance(atoms, mic=mic)
-
-            min_dist_list.append(min_dist)
-            max_dist_list.append(max_dist)
-
-        min_dist_global = np.min(min_dist_list)
-        min_dist_average = np.mean(min_dist_list)
-        max_dist_global = np.max(max_dist_list)
-
-        print(f"Minimum distance list (Å):")
-        print(min_dist_list)
-        print(f"Maximum distance list (Å):")
-        print(max_dist_list)
-        print(
-            f"Global Minimum distance: {min_dist_global:.3f} Å. Average: {min_dist_average:.3f} Å."
-        )
-        print(f"Global Maximum distance: {max_dist_global:.3f} Å.")
-
-    else:
-        atoms = read(structure_fn)
-
-        natoms = len(atoms)
-
-        if natoms == 1:
-            print("Number of atom is 1, no atomic pair, pass.")
-        else:
-            min_dist, max_dist = get_distance(atoms, mic=mic)
-
-            print(f"Minimum distance: {min_dist} Å.")
-            print(f"Maximum distance: {max_dist} Å.")
-
-            if natoms == 2 or np.isclose(min_dist, max_dist):
-                print(f"Number of atom is {natoms} or all distances are same.")
+    dists = np.array([get_distance(frames[k], mic=mic) for k in valid]).round(3)
+    print(f"\nNumber of frames: {len(frames)}; with more than one atom: {len(valid)}.\n")
+    print("Minimum distance list (Å):")
+    print(dists[:, 0].tolist())
+    print("Maximum distance list (Å):")
+    print(dists[:, 1].tolist())
+    print(
+        f"Global minimum distance: {dists[:, 0].min():.3f} Å "
+        f"(frame {valid[dists[:, 0].argmin()]}). Average: {dists[:, 0].mean():.3f} Å."
+    )
+    print(
+        f"Global maximum distance: {dists[:, 1].max():.3f} Å "
+        f"(frame {valid[dists[:, 1].argmax()]}, 0-based)."
+    )
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
-        description="Get the minimum and maximum distance of atomic pair in a configuration.",
+        description="Get the minimum and maximum atomic pair distances of a structure "
+        "or of every frame in a trajectory (extxyz, XDATCAR, OUTCAR, ...).",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        epilog="Author: SLY",
+        epilog="Author: SLY.",
     )
-
+    parser.add_argument("structure_fn", nargs="?", default="POSCAR", help="structure filename")
     parser.add_argument(
-        "structure_fn", nargs="?", default="POSCAR", help="Structure filename"
+        "-mic", "--mic", action="store_true", help="use minimum image convention (periodic images)"
     )
-
-    parser.add_argument(
-        "-mic", action="store_true", help="Use minimum image convention"
-    )
-
     args = parser.parse_args()
 
-    main(structure_fn=args.structure_fn, mic=args.mic)
+    main(args.structure_fn, mic=args.mic)

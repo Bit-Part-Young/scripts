@@ -6,104 +6,109 @@ import argparse
 
 import numpy as np
 import pandas as pd
+from ase.atoms import Atoms
 from ase.io import read
 
+AXES = {"x": 0, "y": 1, "z": 2}
 
-def layer_identify(
+
+def read_structure(structure_fn: str) -> Atoms:
+    """读取结构文件（LAMMPS data 需显式指定格式，其余由 ASE 自动识别）"""
+
+    if structure_fn.rsplit(".", 1)[-1] in ("lmp", "data", "lammps-data"):
+        return read(structure_fn, format="lammps-data", sort_by_id=False)
+    return read(structure_fn)
+
+
+def assign_layers(atoms: Atoms, axis: str = "z", tol: float = 0.01):
+    """按指定笛卡尔轴坐标对原子分层，返回 (层编号数组(从 1 开始), 坐标数组)
+
+    相邻原子坐标差 <= tol 视为同一层；若另两个基矢在该轴上分量为 0（坐标沿该轴周期为 L），
+    则跨越周期边界（坐标 ≈0 与 ≈L）的原子合并到第 1 层。
+    """
+
+    i = AXES[axis]
+    coords = atoms.get_positions(wrap=True)[:, i]
+
+    def cluster(x):
+        order = np.argsort(x)
+        labels = np.empty(len(x), dtype=int)
+        labels[order] = np.concatenate(([0], np.cumsum(np.diff(x[order]) > tol))) + 1
+        return labels
+
+    labels = cluster(coords)
+
+    cell = atoms.cell.array
+    others = [j for j in range(3) if j != i]
+    if atoms.pbc[i] and labels.max() > 1 and np.allclose(cell[others, i], 0.0):
+        period = cell[i, i]
+        if coords.min() + period - coords.max() <= tol:
+            coords = np.where(labels == labels.max(), coords - period, coords)
+            labels = cluster(coords)
+
+    return labels, coords
+
+
+def layers_identify(
     structure_fn: str,
-    layer_indices: int | list[int] | None = None,
-    precision: float = 0.001,
+    layer_indices: list[int] | None = None,
     axis: str = "z",
-):
-    """识别原子层及其对应的原子"""
+    tol: float = 0.01,
+) -> pd.DataFrame:
+    """识别原子层及其对应的原子；layer_indices 为 None 时输出全部原子"""
 
-    if structure_fn.split(".")[-1] in ["lmp", "data", "lammps-data"]:
-        atoms = read(structure_fn, format="lammps-data", sort_by_id=False)
-    elif structure_fn.split(".")[-1] in ["xyz", "extxyz"]:
-        atoms = read(structure_fn, format="extxyz")
-    else:
-        atoms = read(structure_fn)
-
-    element_list = atoms.get_chemical_symbols()
+    atoms = read_structure(structure_fn)
+    labels, _ = assign_layers(atoms, axis=axis, tol=tol)
 
     positions = atoms.get_positions(wrap=True)
-    positions_frac = atoms.get_scaled_positions(wrap=True)
+    scaled = atoms.get_scaled_positions(wrap=True)
+    df = pd.DataFrame(
+        {
+            "x": positions[:, 0],
+            "y": positions[:, 1],
+            "z": positions[:, 2],
+            "layer": labels,
+            "element": atoms.get_chemical_symbols(),
+            "xs": scaled[:, 0],
+            "ys": scaled[:, 1],
+            "zs": scaled[:, 2],
+        }
+    ).round(5)
 
-    if axis == "z":
-        positions_z = positions[:, 2]
-    elif axis == "y":
-        positions_z = positions[:, 1]
-    elif axis == "x":
-        positions_z = positions[:, 0]
-    else:
-        raise ValueError(f"Invalid axis: {axis}")
+    print(f"Atoms count: {len(atoms)}; Layers count: {labels.max()}.\n")
 
-    positions_z_rounded = precision * np.round(positions_z / precision)
-    positions_z_unique = np.unique(positions_z_rounded)
+    if layer_indices:
+        missing = sorted(set(layer_indices) - set(labels))
+        if missing:
+            print(f"Warning: layer(s) {missing} not found (valid: 1-{labels.max()}).\n")
+        df = df[df["layer"].isin(layer_indices)]
 
-    print(f"Atoms count: {len(atoms)}; Layers count: {len(positions_z_unique)}.\n")
+    print(df.to_string())
 
-    # 获取每个原子所在的原子层
-    layer_index_list = []
-    for z_coord in positions_z_rounded:
-        for i, z_unique in enumerate(positions_z_unique, start=1):
-            if np.isclose(z_unique, z_coord):
-                layer_index_list.append(i)
-
-    data = {
-        "x": positions[:, 0],
-        "y": positions[:, 1],
-        "z": positions[:, 2],
-        "layer_index": layer_index_list,
-        "element": element_list,
-        "xs": positions_frac[:, 0],
-        "ys": positions_frac[:, 1],
-        "zs": positions_frac[:, 2],
-    }
-    df = pd.DataFrame(data).round(5)
-
-    if layer_indices is None:
-        print(df)
-    elif isinstance(layer_indices, int):
-        print(df[df["layer_index"] == layer_indices])
-    elif isinstance(layer_indices, list):
-        print(df[df["layer_index"].isin(layer_indices)])
+    return df
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
-        description="Identify atomic layers.",
-        epilog="Author: SLY.",
+        description="Identify atomic layers and the atoms in them.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        allow_abbrev=True,
+        epilog="Author: SLY.",
     )
-
-    parser.add_argument(
-        "structure_fn", nargs="?", default="POSCAR", help="structure filename"
-    )
-
+    parser.add_argument("structure_fn", nargs="?", default="POSCAR", help="structure filename")
     parser.add_argument(
         "-li",
         "--layer_indices",
         type=int,
-        nargs="*",
+        nargs="+",
         metavar="N",
-        help="atomic layer indices",
+        help="layers to show (1-based, e.g. 1 2); omit to show all",
     )
-
     parser.add_argument(
-        "--axis",
-        choices=["x", "y", "z"],
-        default="z",
-        metavar="STR",
-        help="axis perpendicular to atomic layers (x, y, z)",
+        "--axis", choices=list(AXES), default="z", help="axis perpendicular to atomic layers"
     )
-
+    parser.add_argument(
+        "-t", "--tol", type=float, default=0.01, help="tolerance (Å) for atoms in the same layer"
+    )
     args = parser.parse_args()
 
-    structure_fn = args.structure_fn
-    layer_indices = args.layer_indices
-    axis = args.axis
-
-    layer_identify(structure_fn=structure_fn, layer_indices=layer_indices, axis=axis)
+    layers_identify(args.structure_fn, args.layer_indices, axis=args.axis, tol=args.tol)
