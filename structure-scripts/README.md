@@ -39,6 +39,5 @@ element_data.py                      # 元素周期表常见元素数据
 get_interface.py                     # 生成界面结构（待优化）
 
 read_poscar.py                       # 读取 POSCAR 文件（练习用）
-build_structure.py                   # 构建晶体结构
 build_structure.ipynb                # 构建晶体结构（练习用）
 ```
