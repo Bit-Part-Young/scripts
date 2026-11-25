@@ -15,7 +15,8 @@ read_force.py                        # 解析每个目录下的 vasprun.xml 文�
 extract_outcar.ipynb                 # 使用正则表达式提取 OUTCAR 文件中的数据（练习用）
 
 CheckVaspDone                        # 检查 VASP 计算是否完成（可多个目录）
-CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（可多个目录）
+CheckScfDone                         # 检查 VASP 静态 (NSW=0) 计算是否完成（可多个目录）
+CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（区分 运行中 / 已结束未收敛）
 sigma.sh                             # 检查 entropy T*S 是否小于 1 meV/atom
 
 plot_energy_force.sh                 # 获取 VASP 弛豫过程中的能量、原子受力（考虑原子位置方向固定情况，计算受力的模长）信息并绘制演化图
@@ -29,9 +30,9 @@ get_psp2.py                          # 生成 VASP 和 pymatgen 推荐的 PBE �
 psp_comparison.py                    # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)
 get_vasp_data.py                     # 获取 VASP 计算目录的输出数据（利用 atomate package）
 get_vasp_data2.py                    # 直接解析 VASP 能量、离子步数及实际耗时（无需 pymatgen）；支持多个目录、. 和 '*'
-get_opt_data.sh                      # 获取当前 目录/子目录 下的 VASP 弛豫计算数据
-get_scf_data.sh                      # 获取当前 目录/子目录 下的 VASP 静态计算数据
-get_vasp_running_job.sh              # 获取正在运行的 VASP 作业信息
+get_opt_data.sh                      # VASP 弛豫计算数据表（离子步、能量、dE、耗时、收敛状态）
+get_scf_data.sh                      # VASP 静态计算数据表（电子步、能量、dE、耗时、NELM 是否用尽）
+get_vasp_running_job.sh [auto|scf|opt]  # 当前用户运行中的 VASP 作业数据（不限作业名，SiYuan 仅 ~/yangsl）
 vasp_timecost.sh                     # 统计 VASP 计算目录的离子步步数、计算耗时、能量信息
 kgrid2kspacing.py                    # 从 KPOINTS 和 POSCAR 文件获取 K-spacing 数值
 kspacing2kgrid.py                    # 从 K-spacing 数值和 POSCAR 获取 K-grid 数值

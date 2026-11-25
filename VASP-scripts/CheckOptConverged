@@ -1,91 +1,71 @@
 #!/bin/bash
+# 检查 VASP 弛豫计算目录是否达到收敛精度（OUTCAR 中出现 "reached required accuracy"）
 
+set -eu
 
-#-------------------------------- 检查 VASP 弛豫计算目录是否达到收敛精度 --------------------------------
-check_converged() {
-  converged_dirs=()
-  unconverged_dirs=()
-  for dir in "$@"; do
+usage() {
+  local s; s=$(basename "$0")
+  cat <<EOT
 
-    [[ -d "${dir}" ]] || continue
+Usage: $s [dirs...]
 
-    outcar_fn="${dir}/OUTCAR"
+Check VASP relaxation/optimization calculation dirs whether converged.
 
-    # 若目录层级数大于 2，则获取最后 3 层目录
-    if [[ $(echo "${dir}" | awk -F'/' '{print NF}') -gt 2 ]]; then
-      dir=$(echo "${dir}" | awk -F'/' '{print $(NF-2)"/"$(NF-1)"/"$NF}')
-    else
-      dir=$(basename "${dir}")
-    fi
+Options:
+  -h, --help    show this help message and exit
+  dirs          VASP calculation dirs ("." = all sub-dirs of current dir)
 
-    # dir=$(basename "${dir}")
-
-    if [ ! -f "${outcar_fn}" ]; then
-      echo "Folder ${dir} OUTCAR doesn't exist!"
-    else
-      if grep -q 'reached required accuracy' "${outcar_fn}"; then
-        converged_dirs+=("${dir}")
-      else
-        unconverged_dirs+=("${dir}")
-      fi
-    fi
-  done
-
-  echo "Converged dirs (${#converged_dirs[@]}):"
-  for dir in "${converged_dirs[@]}"; do
-    echo "  ${dir}"
-  done
-
-  if [[ ${#unconverged_dirs[@]} -eq 0 ]]; then
-    echo -e "\nAll VASP relaxation/optimization calulations dirs are converged!"
-  else
-    echo -e "\nUnconverged dirs (${#unconverged_dirs[@]}):"
-    for dir in "${unconverged_dirs[@]}"; do
-      echo "  ${dir}"
-    done
-  fi
-
+Examples:
+    $s \${PWD}       # 当前目录
+    $s test1        # 单个目录
+    $s test1 test2  # 多个目录
+    $s .            # 当前目录下的所有子目录
+EOT
 }
 
+# 显示名：相对路径原样；绝对路径（去掉 $PWD 前缀后）取最后 3 级
+short_name() {
+  local d=${1#./}
+  if [[ $d != /* ]]; then echo "$d"
+  elif [[ $d == "$PWD" ]]; then basename "$d"
+  else d=${d#"$PWD"/}; echo "$d" | awk -F/ '{print (NF > 3 ? $(NF-2)"/"$(NF-1)"/"$NF : $0)}'
+  fi
+}
 
-#-------------------------------- 获取帮助 --------------------------------
-get_help() {
-  script_name=$(basename "$0")
+# 打印分组：$1 标题，其余为条目（为空则不打印）
+print_group() {
+  local title=$1; shift
+  [[ $# -eq 0 ]] && return 0
+  echo "${title} ($#):"
+  printf "  %s\n" "$@"
+  echo
+}
 
-  echo -e "\nUsage: ${script_name} [dirs...]"
+check() {
+  local dir name converged=() running=() stopped=() no_outcar=()
+  for dir in "$@"; do
+    name=$(short_name "$dir")
+    if [[ ! -f $dir/OUTCAR ]]; then no_outcar+=("$name")
+    elif grep -q "reached required accuracy" "$dir/OUTCAR"; then converged+=("$name")
+    elif grep -q "Total CPU time used" "$dir/OUTCAR"; then stopped+=("$name")   # 已结束但未收敛
+    else running+=("$name")
+    fi
+  done
 
-  echo -e "\nCheck VASP relaxation/optimization calculation dirs whether converged."
-
-  echo -e "\nOptions:"
-  echo "    -h, --help    show this help message and exit"
-  echo "    dirs          VASP calculation dirs"
-
-  echo -e "\nExamples:"
-  echo "    ${script_name} \${PWD}       # 当前目录"
-  echo "    ${script_name} test1        # 单个目录"
-  echo "    ${script_name} test1 test2  # 多个目录"
-  echo "    ${script_name} .            # 当前目录下的所有子目录"
-
-  exit 0
+  print_group "Converged dirs" "${converged[@]}"
+  print_group "Unconverged dirs, still running" "${running[@]}"
+  print_group "Unconverged dirs, finished (NSW exhausted?)" "${stopped[@]}"
+  print_group "Dirs without OUTCAR" "${no_outcar[@]}"
+  [[ $# -gt 0 && ${#converged[@]} -eq $# ]] && echo "All VASP relaxation/optimization calculation dirs are converged!"
+  return 0
 }
 
 
 #-------------------------------- 主函数 --------------------------------
-if [ $# -eq 0 ]; then
-  get_help
-  exit 0
-
-elif [[ "$1" == "-h" || "$1" == "--help" ]]; then
-  get_help
-
-elif [[ "$1" == "." ]]; then
-  for item in ./*; do
-    if [[ -d ${item} ]]; then
-      item=$(basename "${item}")
-      check_converged "${item}"
-    fi
-  done
-
-else
-  check_converged "$@"
+if [[ $# -eq 0 || $1 == "-h" || $1 == "--help" ]]; then
+  usage; exit 0
 fi
+[[ $# -eq 1 && $1 == "." ]] && set -- ./*/
+
+mapfile -t dirs < <(for d in "$@"; do [[ -d $d ]] && printf "%s\n" "${d%/}"; done | sort -V)
+check "${dirs[@]}"
