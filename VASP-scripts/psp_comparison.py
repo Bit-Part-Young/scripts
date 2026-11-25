@@ -1,188 +1,56 @@
 #!/usr/bin/env python3
 
-"""比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP.5.4.4)"""
+"""比较 VASP(potpaw.54/.64) 和 pymatgen 推荐的 PBE 赝势（TITEL、ENMAX、ZVAL、VRHFIN），仅依赖标准库"""
 
 import argparse
-import os
-import subprocess
+import re
 
-import pandas as pd
-from monty.os.path import zpath
-from pymatgen.core import SETTINGS
+from get_psp import find_potcar, psp_root, psp_symbols, read_potcar
 
-# Data source: https://github.com/materialsproject/pymatgen/blob/master/src/pymatgen/io/vasp/MPRelaxSet.yaml
-pbe_dict_pymatgen = {
-    "H": "H",
-    "He": "He",
-    "Li": "Li_sv",
-    "Be": "Be_sv",
-    "B": "B",
-    "C": "C",
-    "N": "N",
-    "O": "O",
-    "Mg": "Mg_pv",
-    "Al": "Al",
-    "Si": "Si",
-    "P": "P",
-    "S": "S",
-    "Cl": "Cl",
-    "Ca": "Ca_sv",
-    "Sc": "Sc_sv",
-    "Ti": "Ti_pv",
-    "V": "V_pv",
-    "Cr": "Cr_pv",
-    "Mn": "Mn_pv",
-    "Fe": "Fe_pv",
-    "Co": "Co",
-    "Ni": "Ni_pv",
-    "Cu": "Cu_pv",
-    "Zn": "Zn",
-    "Zr": "Zr_sv",
-    "Nb": "Nb_pv",
-    "Mo": "Mo_pv",
-    "Sn": "Sn_d",
-    "Hf": "Hf_pv",
-    "Ta": "Ta_pv",
-    "W": "W_sv",
-    "Pt": "Pt",
-    "Au": "Au",
-    "Pb": "Pb_d",
-    "Ag": "Ag",
-    "Pd": "Pd",
-}
-
-# Data source: https://www.vasp.at/wiki/index.php/Available_PAW_potentials
-pbe_dict_vasp = {
-    "H": "H",
-    "He": "He",
-    "Li": "Li_sv",
-    "Be": "Be",
-    "B": "B",
-    "C": "C",
-    "N": "N",
-    "O": "O",
-    "Mg": "Mg",
-    "Al": "Al",
-    "Si": "Si",
-    "P": "P",
-    "S": "S",
-    "Cl": "Cl",
-    "Ca": "Ca_sv",
-    "Sc": "Sc_sv",
-    "Ti": "Ti_sv",
-    "V": "V_sv",
-    "Cr": "Cr_pv",
-    "Mn": "Mn_pv",
-    "Fe": "Fe",
-    "Co": "Co",
-    "Ni": "Ni",
-    "Cu": "Cu",
-    "Zn": "Zn",
-    "Zr": "Zr_sv",
-    "Nb": "Nb_sv",
-    "Mo": "Mo_sv",
-    "Sn": "Sn_d",
-    "Hf": "Hf_pv",
-    "Ta": "Ta_pv",
-    "W": "W_sv",
-    "Pt": "Pt",
-    "Au": "Au",
-    "Pb": "Pb_d",
-    "Ag": "Ag",
-    "Pd": "Pd",
-}
+COLUMNS = ("", "POTCAR", "TITEL", "ENMAX", "ZVAL", "VRHFIN")
 
 
-def get_shell_outputs(command: str) -> str:
-    """获取 Shell 命令的输出"""
+def get_potcar_info(psp_symbol, root=None):
+    """读取单元素 POTCAR 头部信息"""
+    text = read_potcar(find_potcar(psp_symbol, root))
 
-    result = subprocess.run(
-        command,
-        shell=True,
-        text=True,
-        capture_output=True,
-    )
-    return result.stdout
+    def field(pattern):
+        return re.search(pattern, text, re.M).group(1).strip()
 
-
-def get_potcar_info(psp_symbol: str):
-    """获取 POTCAR 文件信息"""
-
-    PMG_VASP_PSP_DIR = SETTINGS.get("PMG_VASP_PSP_DIR")
-
-    functional_subdir = "POT_GGA_PAW_PBE"
-
-    paths_to_try: list[str] = [
-        os.path.join(PMG_VASP_PSP_DIR, functional_subdir, f"POTCAR.{psp_symbol}"),
-        os.path.join(PMG_VASP_PSP_DIR, functional_subdir, psp_symbol, "POTCAR"),
-    ]
-
-    for path in paths_to_try:
-        path = os.path.expanduser(path)
-        path = zpath(path)
-        if os.path.isfile(path):
-
-            command = f"head -n 1 {path}"
-            titel = get_shell_outputs(command).strip()
-
-            command = f"grep ENMAX {path} | awk '{{print $3}}'"
-            enmax = float(get_shell_outputs(command).strip()[:-1])
-
-            command = f"grep ZVAL {path} | awk '{{print $6}}'"
-            zval = int(float(get_shell_outputs(command).strip()))
-
-            command = f"grep VRHFIN {path} | awk -F':' '{{print $2}}'"
-            vrhfin = get_shell_outputs(command).strip()
-
-            psp_info_dict = {
-                "TITEL": titel,
-                "ENMAX": enmax,
-                "ZVAL": zval,
-                "VRHFIN": vrhfin,
-            }
-
-    return psp_info_dict
+    return {
+        "POTCAR": psp_symbol,
+        "TITEL": field(r"^\s*TITEL\s*=\s*(.+)$"),
+        "ENMAX": "%.3f" % float(field(r"ENMAX\s*=\s*([-\d.]+)")),
+        "ZVAL": "%g" % float(field(r"ZVAL\s*=\s*([-\d.]+)")),
+        # 部分官方 POTCAR（如 Ni、Pb、Bi）的 VRHFIN 本身就为空
+        "VRHFIN": field(r"VRHFIN\s*=\s*[^:]*:(.*)$") or "-",
+    }
 
 
-def potcar_pbe_compare(element_symbol: str):
-    """比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP.5.4.4)"""
+def potcar_pbe_compare(element_symbols):
+    """比较 VASP(.54/.64) 和 pymatgen 推荐的 PBE 赝势；推荐相同的合并为一行"""
+    root = psp_root()
+    sources = {"VASP.54": "vasp", "VASP.64": "vasp64", "pymatgen": "pymatgen"}
+    symbols = {label: psp_symbols(element_symbols, key) for label, key in sources.items()}
+    rows = []
+    for i, element in enumerate(element_symbols):
+        groups = {}
+        for label in sources:
+            groups.setdefault(symbols[label][i], []).append(label)
+        for psp, labels in groups.items():
+            rows.append({"": f"{element} {'='.join(labels)}", **get_potcar_info(psp, root)})
 
-    psp_vasp = pbe_dict_vasp[element_symbol]
-    psp_pymatgen = pbe_dict_pymatgen[element_symbol]
-
-    psp_info_dict_vasp = get_potcar_info(psp_symbol=psp_vasp)
-    psp_info_dict_pymatgen = get_potcar_info(psp_symbol=psp_pymatgen)
-    if psp_vasp != psp_pymatgen:
-        print("VASP and pymatgen recommended is different.\n")
-        df = pd.DataFrame(
-            [psp_info_dict_vasp, psp_info_dict_pymatgen],
-            index=["VASP", "pymatgen"],
-        )
-    else:
-        print("VASP and pymatgen recommended is same.\n")
-        df = pd.DataFrame(
-            [psp_info_dict_vasp],
-            index=["VASP/pymatgen"],
-        )
-
-    # 索引行输出宽度设置为 15
-    df.index = df.index.map(lambda x: f"{x:<15}")
-
-    print(df)
+    widths = {c: max(len(c), *(len(row[c]) for row in rows)) for c in COLUMNS}
+    numeric = {"ENMAX", "ZVAL"}
+    for row in [dict(zip(COLUMNS, COLUMNS)), *rows]:
+        print("  ".join(row[c].rjust(widths[c]) if c in numeric else row[c].ljust(widths[c])
+                        for c in COLUMNS).rstrip())
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(
-        description="Compare VASP, pymatgen recommended PBE pseudopotentials.",
-        epilog="Author: SLY.",
+        description="Compare VASP (potpaw.54/.64) and pymatgen recommended PBE pseudopotentials.",
+        epilog="Example: %(prog)s Ti Al W. Author: SLY.",
     )
-
-    parser.add_argument(
-        "element_symbol",
-        help="Element symbol, eg. Ti",
-    )
-
-    args = parser.parse_args()
-
-    potcar_pbe_compare(element_symbol=args.element_symbol)
+    parser.add_argument("element_symbols", nargs="+", help="element symbols, eg. Ti Al")
+    potcar_pbe_compare(parser.parse_args().element_symbols)

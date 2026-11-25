@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 生成 VASP + phonopy 声子计算的输入文件：有限位移法（fd，每个位移一个 disp-XXX/）或 DFPT（dfpt，一个 DFPT/）
-# 需要 phonopy ≥ 4（phonopy-init），以及 cms-scripts 中的 get_psp2.py、slurm_generation.py、check_vaspi
+# 需要 phonopy ≥ 4（phonopy-init），以及 cms-scripts 中的 get_psp.py、slurm_generation.py、check_vaspi
 
 set -eu
 
@@ -84,7 +84,7 @@ function setup_job() {
   (
     cd "${folder}"
     generate_incar
-    get_psp2.py
+    get_psp.py
     slurm_generation.py "${platform}" -nc "${ncpus}"
     echo -n "${folder}: "
     check_vaspi

@@ -17,7 +17,7 @@ extract_outcar.ipynb                 # 使用正则表达式提取 OUTCAR 文件
 CheckVaspDone                        # 检查 VASP 计算是否完成（可多个目录）
 CheckScfDone                         # 检查 VASP 静态 (NSW=0) 计算是否完成（可多个目录）
 CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（区分 运行中 / 已结束未收敛）
-sigma.sh                             # 检查 entropy T*S 是否小于 1 meV/atom
+sigma.sh [dir]                       # 检查 entropy T*S 是否小于 1 meV/atom
 
 plot_energy_force.sh                 # 获取 VASP 弛豫过程中的能量、原子受力（考虑原子位置方向固定情况，计算受力的模长）信息并绘制演化图
 plot_energy_force2.sh                # 获取 VASP 弛豫过程中的能量、原子受力（不考虑原子位置方向固定情况，不计算受力的模长）信息并绘制演化图
@@ -25,15 +25,14 @@ plot_rdf_AIMD.sh                     # 获取 AIMD 的 RDF 数据并绘制
 plot_temperature_energy_AIMD.sh      # 获取 AIMD 的温度和能量数据并绘制
 plot_ev.py                           # EV（能量-体积）曲线绘制
 
-get_psp.py                           # 生成 VASP 和 pymatgen 推荐的 PBE 赝势 POTCAR 文件
-get_psp2.py                          # 生成 VASP 和 pymatgen 推荐的 PBE 赝势 POTCAR 文件（不依赖 pymatgen，速度更快）
-psp_comparison.py                    # 比较 VASP 和 pymatgen 推荐的常用元素 PBE 赝势 (VASP5.4.4)
-get_vasp_data.py                     # 获取 VASP 计算目录的输出数据（利用 atomate package）
+get_psp.py [-pr vasp|vasp64|pymatgen] # 生成 VASP(potpaw.54/.64 2026.10 版) 和 pymatgen 推荐的 PBE 赝势 POTCAR 文件（不依赖 pymatgen；赝势库取 VASP_PSP_PATH 或 ~/.pmgrc.yaml）
+psp_comparison.py Ti Al ...          # 比较 VASP(.54/.64) 和 pymatgen 推荐的 PBE 赝势（TITEL/ENMAX/ZVAL/VRHFIN），可多个元素，仅需标准库
+get_vasp_data.py                     # 获取 VASP 计算目录的输出数据（优先 atomate，无则用 pymatgen）
 get_vasp_data2.py                    # 直接解析 VASP 能量、离子步数及实际耗时（无需 pymatgen）；支持多个目录、. 和 '*'
 get_opt_data.sh                      # VASP 弛豫计算数据表（离子步、能量、dE、耗时、收敛状态）
 get_scf_data.sh                      # VASP 静态计算数据表（电子步、能量、dE、耗时、NELM 是否用尽）
 get_vasp_running_job.sh [auto|scf|opt]  # 当前用户运行中的 VASP 作业数据（不限作业名，SiYuan 仅 ~/yangsl）
-vasp_timecost.sh                     # 统计 VASP 计算目录的离子步步数、计算耗时、能量信息
+vasp_timecost.sh [dir]               # 统计 VASP 计算目录的离子步步数、计算耗时（已结束取 Elapsed time，运行中累加 LOOP+ 与当前离子步 LOOP）、能量信息
 kgrid2kspacing.py                    # 从 KPOINTS 和 POSCAR 文件获取 K-spacing 数值
 kspacing2kgrid.py                    # 从 K-spacing 数值和 POSCAR 获取 K-grid 数值
 incar_generation.py                  # 根据计算类型生成 VASP INCAR 文件

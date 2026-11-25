@@ -91,7 +91,7 @@ function elastic_vaspkit_stress_strain() {
     # 生成空的 KPOINTS 文件（不用，而是用 INCAR 中的 KSPACING 和 KGAMMA 参数）
     touch KPOINTS
     # 生成 POTCAR 文件
-    get_psp2.py
+    get_psp.py
     # 生成 job.slurm 文件
     ncpus=$(get_ncpus)
     slurm_generation.py master -nc ${ncpus}

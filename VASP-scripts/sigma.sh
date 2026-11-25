@@ -2,29 +2,29 @@
 
 : '
 检查 entropy T*S 是否小于 1 meV/atom
+用法: sigma.sh [计算目录，默认 .]
 
 reference: https://github.com/tamaswells/VASP_script/blob/master/sigma.sh
 '
 
 set -eu
 
+dir=${1:-.}
+for f in OUTCAR INCAR; do
+  [[ -f ${dir}/${f} ]] || { echo "${dir}/${f} not found!" >&2; exit 1; }
+done
 
-entropy=$(grep 'entropy T\*S' OUTCAR | tail -1 | awk '{print $5}')
-natoms=$(grep 'NIONS' OUTCAR | tail -1 | awk '{print $12}')
+# 只取未被注释的 SIGMA 设置，缺省为 VASP 默认值 0.2
+sigma=$(awk -F'=' 'toupper($1) ~ /^[ \t]*SIGMA[ \t]*$/ {split($2, a, /[ \t;!#]+/); v = (a[1] == "" ? a[2] : a[1])} END {print (v == "" ? 0.2 : v)}' "${dir}/INCAR")
 
-entropy_average=$(echo "scale=5; ${entropy}/${natoms}" | bc)
-value_abs=${entropy_average#-}
-
-if grep -q 'SIGMA' INCAR; then
-  sigma=$(grep SIGMA INCAR | grep -Eo '([0-9.]+)' | head -1)
-else
-  sigma=0.2
-fi
-
-flag=$(echo "$value_abs < 0.001" | bc)
-
-if [ "${flag}" -eq 1 ]; then
-  echo "Your SIGMA $sigma is okay; for average entropy T*S $value_abs is < 0.001 eV/atom."
-else
-  echo "Your SIGMA $sigma is BAD; for average entropy T*S $value_abs is > 0.001 eV/atom. Try to decrease SIGMA!"
-fi
+awk -v sigma="${sigma}" '
+  /entropy T\*S/ { entropy = $NF }
+  /NIONS/        { natoms = $NF }
+  END {
+    if (entropy == "" || natoms == "") { print "entropy T*S or NIONS not found in OUTCAR!"; exit 1 }
+    value = entropy / natoms; if (value < 0) value = -value
+    if (value < 0.001)
+      printf "Your SIGMA %s is okay; for average entropy T*S %.6f is < 0.001 eV/atom.\n", sigma, value
+    else
+      printf "Your SIGMA %s is BAD; for average entropy T*S %.6f is > 0.001 eV/atom. Try to decrease SIGMA!\n", sigma, value
+  }' "${dir}/OUTCAR"

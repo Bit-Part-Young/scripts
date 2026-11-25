@@ -30,4 +30,4 @@ LAMMPS 势函数：`disp_supercell_generation.py POSCAR -d 6 6 4 --interface lam
 
 需要和其他势函数、实验值对比时，用 `plot_phonon_bs.py`，见其文件头的说明。
 
-依赖：`phonon_vasp.sh` 调用 cms-scripts 中的 `get_psp2.py`、`check_vaspi`（`VASP-scripts/`）和 `slurm_generation.py`（`HPC/`）。
+依赖：`phonon_vasp.sh` 调用 cms-scripts 中的 `get_psp.py`、`check_vaspi`（`VASP-scripts/`）和 `slurm_generation.py`（`HPC/`）。
