@@ -20,7 +20,6 @@ CheckOptConverged                    # 检查 VASP 弛豫计算是否收敛（�
 sigma.sh [dir]                       # 检查 entropy T*S 是否小于 1 meV/atom
 
 plot_energy_force.sh                 # 获取 VASP 弛豫过程中的能量、原子受力（考虑原子位置方向固定情况，计算受力的模长）信息并绘制演化图
-plot_energy_force2.sh                # 获取 VASP 弛豫过程中的能量、原子受力（不考虑原子位置方向固定情况，不计算受力的模长）信息并绘制演化图
 plot_rdf_AIMD.sh                     # 获取 AIMD 的 RDF 数据并绘制
 plot_temperature_energy_AIMD.sh      # 获取 AIMD 的温度和能量数据并绘制
 plot_ev.py                           # EV（能量-体积）曲线绘制
